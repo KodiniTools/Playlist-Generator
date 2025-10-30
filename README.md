@@ -111,4 +111,4 @@ Diese Anwendung wurde von Vanilla JavaScript zu Vue 3 migriert. Wichtige Änderu
 
 ```
 ## Author
-Dinko Ramić - Kodini Tools - kodinitools.com
+- Dinko Ramić - Kodini Tools - kodinitools.com
