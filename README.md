@@ -108,5 +108,7 @@ Diese Anwendung wurde von Vanilla JavaScript zu Vue 3 migriert. Wichtige Änderu
 3. **Composables**: Logik ist in Composables ausgelagert für bessere Wiederverwendbarkeit
 4. **Single File Components**: HTML, JavaScript und CSS-Scoping in .vue-Dateien
 5. **Build-System**: Vite für schnelles HMR (Hot Module Replacement)
+
 ```
-Autor: Dinko Ramić - Kodini Tools - kodinitools.com
+## Author
+Dinko Ramić - Kodini Tools - kodinitools.com
