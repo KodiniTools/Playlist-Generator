@@ -1,4 +1,4 @@
-# Audio Playlist Generator - Vue 3 Edition
+# Audio Playlist Generator für M3U, XSPF und JSON-Playlists - Vue 3 Edition
 
 Eine moderne Vue 3-Anwendung zum Erstellen von Audio-Playlists in verschiedenen Formaten (M3U, XSPF, JSON).
 
@@ -97,7 +97,7 @@ Die Anwendung nutzt moderne Web-APIs:
 
 ## Lizenz
 
-Erstellt von KodiniTools
+
 
 ## Migrationshinweise
 
@@ -108,3 +108,5 @@ Diese Anwendung wurde von Vanilla JavaScript zu Vue 3 migriert. Wichtige Änderu
 3. **Composables**: Logik ist in Composables ausgelagert für bessere Wiederverwendbarkeit
 4. **Single File Components**: HTML, JavaScript und CSS-Scoping in .vue-Dateien
 5. **Build-System**: Vite für schnelles HMR (Hot Module Replacement)
+```
+Autor: Dinko Ramić - Kodini Tools - kodinitools.com
