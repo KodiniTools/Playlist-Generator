@@ -110,5 +110,6 @@ Diese Anwendung wurde von Vanilla JavaScript zu Vue 3 migriert. Wichtige Änderu
 5. **Build-System**: Vite für schnelles HMR (Hot Module Replacement)
 
 ```
+```
 ## Author
 - Dinko Ramić - Kodini Tools - kodinitools.com
