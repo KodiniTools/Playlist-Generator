@@ -96,6 +96,7 @@ Die Anwendung nutzt moderne Web-APIs:
 - **File System Access API**: Chrome 86+, Edge 86+ (für das Speichern)
 
 ## Lizenz
+MIT License
 
 
 
