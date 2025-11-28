@@ -50,7 +50,9 @@ const translations = {
     tool2_desc: "Passen Sie den Klang Ihrer Musik präzise an. Dieser 10-Band-Grafik-Equalizer ermöglicht es Ihnen, Frequenzen für das perfekte Hörerlebnis zu formen.",
     tool3_title: "Audio-Konverter",
     tool3_desc: "Konvertieren Sie Ihre Audiodateien schnell und einfach zwischen Formaten wie MP3, WAV und FLAC direkt in Ihrem Browser – ohne Uploads.",
-    tool_button: "Ausprobieren"
+    tool_button: "Ausprobieren",
+    donate_button: "spenden",
+    donate_title: "Mit PayPal spenden"
   },
   en: {
     meta_title: "Audio Playlist Generator - Create M3U, XSPF & JSON Playlists",
@@ -101,7 +103,9 @@ const translations = {
     tool2_desc: "Precisely adjust your music's sound. This 10-band graphic equalizer allows you to shape frequencies for the perfect listening experience.",
     tool3_title: "Audio Converter",
     tool3_desc: "Quickly and easily convert your audio files between formats like MP3, WAV, and FLAC directly in your browser—no uploads required.",
-    tool_button: "Try It Out"
+    tool_button: "Try It Out",
+    donate_button: "donate",
+    donate_title: "Donate with PayPal"
   }
 }
 
