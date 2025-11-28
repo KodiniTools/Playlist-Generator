@@ -736,11 +736,57 @@ details p {
     }
 }
 
+/* === Footer === */
+.site-footer {
+    margin-top: 50px;
+    padding: 30px 0;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+}
+
+.donate-form {
+    display: inline-block;
+}
+
+.donate-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--muted-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.donate-button:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: rgba(242, 226, 142, 0.05);
+}
+
+.light-theme .donate-button:hover {
+    background: rgba(162, 134, 128, 0.05);
+}
+
+.paypal-icon {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.donate-button:hover .paypal-icon {
+    opacity: 1;
+}
+
 /* === Print Styles === */
 @media print {
     .page-controls,
     .generate-button,
-    .tools-grid-section {
+    .tools-grid-section,
+    .site-footer {
         display: none;
     }
 
