@@ -1,6 +1,4 @@
 <template>
-  <a href="https://kodinitools.top" class="home-icon" title="Zurück zu KodiniTools.top">🏠</a>
-  
   <div class="page-controls">
     <LanguageSwitcher />
     <ThemeSwitcher />
