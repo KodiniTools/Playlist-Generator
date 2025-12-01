@@ -58,6 +58,7 @@
       </form>
     </footer>
   </main>
+  <ToastContainer />
 </template>
 
 <script setup>
@@ -68,10 +69,13 @@ import PlaylistConfig from './components/PlaylistConfig.vue'
 import PlaylistPreview from './components/PlaylistPreview.vue'
 import ToolsGrid from './components/ToolsGrid.vue'
 import FAQ from './components/FAQ.vue'
+import ToastContainer from './components/ToastContainer.vue'
 import { useTranslation } from './composables/useTranslation'
 import { usePlaylist } from './composables/usePlaylist'
+import { useToast } from './composables/useToast'
 
 const { t } = useTranslation()
+const toast = useToast()
 const {
   files,
   sortOption,
@@ -88,7 +92,10 @@ const {
 } = usePlaylist()
 
 const handleAddFiles = (fileList) => {
-  addFiles(fileList)
+  const count = addFiles(fileList)
+  if (count > 0) {
+    toast.info(t.value('toast_files_added').replace('{count}', count))
+  }
 }
 
 const handleFormatChange = (format) => {
@@ -97,13 +104,15 @@ const handleFormatChange = (format) => {
 
 const handleSave = async () => {
   if (!playlistContent.value) {
-    alert(t.value('alert_create_first'))
+    toast.error(t.value('alert_create_first'))
     return
   }
-  
+
   const result = await savePlaylist()
   if (result === false) {
-    alert(t.value('alert_save_error'))
+    toast.error(t.value('alert_save_error'))
+  } else {
+    toast.success(t.value('toast_playlist_saved'))
   }
 }
 

@@ -10,10 +10,12 @@ export function usePlaylist() {
   const supportedFormats = ['.mp3', '.wav', '.flac']
 
   const addFiles = (fileList) => {
-    files.value = Array.from(fileList).filter(f => 
+    const newFiles = Array.from(fileList).filter(f =>
       supportedFormats.some(ext => f.name.toLowerCase().endsWith(ext))
     )
+    files.value = [...files.value, ...newFiles]
     sortFiles()
+    return newFiles.length
   }
 
   const clearFiles = () => {
