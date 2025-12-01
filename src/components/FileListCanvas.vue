@@ -52,6 +52,10 @@ const props = defineProps({
   files: {
     type: Array,
     required: true
+  },
+  selectedIndex: {
+    type: Number,
+    default: -1
   }
 })
 
@@ -83,7 +87,7 @@ const estimatedDuration = computed(() => {
   return `${hours}h ${mins}min`
 })
 
-const emit = defineEmits(['clear', 'removeFile', 'moveFile'])
+const emit = defineEmits(['clear', 'removeFile', 'moveFile', 'selectFile'])
 
 const { t } = useTranslation()
 const { currentTheme } = useTheme()
@@ -122,7 +126,9 @@ const colors = {
     dragHandle: 'rgba(174, 175, 183, 0.4)',
     dragHandleHover: 'rgba(242, 226, 142, 0.7)',
     dropIndicator: '#F2E28E',
-    draggedBg: 'rgba(242, 226, 142, 0.15)'
+    draggedBg: 'rgba(242, 226, 142, 0.15)',
+    selectedBg: 'rgba(242, 226, 142, 0.2)',
+    selectedBorder: 'rgba(242, 226, 142, 0.5)'
   },
   light: {
     background: '#f5f5f5',
@@ -135,7 +141,9 @@ const colors = {
     dragHandle: 'rgba(94, 95, 105, 0.4)',
     dragHandleHover: 'rgba(162, 134, 128, 0.8)',
     dropIndicator: '#A28680',
-    draggedBg: 'rgba(162, 134, 128, 0.15)'
+    draggedBg: 'rgba(162, 134, 128, 0.15)',
+    selectedBg: 'rgba(162, 134, 128, 0.2)',
+    selectedBorder: 'rgba(162, 134, 128, 0.6)'
   }
 }
 
@@ -212,6 +220,16 @@ const drawFilesOnCanvas = () => {
     const y = (index * lineHeight) + (lineHeight / 2) + padding - scrollY.value
 
     if (y > -lineHeight && y < canvasHeight + lineHeight) {
+      // Draw selection highlight
+      if (props.selectedIndex === index) {
+        const rowY = (index * lineHeight) + padding - scrollY.value
+        ctx.fillStyle = theme.selectedBg
+        ctx.fillRect(padding - 4, rowY + 2, canvasWidth - padding * 2 - scrollbarSpace + 8, lineHeight - 4)
+        ctx.strokeStyle = theme.selectedBorder
+        ctx.lineWidth = 1
+        ctx.strokeRect(padding - 4, rowY + 2, canvasWidth - padding * 2 - scrollbarSpace + 8, lineHeight - 4)
+      }
+
       // Draw drag handle (≡ symbol - 3 horizontal lines)
       const handle = getDragHandleBounds(index)
       const isHandleHovered = hoveredDragHandle.value === index
@@ -546,11 +564,19 @@ const handleClick = (e) => {
       return
     }
 
+    // Check delete button
     const btn = getDeleteButtonBounds(fileIndex, canvasWidth)
     if (mX >= btn.x && mX <= btn.x + btn.width &&
         mY >= btn.y && mY <= btn.y + btn.height) {
       emit('removeFile', fileIndex)
+      return
     }
+
+    // Click on file row - select it
+    emit('selectFile', fileIndex)
+  } else {
+    // Click outside files - deselect
+    emit('selectFile', -1)
   }
 }
 
@@ -663,6 +689,10 @@ watch(() => props.files, () => {
 }, { deep: true })
 
 watch(currentTheme, () => {
+  drawFilesOnCanvas()
+})
+
+watch(() => props.selectedIndex, () => {
   drawFilesOnCanvas()
 })
 </script>

@@ -10,6 +10,7 @@ export function usePlaylist() {
   const supportedFormats = ['.mp3', '.wav', '.flac']
 
   const replaceMode = ref(false)
+  const selectedFileIndex = ref(-1)
 
   const addFiles = (fileList) => {
     const validFiles = Array.from(fileList).filter(f =>
@@ -216,6 +217,7 @@ ${tracks}
     outputFormat,
     playlistContent,
     replaceMode,
+    selectedFileIndex,
     addFiles,
     clearFiles,
     removeFile,
