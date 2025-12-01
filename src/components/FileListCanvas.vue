@@ -35,21 +35,28 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['clear', 'removeFile'])
+const emit = defineEmits(['clear', 'removeFile', 'moveFile'])
 
 const { t } = useTranslation()
 const { currentTheme } = useTheme()
 
 const canvasRef = ref(null)
 const scrollY = ref(0)
-const isDragging = ref(false)
+const isDraggingScrollbar = ref(false)
+const isDraggingFile = ref(false)
 const dragStartY = ref(0)
 const initialScrollY = ref(0)
 const hoveredIndex = ref(-1)
+const hoveredDragHandle = ref(-1)
+const draggedFileIndex = ref(-1)
+const dropTargetIndex = ref(-1)
+const dragOffsetY = ref(0)
+const currentDragY = ref(0)
 
 const lineHeight = 28
 const padding = 10
 const deleteButtonSize = 18
+const dragHandleWidth = 24
 
 // Farbschema: #F2E28E, #A28680, #5E5F69, #AEAFB7, #0C0C10
 const colors = {
@@ -60,7 +67,11 @@ const colors = {
     scrollbarHandle: 'rgba(242, 226, 142, 0.4)',
     deleteButton: 'rgba(229, 115, 115, 0.6)',
     deleteButtonHover: '#e57373',
-    deleteX: '#0C0C10'
+    deleteX: '#0C0C10',
+    dragHandle: 'rgba(174, 175, 183, 0.4)',
+    dragHandleHover: 'rgba(242, 226, 142, 0.7)',
+    dropIndicator: '#F2E28E',
+    draggedBg: 'rgba(242, 226, 142, 0.15)'
   },
   light: {
     background: '#f5f5f5',
@@ -69,7 +80,11 @@ const colors = {
     scrollbarHandle: 'rgba(162, 134, 128, 0.5)',
     deleteButton: 'rgba(211, 47, 47, 0.5)',
     deleteButtonHover: '#d32f2f',
-    deleteX: '#ffffff'
+    deleteX: '#ffffff',
+    dragHandle: 'rgba(94, 95, 105, 0.4)',
+    dragHandleHover: 'rgba(162, 134, 128, 0.8)',
+    dropIndicator: '#A28680',
+    draggedBg: 'rgba(162, 134, 128, 0.15)'
   }
 }
 
@@ -98,6 +113,12 @@ const getDeleteButtonBounds = (index, canvasWidth) => {
   const x = canvasWidth - deleteButtonSize - padding - scrollbarSpace
   const y = (index * lineHeight) + padding - scrollY.value + (lineHeight - deleteButtonSize) / 2
   return { x, y, width: deleteButtonSize, height: deleteButtonSize }
+}
+
+const getDragHandleBounds = (index) => {
+  const x = padding
+  const y = (index * lineHeight) + padding - scrollY.value + (lineHeight - 16) / 2
+  return { x, y, width: dragHandleWidth - 8, height: 16 }
 }
 
 const getFileIndexAtPosition = (mY) => {
@@ -134,12 +155,30 @@ const drawFilesOnCanvas = () => {
   const scrollbarSpace = geo ? 30 : 10
 
   props.files.forEach((file, index) => {
+    // Skip drawing the dragged file in its original position
+    if (isDraggingFile.value && draggedFileIndex.value === index) return
+
     const y = (index * lineHeight) + (lineHeight / 2) + padding - scrollY.value
 
     if (y > -lineHeight && y < canvasHeight + lineHeight) {
-      // Draw file name
+      // Draw drag handle (≡ symbol - 3 horizontal lines)
+      const handle = getDragHandleBounds(index)
+      const isHandleHovered = hoveredDragHandle.value === index
+      ctx.strokeStyle = isHandleHovered ? theme.dragHandleHover : theme.dragHandle
+      ctx.lineWidth = 2
+      ctx.lineCap = 'round'
+      for (let i = 0; i < 3; i++) {
+        const lineY = handle.y + 3 + (i * 5)
+        ctx.beginPath()
+        ctx.moveTo(handle.x, lineY)
+        ctx.lineTo(handle.x + handle.width, lineY)
+        ctx.stroke()
+      }
+
+      // Draw file name (offset for drag handle)
       let text = `${index + 1}. ${file.name}`
-      const maxWidth = canvasWidth - (padding * 2) - deleteButtonSize - scrollbarSpace - 10
+      const textX = padding + dragHandleWidth
+      const maxWidth = canvasWidth - textX - padding - deleteButtonSize - scrollbarSpace - 10
 
       if (ctx.measureText(text).width > maxWidth) {
         while (ctx.measureText(text).width > maxWidth && text.length > 5) {
@@ -148,7 +187,7 @@ const drawFilesOnCanvas = () => {
       }
 
       ctx.fillStyle = theme.text
-      ctx.fillText(text, padding, y)
+      ctx.fillText(text, textX, y)
 
       // Draw delete button
       const btn = getDeleteButtonBounds(index, canvasWidth)
@@ -173,6 +212,63 @@ const drawFilesOnCanvas = () => {
       ctx.stroke()
     }
   })
+
+  // Draw drop indicator line
+  if (isDraggingFile.value && dropTargetIndex.value >= 0) {
+    const indicatorY = (dropTargetIndex.value * lineHeight) + padding - scrollY.value
+    ctx.strokeStyle = theme.dropIndicator
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(padding, indicatorY)
+    ctx.lineTo(canvasWidth - padding - scrollbarSpace, indicatorY)
+    ctx.stroke()
+
+    // Draw small triangles at the ends
+    ctx.fillStyle = theme.dropIndicator
+    ctx.beginPath()
+    ctx.moveTo(padding, indicatorY)
+    ctx.lineTo(padding + 8, indicatorY - 4)
+    ctx.lineTo(padding + 8, indicatorY + 4)
+    ctx.fill()
+  }
+
+  // Draw the dragged file at cursor position
+  if (isDraggingFile.value && draggedFileIndex.value >= 0 && draggedFileIndex.value < props.files.length) {
+    const file = props.files[draggedFileIndex.value]
+    const dragY = currentDragY.value - dragOffsetY.value
+
+    // Background for dragged item
+    ctx.fillStyle = theme.draggedBg
+    ctx.fillRect(padding, dragY - lineHeight / 2 + 2, canvasWidth - padding * 2 - scrollbarSpace, lineHeight - 4)
+    ctx.strokeStyle = theme.dropIndicator
+    ctx.lineWidth = 1
+    ctx.strokeRect(padding, dragY - lineHeight / 2 + 2, canvasWidth - padding * 2 - scrollbarSpace, lineHeight - 4)
+
+    // Draw drag handle for dragged item
+    ctx.strokeStyle = theme.dragHandleHover
+    ctx.lineWidth = 2
+    for (let i = 0; i < 3; i++) {
+      const lineY = dragY - 7 + (i * 5)
+      ctx.beginPath()
+      ctx.moveTo(padding, lineY)
+      ctx.lineTo(padding + dragHandleWidth - 8, lineY)
+      ctx.stroke()
+    }
+
+    // Draw file name
+    let text = `${draggedFileIndex.value + 1}. ${file.name}`
+    const textX = padding + dragHandleWidth
+    const maxWidth = canvasWidth - textX - padding - deleteButtonSize - scrollbarSpace - 10
+
+    if (ctx.measureText(text).width > maxWidth) {
+      while (ctx.measureText(text).width > maxWidth && text.length > 5) {
+        text = text.slice(0, -5) + '...'
+      }
+    }
+
+    ctx.fillStyle = theme.text
+    ctx.fillText(text, textX, dragY)
+  }
 
   // Draw scrollbar
   if (geo) {
@@ -209,18 +305,37 @@ const handleWheel = (e) => {
 }
 
 const handleMouseDown = (e) => {
-  const geo = getScrollbarGeometry()
-  if (!geo) return
-
   const rect = canvasRef.value.getBoundingClientRect()
   const mX = e.clientX - rect.left
   const mY = e.clientY - rect.top
+
+  // Check if clicking on drag handle
+  const fileIndex = getFileIndexAtPosition(mY)
+  if (fileIndex >= 0) {
+    const handle = getDragHandleBounds(fileIndex)
+    if (mX >= handle.x && mX <= handle.x + handle.width + 5 &&
+        mY >= handle.y && mY <= handle.y + handle.height) {
+      isDraggingFile.value = true
+      draggedFileIndex.value = fileIndex
+      const fileY = (fileIndex * lineHeight) + (lineHeight / 2) + padding - scrollY.value
+      dragOffsetY.value = mY - fileY
+      currentDragY.value = mY
+      dropTargetIndex.value = fileIndex
+      canvasRef.value.style.cursor = 'grabbing'
+      drawFilesOnCanvas()
+      return
+    }
+  }
+
+  // Check scrollbar
+  const geo = getScrollbarGeometry()
+  if (!geo) return
 
   if (mX >= geo.scrollbarX &&
       mX <= geo.scrollbarX + geo.scrollbarWidth &&
       mY >= geo.handleY &&
       mY <= geo.handleY + geo.scrollbarHandleHeight) {
-    isDragging.value = true
+    isDraggingScrollbar.value = true
     dragStartY.value = mY
     initialScrollY.value = scrollY.value
     canvasRef.value.style.cursor = 'grabbing'
@@ -228,26 +343,43 @@ const handleMouseDown = (e) => {
 }
 
 const handleMouseMove = (e) => {
-  if (!isDragging.value) {
-    updateCursor(e)
-    updateHover(e)
-    return
-  }
-
-  const geo = getScrollbarGeometry()
-  if (!geo) {
-    isDragging.value = false
-    return
-  }
-
   const rect = canvasRef.value.getBoundingClientRect()
   const mY = e.clientY - rect.top
-  const dY = mY - dragStartY.value
-  const maxHandleTravel = geo.visibleHeight - geo.scrollbarHandleHeight
-  const scrollDelta = (dY / maxHandleTravel) * geo.maxScroll
 
-  scrollY.value = Math.max(0, Math.min(initialScrollY.value + scrollDelta, geo.maxScroll))
-  drawFilesOnCanvas()
+  // Handle file dragging
+  if (isDraggingFile.value) {
+    currentDragY.value = mY
+
+    // Calculate drop target index
+    const adjustedY = mY + scrollY.value - padding + (lineHeight / 2)
+    let targetIndex = Math.floor(adjustedY / lineHeight)
+    targetIndex = Math.max(0, Math.min(targetIndex, props.files.length))
+    dropTargetIndex.value = targetIndex
+
+    drawFilesOnCanvas()
+    return
+  }
+
+  // Handle scrollbar dragging
+  if (isDraggingScrollbar.value) {
+    const geo = getScrollbarGeometry()
+    if (!geo) {
+      isDraggingScrollbar.value = false
+      return
+    }
+
+    const dY = mY - dragStartY.value
+    const maxHandleTravel = geo.visibleHeight - geo.scrollbarHandleHeight
+    const scrollDelta = (dY / maxHandleTravel) * geo.maxScroll
+
+    scrollY.value = Math.max(0, Math.min(initialScrollY.value + scrollDelta, geo.maxScroll))
+    drawFilesOnCanvas()
+    return
+  }
+
+  // Normal hover handling
+  updateCursor(e)
+  updateHover(e)
 }
 
 const updateHover = (e) => {
@@ -261,23 +393,44 @@ const updateHover = (e) => {
 
   const fileIndex = getFileIndexAtPosition(mY)
   let newHoveredIndex = -1
+  let newHoveredDragHandle = -1
 
   if (fileIndex >= 0) {
+    // Check delete button hover
     const btn = getDeleteButtonBounds(fileIndex, canvasWidth)
     if (mX >= btn.x && mX <= btn.x + btn.width &&
         mY >= btn.y && mY <= btn.y + btn.height) {
       newHoveredIndex = fileIndex
     }
+
+    // Check drag handle hover
+    const handle = getDragHandleBounds(fileIndex)
+    if (mX >= handle.x && mX <= handle.x + handle.width + 5 &&
+        mY >= handle.y && mY <= handle.y + handle.height) {
+      newHoveredDragHandle = fileIndex
+    }
   }
 
+  let needsRedraw = false
   if (newHoveredIndex !== hoveredIndex.value) {
     hoveredIndex.value = newHoveredIndex
+    needsRedraw = true
+  }
+  if (newHoveredDragHandle !== hoveredDragHandle.value) {
+    hoveredDragHandle.value = newHoveredDragHandle
+    needsRedraw = true
+  }
+
+  if (needsRedraw) {
     drawFilesOnCanvas()
   }
 }
 
 const handleClick = (e) => {
   if (!canvasRef.value) return
+
+  // Don't process clicks if we were dragging
+  if (isDraggingFile.value || isDraggingScrollbar.value) return
 
   const rect = canvasRef.value.getBoundingClientRect()
   const mX = e.clientX - rect.left
@@ -288,6 +441,13 @@ const handleClick = (e) => {
   const fileIndex = getFileIndexAtPosition(mY)
 
   if (fileIndex >= 0) {
+    // Don't trigger click on drag handle area
+    const handle = getDragHandleBounds(fileIndex)
+    if (mX >= handle.x && mX <= handle.x + handle.width + 5 &&
+        mY >= handle.y && mY <= handle.y + handle.height) {
+      return
+    }
+
     const btn = getDeleteButtonBounds(fileIndex, canvasWidth)
     if (mX >= btn.x && mX <= btn.x + btn.width &&
         mY >= btn.y && mY <= btn.y + btn.height) {
@@ -297,15 +457,44 @@ const handleClick = (e) => {
 }
 
 const handleMouseLeave = () => {
+  let needsRedraw = false
   if (hoveredIndex.value !== -1) {
     hoveredIndex.value = -1
+    needsRedraw = true
+  }
+  if (hoveredDragHandle.value !== -1) {
+    hoveredDragHandle.value = -1
+    needsRedraw = true
+  }
+  if (needsRedraw) {
     drawFilesOnCanvas()
   }
 }
 
 const handleMouseUp = () => {
-  if (isDragging.value) {
-    isDragging.value = false
+  // Handle file drag end
+  if (isDraggingFile.value) {
+    const fromIndex = draggedFileIndex.value
+    const toIndex = dropTargetIndex.value
+
+    // Only emit move if the position changed
+    if (fromIndex !== toIndex && fromIndex !== toIndex - 1) {
+      emit('moveFile', fromIndex, toIndex > fromIndex ? toIndex - 1 : toIndex)
+    }
+
+    isDraggingFile.value = false
+    draggedFileIndex.value = -1
+    dropTargetIndex.value = -1
+    if (canvasRef.value) {
+      canvasRef.value.style.cursor = 'default'
+    }
+    drawFilesOnCanvas()
+    return
+  }
+
+  // Handle scrollbar drag end
+  if (isDraggingScrollbar.value) {
+    isDraggingScrollbar.value = false
     if (canvasRef.value) {
       canvasRef.value.style.cursor = 'grab'
     }
@@ -313,7 +502,7 @@ const handleMouseUp = () => {
 }
 
 const updateCursor = (e) => {
-  if (!canvasRef.value || isDragging.value) return
+  if (!canvasRef.value || isDraggingFile.value || isDraggingScrollbar.value) return
 
   const rect = canvasRef.value.getBoundingClientRect()
   const mX = e.clientX - rect.left
@@ -321,9 +510,17 @@ const updateCursor = (e) => {
   const dpr = window.devicePixelRatio || 1
   const canvasWidth = canvasRef.value.width / dpr
 
-  // Check delete button hover
   const fileIndex = getFileIndexAtPosition(mY)
   if (fileIndex >= 0) {
+    // Check drag handle hover
+    const handle = getDragHandleBounds(fileIndex)
+    if (mX >= handle.x && mX <= handle.x + handle.width + 5 &&
+        mY >= handle.y && mY <= handle.y + handle.height) {
+      canvasRef.value.style.cursor = 'grab'
+      return
+    }
+
+    // Check delete button hover
     const btn = getDeleteButtonBounds(fileIndex, canvasWidth)
     if (mX >= btn.x && mX <= btn.x + btn.width &&
         mY >= btn.y && mY <= btn.y + btn.height) {

@@ -41,6 +41,7 @@
         :files="files"
         @clear="handleClear"
         @removeFile="handleRemoveFile"
+        @moveFile="handleMoveFile"
       />
 
       <div class="form-group">
@@ -53,6 +54,7 @@
           <option value="alphabetical">{{ t('sort_alpha') }}</option>
           <option value="date">{{ t('sort_date') }}</option>
           <option value="random">{{ t('sort_random') }}</option>
+          <option value="manual">{{ t('sort_manual') }}</option>
         </select>
       </div>
 
@@ -89,7 +91,7 @@ const props = defineProps({
   playlistName: String
 })
 
-const emit = defineEmits(['update:sortOption', 'update:playlistName', 'generate', 'addFiles', 'clearFiles', 'removeFile', 'sortFiles'])
+const emit = defineEmits(['update:sortOption', 'update:playlistName', 'generate', 'addFiles', 'clearFiles', 'removeFile', 'moveFile', 'sortFiles'])
 
 const { t } = useTranslation()
 const fileInputRef = ref(null)
@@ -134,6 +136,10 @@ const handleClear = () => {
 
 const handleRemoveFile = (index) => {
   emit('removeFile', index)
+}
+
+const handleMoveFile = (fromIndex, toIndex) => {
+  emit('moveFile', fromIndex, toIndex)
 }
 
 const handleSortChange = (e) => {
