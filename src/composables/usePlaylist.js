@@ -9,14 +9,39 @@ export function usePlaylist() {
 
   const supportedFormats = ['.mp3', '.wav', '.flac']
 
+  const replaceMode = ref(false)
+
   const addFiles = (fileList) => {
-    const newFiles = Array.from(fileList).filter(f =>
+    const validFiles = Array.from(fileList).filter(f =>
       supportedFormats.some(ext => f.name.toLowerCase().endsWith(ext))
     )
+
+    if (replaceMode.value) {
+      // Replace mode: clear and add all new files
+      files.value = validFiles
+      sortFiles()
+      generatePlaylist()
+      return { added: validFiles.length, skipped: 0 }
+    }
+
+    // Append mode: check for duplicates by filename
+    const existingNames = new Set(files.value.map(f => f.name.toLowerCase()))
+    const newFiles = []
+    let skipped = 0
+
+    for (const file of validFiles) {
+      if (existingNames.has(file.name.toLowerCase())) {
+        skipped++
+      } else {
+        newFiles.push(file)
+        existingNames.add(file.name.toLowerCase())
+      }
+    }
+
     files.value = [...files.value, ...newFiles]
     sortFiles()
     generatePlaylist()
-    return newFiles.length
+    return { added: newFiles.length, skipped }
   }
 
   const clearFiles = () => {
@@ -190,6 +215,7 @@ ${tracks}
     playlistName,
     outputFormat,
     playlistContent,
+    replaceMode,
     addFiles,
     clearFiles,
     removeFile,
