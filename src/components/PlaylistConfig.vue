@@ -40,6 +40,7 @@
       <FileListCanvas
         :files="files"
         @clear="handleClear"
+        @removeFile="handleRemoveFile"
       />
 
       <div class="form-group">
@@ -88,7 +89,7 @@ const props = defineProps({
   playlistName: String
 })
 
-const emit = defineEmits(['update:sortOption', 'update:playlistName', 'generate', 'addFiles', 'clearFiles', 'sortFiles'])
+const emit = defineEmits(['update:sortOption', 'update:playlistName', 'generate', 'addFiles', 'clearFiles', 'removeFile', 'sortFiles'])
 
 const { t } = useTranslation()
 const fileInputRef = ref(null)
@@ -129,6 +130,10 @@ const handleClear = () => {
     fileInputRef.value.value = ''
   }
   emit('clearFiles')
+}
+
+const handleRemoveFile = (index) => {
+  emit('removeFile', index)
 }
 
 const handleSortChange = (e) => {

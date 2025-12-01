@@ -17,6 +17,8 @@
       @wheel="handleWheel"
       @mousedown="handleMouseDown"
       @mousemove="handleMouseMove"
+      @click="handleClick"
+      @mouseleave="handleMouseLeave"
     ></canvas>
   </div>
 </template>
@@ -33,7 +35,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['clear'])
+const emit = defineEmits(['clear', 'removeFile'])
 
 const { t } = useTranslation()
 const { currentTheme } = useTheme()
@@ -43,9 +45,11 @@ const scrollY = ref(0)
 const isDragging = ref(false)
 const dragStartY = ref(0)
 const initialScrollY = ref(0)
+const hoveredIndex = ref(-1)
 
 const lineHeight = 28
 const padding = 10
+const deleteButtonSize = 18
 
 // Farbschema: #F2E28E, #A28680, #5E5F69, #AEAFB7, #0C0C10
 const colors = {
@@ -53,13 +57,19 @@ const colors = {
     background: '#0C0C10',
     text: '#F2E28E',
     scrollbarTrack: 'rgba(174, 175, 183, 0.1)',
-    scrollbarHandle: 'rgba(242, 226, 142, 0.4)'
+    scrollbarHandle: 'rgba(242, 226, 142, 0.4)',
+    deleteButton: 'rgba(229, 115, 115, 0.6)',
+    deleteButtonHover: '#e57373',
+    deleteX: '#0C0C10'
   },
   light: {
     background: '#f5f5f5',
     text: '#A28680',
     scrollbarTrack: 'rgba(94, 95, 105, 0.1)',
-    scrollbarHandle: 'rgba(162, 134, 128, 0.5)'
+    scrollbarHandle: 'rgba(162, 134, 128, 0.5)',
+    deleteButton: 'rgba(211, 47, 47, 0.5)',
+    deleteButtonHover: '#d32f2f',
+    deleteX: '#ffffff'
   }
 }
 
@@ -80,6 +90,23 @@ const getScrollbarGeometry = () => {
   const handleY = (scrollY.value / maxScroll) * maxHandleTravel
 
   return { visibleHeight, maxScroll, scrollbarX, scrollbarWidth, handleY, scrollbarHandleHeight }
+}
+
+const getDeleteButtonBounds = (index, canvasWidth) => {
+  const geo = getScrollbarGeometry()
+  const scrollbarSpace = geo ? 20 : 10
+  const x = canvasWidth - deleteButtonSize - padding - scrollbarSpace
+  const y = (index * lineHeight) + padding - scrollY.value + (lineHeight - deleteButtonSize) / 2
+  return { x, y, width: deleteButtonSize, height: deleteButtonSize }
+}
+
+const getFileIndexAtPosition = (mY) => {
+  const adjustedY = mY + scrollY.value - padding
+  const index = Math.floor(adjustedY / lineHeight)
+  if (index >= 0 && index < props.files.length) {
+    return index
+  }
+  return -1
 }
 
 const drawFilesOnCanvas = () => {
@@ -103,12 +130,16 @@ const drawFilesOnCanvas = () => {
   ctx.font = '14px Segoe UI'
   ctx.textBaseline = 'middle'
 
+  const geo = getScrollbarGeometry()
+  const scrollbarSpace = geo ? 30 : 10
+
   props.files.forEach((file, index) => {
     const y = (index * lineHeight) + (lineHeight / 2) + padding - scrollY.value
 
     if (y > -lineHeight && y < canvasHeight + lineHeight) {
+      // Draw file name
       let text = `${index + 1}. ${file.name}`
-      const maxWidth = canvasWidth - (padding * 3) - 10
+      const maxWidth = canvasWidth - (padding * 2) - deleteButtonSize - scrollbarSpace - 10
 
       if (ctx.measureText(text).width > maxWidth) {
         while (ctx.measureText(text).width > maxWidth && text.length > 5) {
@@ -118,11 +149,32 @@ const drawFilesOnCanvas = () => {
 
       ctx.fillStyle = theme.text
       ctx.fillText(text, padding, y)
+
+      // Draw delete button
+      const btn = getDeleteButtonBounds(index, canvasWidth)
+      const isHovered = hoveredIndex.value === index
+
+      // Button background (circle)
+      ctx.beginPath()
+      ctx.arc(btn.x + btn.width / 2, btn.y + btn.height / 2, btn.width / 2, 0, Math.PI * 2)
+      ctx.fillStyle = isHovered ? theme.deleteButtonHover : theme.deleteButton
+      ctx.fill()
+
+      // X symbol
+      ctx.strokeStyle = theme.deleteX
+      ctx.lineWidth = 2
+      ctx.lineCap = 'round'
+      const xPadding = 5
+      ctx.beginPath()
+      ctx.moveTo(btn.x + xPadding, btn.y + xPadding)
+      ctx.lineTo(btn.x + btn.width - xPadding, btn.y + btn.height - xPadding)
+      ctx.moveTo(btn.x + btn.width - xPadding, btn.y + xPadding)
+      ctx.lineTo(btn.x + xPadding, btn.y + btn.height - xPadding)
+      ctx.stroke()
     }
   })
 
   // Draw scrollbar
-  const geo = getScrollbarGeometry()
   if (geo) {
     ctx.fillStyle = theme.scrollbarTrack
     ctx.fillRect(geo.scrollbarX, 0, geo.scrollbarWidth, geo.visibleHeight)
@@ -178,6 +230,7 @@ const handleMouseDown = (e) => {
 const handleMouseMove = (e) => {
   if (!isDragging.value) {
     updateCursor(e)
+    updateHover(e)
     return
   }
 
@@ -197,6 +250,59 @@ const handleMouseMove = (e) => {
   drawFilesOnCanvas()
 }
 
+const updateHover = (e) => {
+  if (!canvasRef.value) return
+
+  const rect = canvasRef.value.getBoundingClientRect()
+  const mX = e.clientX - rect.left
+  const mY = e.clientY - rect.top
+  const dpr = window.devicePixelRatio || 1
+  const canvasWidth = canvasRef.value.width / dpr
+
+  const fileIndex = getFileIndexAtPosition(mY)
+  let newHoveredIndex = -1
+
+  if (fileIndex >= 0) {
+    const btn = getDeleteButtonBounds(fileIndex, canvasWidth)
+    if (mX >= btn.x && mX <= btn.x + btn.width &&
+        mY >= btn.y && mY <= btn.y + btn.height) {
+      newHoveredIndex = fileIndex
+    }
+  }
+
+  if (newHoveredIndex !== hoveredIndex.value) {
+    hoveredIndex.value = newHoveredIndex
+    drawFilesOnCanvas()
+  }
+}
+
+const handleClick = (e) => {
+  if (!canvasRef.value) return
+
+  const rect = canvasRef.value.getBoundingClientRect()
+  const mX = e.clientX - rect.left
+  const mY = e.clientY - rect.top
+  const dpr = window.devicePixelRatio || 1
+  const canvasWidth = canvasRef.value.width / dpr
+
+  const fileIndex = getFileIndexAtPosition(mY)
+
+  if (fileIndex >= 0) {
+    const btn = getDeleteButtonBounds(fileIndex, canvasWidth)
+    if (mX >= btn.x && mX <= btn.x + btn.width &&
+        mY >= btn.y && mY <= btn.y + btn.height) {
+      emit('removeFile', fileIndex)
+    }
+  }
+}
+
+const handleMouseLeave = () => {
+  if (hoveredIndex.value !== -1) {
+    hoveredIndex.value = -1
+    drawFilesOnCanvas()
+  }
+}
+
 const handleMouseUp = () => {
   if (isDragging.value) {
     isDragging.value = false
@@ -209,24 +315,34 @@ const handleMouseUp = () => {
 const updateCursor = (e) => {
   if (!canvasRef.value || isDragging.value) return
 
-  const geo = getScrollbarGeometry()
-  if (!geo) {
-    canvasRef.value.style.cursor = 'default'
-    return
-  }
-
   const rect = canvasRef.value.getBoundingClientRect()
   const mX = e.clientX - rect.left
   const mY = e.clientY - rect.top
+  const dpr = window.devicePixelRatio || 1
+  const canvasWidth = canvasRef.value.width / dpr
 
-  if (mX >= geo.scrollbarX &&
+  // Check delete button hover
+  const fileIndex = getFileIndexAtPosition(mY)
+  if (fileIndex >= 0) {
+    const btn = getDeleteButtonBounds(fileIndex, canvasWidth)
+    if (mX >= btn.x && mX <= btn.x + btn.width &&
+        mY >= btn.y && mY <= btn.y + btn.height) {
+      canvasRef.value.style.cursor = 'pointer'
+      return
+    }
+  }
+
+  // Check scrollbar hover
+  const geo = getScrollbarGeometry()
+  if (geo && mX >= geo.scrollbarX &&
       mX <= geo.scrollbarX + geo.scrollbarWidth &&
       mY >= geo.handleY &&
       mY <= geo.handleY + geo.scrollbarHandleHeight) {
     canvasRef.value.style.cursor = 'grab'
-  } else {
-    canvasRef.value.style.cursor = 'default'
+    return
   }
+
+  canvasRef.value.style.cursor = 'default'
 }
 
 onMounted(() => {
