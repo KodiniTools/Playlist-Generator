@@ -20,11 +20,31 @@
       @click="handleClick"
       @mouseleave="handleMouseLeave"
     ></canvas>
+    <div class="stats-bar">
+      <span class="stat-item">
+        <svg viewBox="0 0 24 24" width="16" height="16">
+          <path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+        {{ files.length }} {{ t('stats_tracks') }}
+      </span>
+      <span class="stat-item">
+        <svg viewBox="0 0 24 24" width="16" height="16">
+          <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H6v-2h6v2zm3-4H6v-2h9v2zm3-4H6V7h12v2z"/>
+        </svg>
+        {{ formattedSize }}
+      </span>
+      <span class="stat-item">
+        <svg viewBox="0 0 24 24" width="16" height="16">
+          <path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+        </svg>
+        ~{{ estimatedDuration }}
+      </span>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useTranslation } from '../composables/useTranslation'
 import { useTheme } from '../composables/useTheme'
 
@@ -33,6 +53,34 @@ const props = defineProps({
     type: Array,
     required: true
   }
+})
+
+// Computed properties for stats
+const totalSize = computed(() => {
+  return props.files.reduce((sum, file) => sum + (file.size || 0), 0)
+})
+
+const formattedSize = computed(() => {
+  const bytes = totalSize.value
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
+})
+
+const estimatedDuration = computed(() => {
+  // Estimate based on average bitrate (~1 MB per minute for 128kbps MP3)
+  // For higher quality files, this might be less accurate
+  const totalMB = totalSize.value / (1024 * 1024)
+  const estimatedMinutes = Math.round(totalMB * 1) // ~1 min per MB
+
+  if (estimatedMinutes < 1) return '< 1 min'
+  if (estimatedMinutes < 60) return `${estimatedMinutes} min`
+
+  const hours = Math.floor(estimatedMinutes / 60)
+  const mins = estimatedMinutes % 60
+  return `${hours}h ${mins}min`
 })
 
 const emit = defineEmits(['clear', 'removeFile', 'moveFile'])
@@ -604,5 +652,36 @@ watch(currentTheme, () => {
   border: 2px solid var(--border-color);
   border-radius: 12px;
   display: block;
+}
+
+.stats-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: var(--panel-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--muted-color);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-item svg {
+  opacity: 0.7;
+}
+
+@media (max-width: 480px) {
+  .stats-bar {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
 }
 </style>
