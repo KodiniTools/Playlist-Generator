@@ -35,6 +35,16 @@
             </span>
           </label>
         </div>
+        <div class="checkbox-option" v-if="files.length > 0">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              :checked="replaceMode"
+              @change="handleReplaceModeChange"
+            >
+            <span class="checkbox-text">{{ t('replace_list_option') }}</span>
+          </label>
+        </div>
       </div>
 
       <FileListCanvas
@@ -80,10 +90,15 @@ import { useTranslation } from '../composables/useTranslation'
 const props = defineProps({
   files: Array,
   sortOption: String,
-  playlistName: String
+  playlistName: String,
+  replaceMode: Boolean
 })
 
-const emit = defineEmits(['update:sortOption', 'update:playlistName', 'addFiles', 'clearFiles', 'removeFile', 'moveFile', 'sortFiles'])
+const emit = defineEmits(['update:sortOption', 'update:playlistName', 'update:replaceMode', 'addFiles', 'clearFiles', 'removeFile', 'moveFile', 'sortFiles'])
+
+const handleReplaceModeChange = (e) => {
+  emit('update:replaceMode', e.target.checked)
+}
 
 const { t } = useTranslation()
 const fileInputRef = ref(null)
@@ -143,3 +158,29 @@ const handleNameChange = (e) => {
   emit('update:playlistName', e.target.value)
 }
 </script>
+
+<style scoped>
+.checkbox-option {
+  margin-top: 10px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--primary-color, #00ff9d);
+}
+
+.checkbox-text {
+  user-select: none;
+}
+</style>

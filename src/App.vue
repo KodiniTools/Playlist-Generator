@@ -24,8 +24,10 @@
         :files="files"
         :sortOption="sortOption"
         :playlistName="playlistName"
+        :replaceMode="replaceMode"
         @update:sortOption="sortOption = $event"
         @update:playlistName="playlistName = $event"
+        @update:replaceMode="replaceMode = $event"
         @addFiles="handleAddFiles"
         @clearFiles="clearFiles"
         @removeFile="removeFile"
@@ -79,6 +81,7 @@ const {
   playlistName,
   outputFormat,
   playlistContent,
+  replaceMode,
   addFiles,
   clearFiles,
   removeFile,
@@ -88,9 +91,12 @@ const {
 } = usePlaylist()
 
 const handleAddFiles = (fileList) => {
-  const count = addFiles(fileList)
-  if (count > 0) {
-    toast.info(t.value('toast_files_added').replace('{count}', count))
+  const { added, skipped } = addFiles(fileList)
+  if (added > 0) {
+    toast.info(t.value('toast_files_added').replace('{count}', added))
+  }
+  if (skipped > 0) {
+    toast.info(t.value('toast_duplicates_skipped').replace('{count}', skipped))
   }
 }
 
