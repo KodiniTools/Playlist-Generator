@@ -100,11 +100,14 @@ const draggedFileIndex = ref(-1)
 const dropTargetIndex = ref(-1)
 const dragOffsetY = ref(0)
 const currentDragY = ref(0)
+const autoScrollInterval = ref(null)
 
 const lineHeight = 28
 const padding = 10
 const deleteButtonSize = 18
 const dragHandleWidth = 24
+const autoScrollZone = 40 // pixels from edge to trigger auto-scroll
+const autoScrollSpeed = 5 // pixels per frame
 
 // Farbschema: #F2E28E, #A28680, #5E5F69, #AEAFB7, #0C0C10
 const colors = {
@@ -342,6 +345,40 @@ const resizeCanvas = () => {
   drawFilesOnCanvas()
 }
 
+// Auto-scroll functions for drag & drop
+const startAutoScroll = (direction) => {
+  if (autoScrollInterval.value) return
+
+  autoScrollInterval.value = setInterval(() => {
+    const geo = getScrollbarGeometry()
+    if (!geo) {
+      stopAutoScroll()
+      return
+    }
+
+    if (direction === 'up') {
+      scrollY.value = Math.max(0, scrollY.value - autoScrollSpeed)
+    } else if (direction === 'down') {
+      scrollY.value = Math.min(geo.maxScroll, scrollY.value + autoScrollSpeed)
+    }
+
+    // Update drop target based on current scroll position
+    const adjustedY = currentDragY.value + scrollY.value - padding + (lineHeight / 2)
+    let targetIndex = Math.floor(adjustedY / lineHeight)
+    targetIndex = Math.max(0, Math.min(targetIndex, props.files.length))
+    dropTargetIndex.value = targetIndex
+
+    drawFilesOnCanvas()
+  }, 16) // ~60fps
+}
+
+const stopAutoScroll = () => {
+  if (autoScrollInterval.value) {
+    clearInterval(autoScrollInterval.value)
+    autoScrollInterval.value = null
+  }
+}
+
 const handleWheel = (e) => {
   e.preventDefault()
   const geo = getScrollbarGeometry()
@@ -393,6 +430,7 @@ const handleMouseDown = (e) => {
 const handleMouseMove = (e) => {
   const rect = canvasRef.value.getBoundingClientRect()
   const mY = e.clientY - rect.top
+  const canvasHeight = rect.height
 
   // Handle file dragging
   if (isDraggingFile.value) {
@@ -403,6 +441,18 @@ const handleMouseMove = (e) => {
     let targetIndex = Math.floor(adjustedY / lineHeight)
     targetIndex = Math.max(0, Math.min(targetIndex, props.files.length))
     dropTargetIndex.value = targetIndex
+
+    // Auto-scroll when near edges
+    const geo = getScrollbarGeometry()
+    if (geo) {
+      if (mY < autoScrollZone && scrollY.value > 0) {
+        startAutoScroll('up')
+      } else if (mY > canvasHeight - autoScrollZone && scrollY.value < geo.maxScroll) {
+        startAutoScroll('down')
+      } else {
+        stopAutoScroll()
+      }
+    }
 
     drawFilesOnCanvas()
     return
@@ -522,6 +572,8 @@ const handleMouseLeave = () => {
 const handleMouseUp = () => {
   // Handle file drag end
   if (isDraggingFile.value) {
+    stopAutoScroll() // Stop auto-scroll when drag ends
+
     const fromIndex = draggedFileIndex.value
     const toIndex = dropTargetIndex.value
 
@@ -601,6 +653,7 @@ onUnmounted(() => {
   window.removeEventListener('resize', resizeCanvas)
   window.removeEventListener('mouseup', handleMouseUp)
   window.removeEventListener('mousemove', handleMouseMove)
+  stopAutoScroll() // Clean up interval on unmount
 })
 
 // Watch for changes
