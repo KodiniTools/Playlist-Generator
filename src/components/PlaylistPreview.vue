@@ -59,7 +59,7 @@ const props = defineProps({
   playlistContent: String
 })
 
-const emit = defineEmits(['update:outputFormat', 'save', 'generate'])
+const emit = defineEmits(['update:outputFormat', 'save'])
 
 const { t } = useTranslation()
 const toast = useToast()
@@ -71,7 +71,6 @@ watch(() => props.outputFormat, (newVal) => {
 
 const handleFormatChange = () => {
   emit('update:outputFormat', localFormat.value)
-  emit('generate')
 }
 
 const handleCopy = async () => {

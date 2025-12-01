@@ -31,15 +31,13 @@
         @removeFile="removeFile"
         @moveFile="moveFile"
         @sortFiles="sortFiles"
-        @generate="generatePlaylist"
       />
 
-      <PlaylistPreview 
+      <PlaylistPreview
         :outputFormat="outputFormat"
         :playlistContent="playlistContent"
         @update:outputFormat="handleFormatChange"
         @save="handleSave"
-        @generate="generatePlaylist"
       />
     </div>
 
@@ -62,7 +60,6 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
 import ThemeSwitcher from './components/ThemeSwitcher.vue'
 import PlaylistConfig from './components/PlaylistConfig.vue'
@@ -87,7 +84,6 @@ const {
   removeFile,
   moveFile,
   sortFiles,
-  generatePlaylist,
   savePlaylist
 } = usePlaylist()
 
@@ -115,9 +111,4 @@ const handleSave = async () => {
     toast.success(t.value('toast_playlist_saved'))
   }
 }
-
-// Watch for sortOption changes
-watch(sortOption, () => {
-  sortFiles()
-})
 </script>
