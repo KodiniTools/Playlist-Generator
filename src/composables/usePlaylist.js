@@ -21,6 +21,15 @@ export function usePlaylist() {
     playlistContent.value = ''
   }
 
+  const removeFile = (index) => {
+    if (index >= 0 && index < files.value.length) {
+      files.value.splice(index, 1)
+      if (files.value.length === 0) {
+        playlistContent.value = ''
+      }
+    }
+  }
+
   const sortFiles = () => {
     const option = sortOption.value
     if (option === 'alphabetical') {
@@ -148,6 +157,7 @@ ${tracks}
     playlistContent,
     addFiles,
     clearFiles,
+    removeFile,
     sortFiles,
     generatePlaylist,
     savePlaylist

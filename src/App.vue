@@ -20,7 +20,7 @@
     </section>
 
     <div class="main-content">
-      <PlaylistConfig 
+      <PlaylistConfig
         :files="files"
         :sortOption="sortOption"
         :playlistName="playlistName"
@@ -28,6 +28,7 @@
         @update:playlistName="playlistName = $event"
         @addFiles="handleAddFiles"
         @clearFiles="clearFiles"
+        @removeFile="removeFile"
         @sortFiles="sortFiles"
         @generate="generatePlaylist"
       />
@@ -70,14 +71,15 @@ import { useTranslation } from './composables/useTranslation'
 import { usePlaylist } from './composables/usePlaylist'
 
 const { t } = useTranslation()
-const { 
-  files, 
-  sortOption, 
-  playlistName, 
-  outputFormat, 
+const {
+  files,
+  sortOption,
+  playlistName,
+  outputFormat,
   playlistContent,
   addFiles,
   clearFiles,
+  removeFile,
   sortFiles,
   generatePlaylist,
   savePlaylist
