@@ -4,7 +4,14 @@
     <form id="playlistForm" @submit.prevent>
       <div class="form-group">
         <label for="fileInput">{{ t('label_files') }}</label>
-        <div class="file-upload-wrapper">
+        <div
+          class="file-upload-wrapper"
+          :class="{ 'drag-over': isDragging }"
+          @dragenter.prevent="handleDragEnter"
+          @dragover.prevent="handleDragOver"
+          @dragleave.prevent="handleDragLeave"
+          @drop.prevent="handleDrop"
+        >
           <input
             type="file"
             id="fileInput"
@@ -22,7 +29,10 @@
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
             </span>
-            <span class="upload-text">{{ files.length > 0 ? files.length + ' ' + t('files_selected') : t('click_to_upload') }}</span>
+            <span class="upload-text">
+              <template v-if="isDragging">{{ t('drop_files_here') }}</template>
+              <template v-else>{{ files.length > 0 ? files.length + ' ' + t('files_selected') : t('click_to_upload') }}</template>
+            </span>
           </label>
         </div>
       </div>
@@ -82,9 +92,36 @@ const emit = defineEmits(['update:sortOption', 'update:playlistName', 'generate'
 
 const { t } = useTranslation()
 const fileInputRef = ref(null)
+const isDragging = ref(false)
+let dragCounter = 0
 
 const handleFileChange = (e) => {
   emit('addFiles', e.target.files)
+}
+
+const handleDragEnter = (e) => {
+  dragCounter++
+  isDragging.value = true
+}
+
+const handleDragOver = (e) => {
+  e.dataTransfer.dropEffect = 'copy'
+}
+
+const handleDragLeave = (e) => {
+  dragCounter--
+  if (dragCounter === 0) {
+    isDragging.value = false
+  }
+}
+
+const handleDrop = (e) => {
+  dragCounter = 0
+  isDragging.value = false
+  const files = e.dataTransfer.files
+  if (files.length > 0) {
+    emit('addFiles', files)
+  }
 }
 
 const handleClear = () => {
