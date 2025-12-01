@@ -21,7 +21,7 @@
             @change="handleFileChange"
             ref="fileInputRef"
           >
-          <label for="fileInput" class="file-upload-label">
+          <label for="fileInput" class="file-upload-label" :title="t('shortcut_open')">
             <span class="upload-icon">
               <svg viewBox="0 0 24 24">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -49,9 +49,11 @@
 
       <FileListCanvas
         :files="files"
+        :selectedIndex="selectedFileIndex"
         @clear="handleClear"
         @removeFile="handleRemoveFile"
         @moveFile="handleMoveFile"
+        @selectFile="handleSelectFile"
       />
 
       <div class="form-group">
@@ -91,10 +93,11 @@ const props = defineProps({
   files: Array,
   sortOption: String,
   playlistName: String,
-  replaceMode: Boolean
+  replaceMode: Boolean,
+  selectedFileIndex: Number
 })
 
-const emit = defineEmits(['update:sortOption', 'update:playlistName', 'update:replaceMode', 'addFiles', 'clearFiles', 'removeFile', 'moveFile', 'sortFiles'])
+const emit = defineEmits(['update:sortOption', 'update:playlistName', 'update:replaceMode', 'update:selectedFileIndex', 'addFiles', 'clearFiles', 'removeFile', 'moveFile', 'sortFiles'])
 
 const handleReplaceModeChange = (e) => {
   emit('update:replaceMode', e.target.checked)
@@ -157,6 +160,19 @@ const handleSortChange = (e) => {
 const handleNameChange = (e) => {
   emit('update:playlistName', e.target.value)
 }
+
+const handleSelectFile = (index) => {
+  emit('update:selectedFileIndex', index)
+}
+
+// Expose method for keyboard shortcut
+const openFileDialog = () => {
+  fileInputRef.value?.click()
+}
+
+defineExpose({
+  openFileDialog
+})
 </script>
 
 <style scoped>

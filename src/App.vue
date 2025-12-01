@@ -21,13 +21,16 @@
 
     <div class="main-content">
       <PlaylistConfig
+        ref="playlistConfigRef"
         :files="files"
         :sortOption="sortOption"
         :playlistName="playlistName"
         :replaceMode="replaceMode"
+        :selectedFileIndex="selectedFileIndex"
         @update:sortOption="sortOption = $event"
         @update:playlistName="playlistName = $event"
         @update:replaceMode="replaceMode = $event"
+        @update:selectedFileIndex="selectedFileIndex = $event"
         @addFiles="handleAddFiles"
         @clearFiles="clearFiles"
         @removeFile="removeFile"
@@ -62,6 +65,7 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
 import ThemeSwitcher from './components/ThemeSwitcher.vue'
 import PlaylistConfig from './components/PlaylistConfig.vue'
@@ -82,6 +86,7 @@ const {
   outputFormat,
   playlistContent,
   replaceMode,
+  selectedFileIndex,
   addFiles,
   clearFiles,
   removeFile,
@@ -89,6 +94,10 @@ const {
   sortFiles,
   savePlaylist
 } = usePlaylist()
+
+// Template refs for child components
+const playlistConfigRef = ref(null)
+const playlistPreviewRef = ref(null)
 
 const handleAddFiles = (fileList) => {
   const { added, skipped } = addFiles(fileList)
@@ -117,4 +126,84 @@ const handleSave = async () => {
     toast.success(t.value('toast_playlist_saved'))
   }
 }
+
+const handleCopy = async () => {
+  if (!playlistContent.value) {
+    toast.error(t.value('alert_create_first'))
+    return
+  }
+
+  try {
+    await navigator.clipboard.writeText(playlistContent.value)
+    toast.success(t.value('toast_copied'))
+  } catch (err) {
+    toast.error(t.value('toast_copy_error'))
+  }
+}
+
+const handleDeleteSelected = () => {
+  if (selectedFileIndex.value >= 0 && selectedFileIndex.value < files.value.length) {
+    removeFile(selectedFileIndex.value)
+    // Adjust selection after removal
+    if (selectedFileIndex.value >= files.value.length) {
+      selectedFileIndex.value = files.value.length - 1
+    }
+  }
+}
+
+const handleKeyDown = (e) => {
+  // Don't capture shortcuts when typing in input/textarea
+  const activeEl = document.activeElement
+  if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+    return
+  }
+
+  // Ctrl+O: Open files
+  if (e.ctrlKey && e.key === 'o') {
+    e.preventDefault()
+    playlistConfigRef.value?.openFileDialog()
+  }
+
+  // Ctrl+S: Save playlist
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault()
+    handleSave()
+  }
+
+  // Ctrl+C: Copy to clipboard (only when no text is selected)
+  if (e.ctrlKey && e.key === 'c' && !window.getSelection()?.toString()) {
+    e.preventDefault()
+    handleCopy()
+  }
+
+  // Delete: Remove selected file
+  if (e.key === 'Delete') {
+    e.preventDefault()
+    handleDeleteSelected()
+  }
+
+  // Arrow keys for file selection
+  if (e.key === 'ArrowDown' && files.value.length > 0) {
+    e.preventDefault()
+    selectedFileIndex.value = Math.min(selectedFileIndex.value + 1, files.value.length - 1)
+  }
+
+  if (e.key === 'ArrowUp' && files.value.length > 0) {
+    e.preventDefault()
+    selectedFileIndex.value = Math.max(selectedFileIndex.value - 1, 0)
+  }
+
+  // Escape: Deselect
+  if (e.key === 'Escape') {
+    selectedFileIndex.value = -1
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown)
+})
 </script>

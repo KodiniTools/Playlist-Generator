@@ -22,6 +22,7 @@
         class="copy-button"
         @click="handleCopy"
         :disabled="!playlistContent"
+        :title="t('shortcut_copy')"
       >
         <span class="button-icon">
           <svg viewBox="0 0 24 24" width="18" height="18">
@@ -35,6 +36,7 @@
         type="button"
         class="save-button"
         @click="handleSave"
+        :title="t('shortcut_save')"
       >
         <span class="button-icon">
           <svg viewBox="0 0 24 24" width="18" height="18">
