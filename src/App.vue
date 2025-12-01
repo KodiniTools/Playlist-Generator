@@ -29,6 +29,7 @@
         @addFiles="handleAddFiles"
         @clearFiles="clearFiles"
         @removeFile="removeFile"
+        @moveFile="moveFile"
         @sortFiles="sortFiles"
         @generate="generatePlaylist"
       />
@@ -80,6 +81,7 @@ const {
   addFiles,
   clearFiles,
   removeFile,
+  moveFile,
   sortFiles,
   generatePlaylist,
   savePlaylist

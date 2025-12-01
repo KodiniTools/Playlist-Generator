@@ -30,8 +30,23 @@ export function usePlaylist() {
     }
   }
 
+  const moveFile = (fromIndex, toIndex) => {
+    if (fromIndex < 0 || fromIndex >= files.value.length) return
+    if (toIndex < 0 || toIndex >= files.value.length) return
+    if (fromIndex === toIndex) return
+
+    const [movedFile] = files.value.splice(fromIndex, 1)
+    files.value.splice(toIndex, 0, movedFile)
+
+    // Switch to manual sort mode when user manually reorders
+    sortOption.value = 'manual'
+  }
+
   const sortFiles = () => {
     const option = sortOption.value
+    // Manual mode: don't sort, keep user's order
+    if (option === 'manual') return
+
     if (option === 'alphabetical') {
       files.value.sort((a, b) => a.name.localeCompare(b.name))
     } else if (option === 'date') {
@@ -158,6 +173,7 @@ ${tracks}
     addFiles,
     clearFiles,
     removeFile,
+    moveFile,
     sortFiles,
     generatePlaylist,
     savePlaylist
