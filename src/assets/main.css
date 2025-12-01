@@ -337,6 +337,30 @@ textarea:focus {
     background: rgba(162, 134, 128, 0.05);
 }
 
+/* === Drag & Drop Zone === */
+.file-upload-wrapper.drag-over .file-upload-label {
+    border-color: var(--accent-color);
+    border-style: solid;
+    background: rgba(242, 226, 142, 0.15);
+    color: var(--accent-color);
+    transform: scale(1.02);
+    box-shadow: 0 0 20px var(--glow-color), inset 0 0 30px rgba(242, 226, 142, 0.1);
+}
+
+.light-theme .file-upload-wrapper.drag-over .file-upload-label {
+    background: rgba(162, 134, 128, 0.15);
+    box-shadow: 0 0 20px var(--glow-color), inset 0 0 30px rgba(162, 134, 128, 0.1);
+}
+
+.file-upload-wrapper.drag-over .upload-icon {
+    animation: bounce 0.5s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
 .file-upload-label .upload-icon {
     font-size: 1.5rem;
 }
