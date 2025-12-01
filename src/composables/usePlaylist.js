@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 export function usePlaylist() {
   const files = ref([])
@@ -15,6 +15,7 @@ export function usePlaylist() {
     )
     files.value = [...files.value, ...newFiles]
     sortFiles()
+    generatePlaylist()
     return newFiles.length
   }
 
@@ -26,9 +27,7 @@ export function usePlaylist() {
   const removeFile = (index) => {
     if (index >= 0 && index < files.value.length) {
       files.value.splice(index, 1)
-      if (files.value.length === 0) {
-        playlistContent.value = ''
-      }
+      generatePlaylist()
     }
   }
 
@@ -42,12 +41,16 @@ export function usePlaylist() {
 
     // Switch to manual sort mode when user manually reorders
     sortOption.value = 'manual'
+    generatePlaylist()
   }
 
   const sortFiles = () => {
     const option = sortOption.value
     // Manual mode: don't sort, keep user's order
-    if (option === 'manual') return
+    if (option === 'manual') {
+      generatePlaylist()
+      return
+    }
 
     if (option === 'alphabetical') {
       files.value.sort((a, b) => a.name.localeCompare(b.name))
@@ -59,6 +62,7 @@ export function usePlaylist() {
         [files.value[i], files.value[j]] = [files.value[j], files.value[i]]
       }
     }
+    generatePlaylist()
   }
 
   const escapeXml = (str) => {
@@ -165,6 +169,20 @@ ${tracks}
       return null // User cancelled
     }
   }
+
+  // Auto-regenerate playlist when format or name changes
+  watch(outputFormat, () => {
+    if (files.value.length > 0) {
+      generatePlaylist()
+    }
+  })
+
+  watch(playlistName, () => {
+    // Only XSPF uses the playlist name in the output
+    if (files.value.length > 0 && outputFormat.value === 'xspf') {
+      generatePlaylist()
+    }
+  })
 
   return {
     files,

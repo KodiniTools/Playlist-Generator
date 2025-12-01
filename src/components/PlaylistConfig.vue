@@ -68,14 +68,6 @@
           @input="handleNameChange"
         >
       </div>
-
-      <button
-        type="button"
-        class="generate-button"
-        @click="$emit('generate')"
-      >
-        {{ t('button_create') }}
-      </button>
     </form>
   </section>
 </template>
@@ -91,7 +83,7 @@ const props = defineProps({
   playlistName: String
 })
 
-const emit = defineEmits(['update:sortOption', 'update:playlistName', 'generate', 'addFiles', 'clearFiles', 'removeFile', 'moveFile', 'sortFiles'])
+const emit = defineEmits(['update:sortOption', 'update:playlistName', 'addFiles', 'clearFiles', 'removeFile', 'moveFile', 'sortFiles'])
 
 const { t } = useTranslation()
 const fileInputRef = ref(null)
