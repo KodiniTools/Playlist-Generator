@@ -55,6 +55,15 @@ body {
     transition: all 0.3s ease;
 }
 
+/* === External Navigation (SSI Include) === */
+nav,
+.nav,
+.navbar,
+.navigation {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
 /* === Animation Keyframes === */
 @keyframes slide-in {
     from {
