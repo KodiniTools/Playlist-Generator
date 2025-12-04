@@ -64,6 +64,27 @@ nav,
     background-color: transparent !important;
 }
 
+nav *,
+.nav *,
+.navbar *,
+.navigation * {
+    color: var(--text-color) !important;
+}
+
+nav a,
+.nav a,
+.navbar a,
+.navigation a {
+    color: var(--accent-color) !important;
+}
+
+nav a:hover,
+.nav a:hover,
+.navbar a:hover,
+.navigation a:hover {
+    color: var(--accent-secondary) !important;
+}
+
 /* === Animation Keyframes === */
 @keyframes slide-in {
     from {
