@@ -55,7 +55,7 @@ const translations = {
     subtitle: "Erstellen Sie professionelle Playlists mit modernem Design",
     description_text: "Wählen Sie Ihre lokalen Audio-Dateien (MP3, WAV, FLAC) aus, legen Sie die Sortierreihenfolge fest und exportieren Sie Ihre persönliche Playlist im M3U-, XSPF- oder JSON-Format. Ideal, um Ihre Musiksammlung für Mediaplayer wie VLC, Winamp oder Foobar2000 zu organisieren.",
     config_title: "Playlist Konfiguration",
-    label_files: "1. audio dateien hinzufügen",
+    label_files: "1. Audio Dateien hinzufügen",
     click_to_upload: "dateien auswählen oder hierher ziehen...",
     drop_files_here: "dateien hier ablegen...",
     files_selected: "dateien ausgewählt",
