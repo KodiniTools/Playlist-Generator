@@ -74,10 +74,10 @@ const formattedSize = computed(() => {
 })
 
 const estimatedDuration = computed(() => {
-  // Estimate based on average bitrate (~1 MB per minute for 128kbps MP3)
-  // For higher quality files, this might be less accurate
+  // Estimate based on average bitrate (~2 MB per minute for 256-320kbps MP3)
+  // This is a rough estimate as actual duration depends on bitrate/format
   const totalMB = totalSize.value / (1024 * 1024)
-  const estimatedMinutes = Math.round(totalMB * 1) // ~1 min per MB
+  const estimatedMinutes = Math.round(totalMB / 2) // ~2 MB per minute average
 
   if (estimatedMinutes < 1) return '< 1 min'
   if (estimatedMinutes < 60) return `${estimatedMinutes} min`
