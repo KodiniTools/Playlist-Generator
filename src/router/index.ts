@@ -19,6 +19,11 @@ const router = createRouter({
       name: 'faq',
       component: () => import('../views/FaqPage.vue'),
     },
+    {
+      path: '/blog',
+      name: 'blog',
+      component: () => import('../views/BlogPage.vue'),
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

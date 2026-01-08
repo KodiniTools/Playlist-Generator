@@ -16,6 +16,9 @@
         <router-link to="/faq" class="nav-link" :class="{ active: $route.path === '/faq' }">
           {{ t('nav_faq') }}
         </router-link>
+        <router-link to="/blog" class="nav-link" :class="{ active: $route.path === '/blog' }">
+          {{ t('nav_blog') }}
+        </router-link>
       </div>
 
       <div class="nav-controls">
@@ -37,6 +40,9 @@
       </router-link>
       <router-link to="/faq" class="mobile-link" @click="mobileMenuOpen = false">
         {{ t('nav_faq') }}
+      </router-link>
+      <router-link to="/blog" class="mobile-link" @click="mobileMenuOpen = false">
+        {{ t('nav_blog') }}
       </router-link>
       <div class="mobile-controls">
         <LanguageSwitcher />
