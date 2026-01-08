@@ -380,11 +380,14 @@ textarea:focus {
 
 .file-upload-label .upload-icon {
     font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .file-upload-label .upload-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     stroke: currentColor;
     fill: none;
     stroke-width: 2;
