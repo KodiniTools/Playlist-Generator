@@ -2,8 +2,53 @@ import { ref, computed } from 'vue'
 
 const translations = {
   de: {
+    // Meta tags
     meta_title: "Audio Playlist Generator - M3U, XSPF & JSON Playlists Erstellen",
     meta_description: "Erstellen Sie einfach und schnell benutzerdefinierte Audio-Playlists (.m3u, .xspf, .json) aus Ihren MP3-, WAV- oder FLAC-Dateien. Sortieren, benennen und laden Sie Ihre Playlist herunter.",
+
+    // Navigation
+    nav_home: "Start",
+    nav_app: "App",
+    nav_faq: "FAQ",
+
+    // Landing Page - Hero
+    hero_title: "Audio Playlist Generator",
+    hero_subtitle: "Erstellen Sie professionelle Playlists in Sekunden",
+    hero_description: "Verwandeln Sie Ihre lokalen Audiodateien in perfekt organisierte Playlists. Unterstützt M3U, XSPF und JSON – kostenlos und 100% lokal in Ihrem Browser.",
+    hero_cta: "Jetzt starten",
+    hero_learn_more: "Mehr erfahren",
+
+    // Feature Cards
+    feature1_title: "Mehrere Formate",
+    feature1_desc: "Exportieren Sie Ihre Playlists in M3U, XSPF oder JSON – kompatibel mit VLC, Winamp, iTunes und mehr.",
+    feature2_title: "100% Privat",
+    feature2_desc: "Alle Dateien werden lokal verarbeitet. Keine Uploads, keine Server – Ihre Musik bleibt auf Ihrem Gerät.",
+    feature3_title: "Flexible Sortierung",
+    feature3_desc: "Ordnen Sie Tracks alphabetisch, nach Datum, zufällig oder per Drag & Drop nach Ihren Wünschen.",
+
+    // Details Section
+    details_title: "Leistungsstarke Funktionen",
+    details_subtitle: "Alles, was Sie für perfekte Playlists brauchen",
+
+    detail1_title: "Drag & Drop Upload",
+    detail1_desc: "Ziehen Sie einfach Ihre MP3-, WAV- oder FLAC-Dateien in den Browser – keine komplizierte Auswahl nötig.",
+    detail2_title: "Interaktive Trackliste",
+    detail2_desc: "Visualisieren und bearbeiten Sie Ihre Playlist in Echtzeit mit unserer Canvas-basierten Oberfläche.",
+    detail3_title: "Schnelle Tastenkombinationen",
+    detail3_desc: "Strg+O zum Öffnen, Strg+S zum Speichern, Strg+C zum Kopieren – arbeiten Sie wie ein Profi.",
+    detail4_title: "Theme-Wechsler",
+    detail4_desc: "Wechseln Sie zwischen hellem und dunklem Design – perfekt für jede Umgebung.",
+    detail5_title: "Mehrsprachig",
+    detail5_desc: "Verfügbar auf Deutsch und Englisch – wechseln Sie die Sprache mit einem Klick.",
+    detail6_title: "Keine Installation",
+    detail6_desc: "Funktioniert direkt im Browser – kein Download, keine Installation erforderlich.",
+
+    // CTA Section
+    cta_title: "Bereit, loszulegen?",
+    cta_desc: "Erstellen Sie jetzt Ihre erste Playlist – kostenlos und ohne Registrierung.",
+    cta_button: "Playlist erstellen",
+
+    // App Page
     notice_m3u: "Wichtiger Hinweis für M3U/XSPF-Playlists: Damit Mediaplayer (VLC, Winamp etc.) die Tracks finden, muss die Playlist-Datei im selben Ordner wie Ihre Audio-Dateien gespeichert werden.",
     main_title: "Audio Playlist Generator",
     subtitle: "Erstellen Sie professionelle Playlists mit modernem Design",
@@ -32,6 +77,10 @@ const translations = {
     placeholder_output: "Klicken Sie auf 'Playlist erstellen', um hier eine Vorschau zu sehen...",
     button_save: "Speichern unter...",
     button_copy: "Kopieren",
+
+    // FAQ Page
+    faq_page_title: "Häufig gestellte Fragen",
+    faq_page_subtitle: "Alles, was Sie über den Audio Playlist Generator wissen müssen",
     faq_title: "Häufig gestellte Fragen (FAQ)",
     faq_q1_title: "Was ist eine M3U-Datei?",
     faq_q1_text: "Eine M3U-Datei ist eine einfache Textdatei, die die Pfade zu Audio- oder Videodateien auflistet. Sie wird von vielen Mediaplayern (z.B. VLC, Winamp, iTunes) verwendet, um Playlists zu organisieren und abzuspielen.",
@@ -45,6 +94,18 @@ const translations = {
     faq_q4_text: "Das Tool verwendet bewusst relative Pfade (nur den Dateinamen). Darum müssen Sie die Playlist-Datei im selben Ordner wie Ihre Musik speichern. Dadurch funktioniert die Playlist auch dann noch, wenn Sie den gesamten Ordner auf einen anderen Computer verschieben.",
     faq_q5_title: "Wofür ist das JSON-Format gut?",
     faq_q5_text: "JSON ist ein Datenformat, das oft von Entwicklern oder in Webanwendungen verwendet wird. Sie könnten eine JSON-Playlist z.B. nutzen, um die Trackliste auf einer Webseite dynamisch anzuzeigen oder in einem eigenen Softwareprojekt zu verarbeiten. Für normale Mediaplayer sind M3U oder XSPF die bessere Wahl.",
+    faq_q6_title: "Welche Browser werden unterstützt?",
+    faq_q6_text: "Der Audio Playlist Generator funktioniert in allen modernen Browsern (Chrome, Firefox, Safari, Edge). Die Speicherfunktion nutzt die File System Access API und ist am besten in Chrome und Edge verfügbar.",
+    faq_q7_title: "Ist der Generator kostenlos?",
+    faq_q7_text: "Ja, der Audio Playlist Generator ist vollständig kostenlos und erfordert keine Registrierung. Wenn Ihnen das Tool gefällt, können Sie uns gerne mit einer kleinen Spende unterstützen.",
+    faq_q8_title: "Kann ich den Generator offline nutzen?",
+    faq_q8_text: "Da die gesamte Verarbeitung lokal in Ihrem Browser stattfindet, benötigen Sie nur für den ersten Zugriff eine Internetverbindung. Sobald die Seite geladen ist, können Sie auch ohne Internet Playlists erstellen.",
+
+    // Privacy Notice
+    privacy_title: "Datenschutz-Hinweis",
+    privacy_text: "Der Audio Playlist Generator verarbeitet alle Daten lokal in Ihrem Browser. Es werden keine Dateien auf Server hochgeladen und keine persönlichen Daten gespeichert. Die einzigen gespeicherten Daten sind Ihre Theme- und Sprachpräferenzen im lokalen Speicher Ihres Browsers.",
+
+    // Toast Messages
     alert_save_error: "Fehler: Die Datei konnte nicht gespeichert werden.",
     alert_create_first: "Bitte erstellen Sie zuerst eine Playlist.",
     toast_files_added: "{count} Dateien hinzugefügt",
@@ -53,9 +114,13 @@ const translations = {
     toast_copied: "In Zwischenablage kopiert ✓",
     toast_copy_error: "Kopieren fehlgeschlagen",
     replace_list_option: "Bestehende Liste ersetzen",
+
+    // Shortcuts
     shortcut_open: "Dateien öffnen (Strg+O)",
     shortcut_save: "Speichern (Strg+S)",
     shortcut_copy: "Kopieren (Strg+C)",
+
+    // Tools Section
     more_tools_title: "Entdecken Sie weitere Audio-Tools",
     tool1_title: "Moderner Musikplayer",
     tool1_desc: "Ein stilvoller, moderner Musikplayer mit beeindruckenden Visualisierungen, Playlist-Verwaltung und Unterstützung für lokale Audiodateien.",
@@ -64,12 +129,60 @@ const translations = {
     tool3_title: "Audio-Konverter",
     tool3_desc: "Konvertieren Sie Ihre Audiodateien schnell und einfach zwischen Formaten wie MP3, WAV und FLAC direkt in Ihrem Browser – ohne Uploads.",
     tool_button: "Ausprobieren",
+
+    // Footer
     donate_button: "spenden",
-    donate_title: "Mit PayPal spenden"
+    donate_title: "Mit PayPal spenden",
+    footer_copyright: "Audio Playlist Generator"
   },
   en: {
+    // Meta tags
     meta_title: "Audio Playlist Generator - Create M3U, XSPF & JSON Playlists",
     meta_description: "Easily and quickly create custom audio playlists (.m3u, .xspf, .json) from your MP3, WAV, or FLAC files. Sort, name, and download your playlist.",
+
+    // Navigation
+    nav_home: "Home",
+    nav_app: "App",
+    nav_faq: "FAQ",
+
+    // Landing Page - Hero
+    hero_title: "Audio Playlist Generator",
+    hero_subtitle: "Create professional playlists in seconds",
+    hero_description: "Transform your local audio files into perfectly organized playlists. Supports M3U, XSPF, and JSON – free and 100% local in your browser.",
+    hero_cta: "Get Started",
+    hero_learn_more: "Learn More",
+
+    // Feature Cards
+    feature1_title: "Multiple Formats",
+    feature1_desc: "Export your playlists to M3U, XSPF, or JSON – compatible with VLC, Winamp, iTunes, and more.",
+    feature2_title: "100% Private",
+    feature2_desc: "All files are processed locally. No uploads, no servers – your music stays on your device.",
+    feature3_title: "Flexible Sorting",
+    feature3_desc: "Arrange tracks alphabetically, by date, randomly, or drag & drop to your preference.",
+
+    // Details Section
+    details_title: "Powerful Features",
+    details_subtitle: "Everything you need for perfect playlists",
+
+    detail1_title: "Drag & Drop Upload",
+    detail1_desc: "Simply drag your MP3, WAV, or FLAC files into the browser – no complicated selection needed.",
+    detail2_title: "Interactive Track List",
+    detail2_desc: "Visualize and edit your playlist in real-time with our canvas-based interface.",
+    detail3_title: "Fast Keyboard Shortcuts",
+    detail3_desc: "Ctrl+O to open, Ctrl+S to save, Ctrl+C to copy – work like a pro.",
+    detail4_title: "Theme Switcher",
+    detail4_desc: "Switch between light and dark design – perfect for any environment.",
+    detail5_title: "Multilingual",
+    detail5_desc: "Available in German and English – switch languages with one click.",
+    detail6_title: "No Installation",
+    detail6_desc: "Works directly in the browser – no download, no installation required.",
+
+    // CTA Section
+    cta_title: "Ready to get started?",
+    cta_desc: "Create your first playlist now – free and without registration.",
+    cta_button: "Create Playlist",
+
+    // App Page
     notice_m3u: "Important Notice for M3U/XSPF Playlists: For media players (VLC, Winamp, etc.) to find the tracks, the playlist file must be saved in the same folder as your audio files.",
     main_title: "Audio Playlist Generator",
     subtitle: "Create professional playlists with a modern design",
@@ -98,6 +211,10 @@ const translations = {
     placeholder_output: "Click 'Create Playlist' to see a preview here...",
     button_save: "Save As...",
     button_copy: "Copy",
+
+    // FAQ Page
+    faq_page_title: "Frequently Asked Questions",
+    faq_page_subtitle: "Everything you need to know about the Audio Playlist Generator",
     faq_title: "Frequently Asked Questions (FAQ)",
     faq_q1_title: "What is an M3U file?",
     faq_q1_text: "An M3U file is a plain text file that lists the paths to audio or video files. It is used by many media players (e.g., VLC, Winamp, iTunes) to organize and play playlists.",
@@ -111,6 +228,18 @@ const translations = {
     faq_q4_text: "The tool intentionally uses relative paths (just the filename). This is why you need to save the playlist file in the same folder as your music. This allows the playlist to work even if you move the entire folder to another computer.",
     faq_q5_title: "What is the JSON format good for?",
     faq_q5_text: "JSON is a data format often used by developers or in web applications. You could use a JSON playlist to dynamically display the track list on a website or to process it in your own software project. For regular media players, M3U or XSPF is the better choice.",
+    faq_q6_title: "Which browsers are supported?",
+    faq_q6_text: "The Audio Playlist Generator works in all modern browsers (Chrome, Firefox, Safari, Edge). The save function uses the File System Access API and works best in Chrome and Edge.",
+    faq_q7_title: "Is the generator free?",
+    faq_q7_text: "Yes, the Audio Playlist Generator is completely free and requires no registration. If you like the tool, feel free to support us with a small donation.",
+    faq_q8_title: "Can I use the generator offline?",
+    faq_q8_text: "Since all processing takes place locally in your browser, you only need an internet connection for the initial access. Once the page is loaded, you can create playlists even without internet.",
+
+    // Privacy Notice
+    privacy_title: "Privacy Notice",
+    privacy_text: "The Audio Playlist Generator processes all data locally in your browser. No files are uploaded to servers and no personal data is stored. The only stored data are your theme and language preferences in your browser's local storage.",
+
+    // Toast Messages
     alert_save_error: "Error: The file could not be saved.",
     alert_create_first: "Please create a playlist first.",
     toast_files_added: "{count} files added",
@@ -119,9 +248,13 @@ const translations = {
     toast_copied: "Copied to clipboard ✓",
     toast_copy_error: "Copy failed",
     replace_list_option: "Replace existing list",
+
+    // Shortcuts
     shortcut_open: "Open files (Ctrl+O)",
     shortcut_save: "Save (Ctrl+S)",
     shortcut_copy: "Copy (Ctrl+C)",
+
+    // Tools Section
     more_tools_title: "Discover More Audio Tools",
     tool1_title: "Modern Music Player",
     tool1_desc: "A stylish, modern music player with stunning visualizations, playlist management, and support for local audio files.",
@@ -130,8 +263,11 @@ const translations = {
     tool3_title: "Audio Converter",
     tool3_desc: "Quickly and easily convert your audio files between formats like MP3, WAV, and FLAC directly in your browser—no uploads required.",
     tool_button: "Try It Out",
+
+    // Footer
     donate_button: "donate",
-    donate_title: "Donate with PayPal"
+    donate_title: "Donate with PayPal",
+    footer_copyright: "Audio Playlist Generator"
   }
 }
 
