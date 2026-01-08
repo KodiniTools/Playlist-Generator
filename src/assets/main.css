@@ -85,6 +85,28 @@ nav a:hover,
     color: var(--accent-secondary) !important;
 }
 
+/* === External Footer (SSI Include) === */
+footer,
+.footer {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+footer *,
+.footer * {
+    color: var(--text-color) !important;
+}
+
+footer a,
+.footer a {
+    color: var(--accent-color) !important;
+}
+
+footer a:hover,
+.footer a:hover {
+    color: var(--accent-secondary) !important;
+}
+
 /* === Animation Keyframes === */
 @keyframes slide-in {
     from {
