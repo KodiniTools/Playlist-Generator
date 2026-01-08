@@ -29,10 +29,6 @@
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
             </span>
-            <span class="upload-text">
-              <template v-if="isDragging">{{ t('drop_files_here') }}</template>
-              <template v-else>{{ files.length > 0 ? files.length + ' ' + t('files_selected') : t('click_to_upload') }}</template>
-            </span>
           </label>
         </div>
         <div class="checkbox-option" v-if="files.length > 0">
