@@ -62,6 +62,21 @@ nav,
 .navigation {
     background: transparent !important;
     background-color: transparent !important;
+    position: relative;
+    z-index: 1000 !important;
+}
+
+/* Ensure external nav dropdowns appear above app navigation */
+nav ul,
+nav .dropdown,
+nav .dropdown-menu,
+.nav ul,
+.nav .dropdown,
+.nav .dropdown-menu,
+.navbar ul,
+.navbar .dropdown,
+.navbar .dropdown-menu {
+    z-index: 1001 !important;
 }
 
 nav *,

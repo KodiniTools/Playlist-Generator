@@ -88,7 +88,7 @@ onUnmounted(() => {
   top: 50px;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 500;
   background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
