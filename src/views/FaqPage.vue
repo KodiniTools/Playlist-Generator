@@ -94,7 +94,7 @@ const { t } = useTranslation()
 
 <style scoped>
 .faq-page {
-  padding-top: 70px;
+  padding-top: 120px;
 }
 
 .container {

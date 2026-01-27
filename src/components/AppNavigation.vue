@@ -1,5 +1,5 @@
 <template>
-  <nav class="app-nav">
+  <nav class="app-nav" :class="{ 'nav-scrolled': isScrolled }">
     <div class="nav-container">
       <router-link to="/" class="nav-logo">
         <span class="logo-icon">🎵</span>
@@ -53,29 +53,50 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 import ThemeSwitcher from './ThemeSwitcher.vue'
 import { useTranslation } from '../composables/useTranslation'
 
 const { t } = useTranslation()
 const mobileMenuOpen = ref(false)
+const isScrolled = ref(false)
+
+const EXTERNAL_NAV_HEIGHT = 50
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > EXTERNAL_NAV_HEIGHT
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  handleScroll()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <style scoped>
 .app-nav {
   position: fixed;
-  top: 0;
+  top: 50px;
   left: 0;
   right: 0;
   z-index: 1000;
   background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
+  transition: top 0.3s ease;
+}
+
+.app-nav.nav-scrolled {
+  top: 0;
 }
 
 .light-theme .app-nav {

@@ -172,12 +172,12 @@ const { t } = useTranslation()
 
 <style scoped>
 .landing-page {
-  padding-top: 70px;
+  padding-top: 120px;
 }
 
 /* Hero Section */
 .hero {
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
   justify-content: center;

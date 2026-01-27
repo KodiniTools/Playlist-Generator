@@ -466,7 +466,7 @@ const { currentLanguage } = useTranslation()
 
 <style scoped>
 .blog-page {
-  padding-top: 70px;
+  padding-top: 120px;
   min-height: 100vh;
 }
 
