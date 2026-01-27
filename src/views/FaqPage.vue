@@ -1,8 +1,28 @@
 <template>
   <div class="faq-page">
+    <!-- Page Header Navigation -->
+    <header class="page-header">
+      <div class="header-container">
+        <div class="header-logo">
+          <span class="logo-icon">🎵</span>
+          <span class="logo-text">Playlist Generator</span>
+        </div>
+        <nav class="header-nav">
+          <router-link to="/" class="nav-link">{{ t('nav_home') }}</router-link>
+          <router-link to="/app" class="nav-link">{{ t('nav_app') }}</router-link>
+          <router-link to="/faq" class="nav-link active">{{ t('nav_faq') }}</router-link>
+          <router-link to="/blog" class="nav-link">{{ t('nav_blog') }}</router-link>
+        </nav>
+        <div class="header-controls">
+          <LanguageSwitcher />
+          <ThemeSwitcher />
+        </div>
+      </div>
+    </header>
+
     <main class="container">
-      <!-- Header -->
-      <header class="page-header">
+      <!-- Content Header -->
+      <header class="content-header">
         <h1>{{ t('faq_page_title') }}</h1>
         <p class="subtitle">{{ t('faq_page_subtitle') }}</p>
       </header>
@@ -88,13 +108,85 @@
 
 <script setup>
 import { useTranslation } from '../composables/useTranslation'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import ThemeSwitcher from '../components/ThemeSwitcher.vue'
 
 const { t } = useTranslation()
 </script>
 
 <style scoped>
 .faq-page {
-  padding-top: 120px;
+  padding-top: 0;
+}
+
+/* Page Header Navigation */
+.page-header {
+  background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.light-theme .page-header {
+  background: linear-gradient(135deg, rgba(245, 245, 245, 0.95), rgba(232, 232, 232, 0.95));
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.logo-icon {
+  font-size: 1.5rem;
+}
+
+.header-nav {
+  display: flex;
+  gap: 30px;
+}
+
+.header-nav .nav-link {
+  text-decoration: none;
+  color: var(--muted-color);
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.header-nav .nav-link:hover,
+.header-nav .nav-link.active {
+  color: var(--accent-color);
+  background: rgba(242, 226, 142, 0.1);
+}
+
+.light-theme .header-nav .nav-link:hover,
+.light-theme .header-nav .nav-link.active {
+  background: rgba(162, 134, 128, 0.1);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .header-nav {
+    display: none;
+  }
 }
 
 .container {
@@ -104,13 +196,13 @@ const { t } = useTranslation()
   animation: fade-in 0.8s ease-out;
 }
 
-.page-header {
+.content-header {
   text-align: center;
   margin-bottom: 50px;
   animation: slide-in 0.8s ease-out;
 }
 
-.page-header h1 {
+.content-header h1 {
   font-size: 2.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
@@ -120,7 +212,7 @@ const { t } = useTranslation()
   margin-bottom: 15px;
 }
 
-.page-header .subtitle {
+.content-header .subtitle {
   font-size: 1.1rem;
   color: var(--muted-color);
 }
