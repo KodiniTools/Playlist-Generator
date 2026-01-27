@@ -1,6 +1,5 @@
 <template>
   <div class="app-wrapper">
-    <AppNavigation />
     <router-view />
     <ToastContainer />
   </div>
@@ -8,7 +7,6 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import AppNavigation from './components/AppNavigation.vue'
 import ToastContainer from './components/ToastContainer.vue'
 import { useTheme } from './composables/useTheme'
 import { useTranslation } from './composables/useTranslation'
