@@ -1,14 +1,13 @@
 <template>
   <div class="language-switcher">
-    <button 
-      :class="{ active: currentLanguage === 'de' }" 
+    <button
+      :class="{ active: currentLanguage === 'de' }"
       @click="setLanguage('de')"
     >
       DE
     </button>
-    |
-    <button 
-      :class="{ active: currentLanguage === 'en' }" 
+    <button
+      :class="{ active: currentLanguage === 'en' }"
       @click="setLanguage('en')"
     >
       EN
