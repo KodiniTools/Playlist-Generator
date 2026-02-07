@@ -1,21 +1,21 @@
 /* === CSS Variables for Theme System === */
-/* Farbschema: #F2E28E, #A28680, #5E5F69, #AEAFB7, #0C0C10 */
+/* Farbschema: #c9984d, #014f99, #091428, #f8e1a9, #f9f2d5 */
 :root {
-    --bg-color: #0C0C10;
-    --bg-secondary: #16161c;
-    --text-color: #AEAFB7;
-    --accent-color: #F2E28E;
-    --accent-secondary: #A28680;
-    --accent-text-color: #0C0C10;
-    --panel-color: #16161c;
-    --btn-color: #1e1e26;
-    --border-color: #5E5F69;
-    --input-bg: #16161c;
-    --muted-color: #5E5F69;
-    --shadow-color: rgba(242, 226, 142, 0.15);
-    --glow-color: rgba(242, 226, 142, 0.3);
+    --bg-color: #091428;
+    --bg-secondary: #0E1C32;
+    --text-color: #f9f2d5;
+    --accent-color: #c9984d;
+    --accent-secondary: #014f99;
+    --accent-text-color: #091428;
+    --panel-color: #142640;
+    --btn-color: #0E1C32;
+    --border-color: #2a4a6a;
+    --input-bg: #0E1C32;
+    --muted-color: #7A8DA0;
+    --shadow-color: rgba(201, 152, 77, 0.15);
+    --glow-color: rgba(201, 152, 77, 0.3);
     --success-color: #7dd87d;
-    --warning-color: #F2E28E;
+    --warning-color: #c9984d;
     --error-color: #e57373;
 }
 
@@ -214,8 +214,8 @@ header h1 {
 /* === Description Section === */
 .description {
     background: linear-gradient(135deg,
-        rgba(22, 22, 28, 0.8),
-        rgba(22, 22, 28, 0.6));
+        rgba(20, 38, 64, 0.8),
+        rgba(20, 38, 64, 0.6));
     border: 2px solid var(--border-color);
     border-radius: 20px;
     padding: 30px;
@@ -241,8 +241,8 @@ header h1 {
 /* === Important Notice === */
 .important-notice {
     background: linear-gradient(135deg,
-        rgba(242, 226, 142, 0.15),
-        rgba(242, 226, 142, 0.05));
+        rgba(201, 152, 77, 0.15),
+        rgba(201, 152, 77, 0.05));
     border: 2px solid var(--warning-color);
     border-radius: 15px;
     padding: 20px;
@@ -282,8 +282,8 @@ header h1 {
 /* === Form Sections === */
 .form-section, .output-section {
     background: linear-gradient(135deg,
-        rgba(22, 22, 28, 0.8),
-        rgba(22, 22, 28, 0.6));
+        rgba(20, 38, 64, 0.8),
+        rgba(20, 38, 64, 0.6));
     border: 2px solid var(--border-color);
     border-radius: 25px;
     padding: 35px;
@@ -369,7 +369,7 @@ textarea:focus {
 
 .file-upload-label:hover {
     border-color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.05);
+    background: rgba(201, 152, 77, 0.05);
     color: var(--accent-color);
 }
 
@@ -381,10 +381,10 @@ textarea:focus {
 .file-upload-wrapper.drag-over .file-upload-label {
     border-color: var(--accent-color);
     border-style: solid;
-    background: rgba(242, 226, 142, 0.15);
+    background: rgba(201, 152, 77, 0.15);
     color: var(--accent-color);
     transform: scale(1.02);
-    box-shadow: 0 0 20px var(--glow-color), inset 0 0 30px rgba(242, 226, 142, 0.1);
+    box-shadow: 0 0 20px var(--glow-color), inset 0 0 30px rgba(201, 152, 77, 0.1);
 }
 
 .light-theme .file-upload-wrapper.drag-over .file-upload-label {
@@ -589,8 +589,8 @@ textarea {
 /* === Tools Grid Section === */
 .tools-grid-section {
     background: linear-gradient(135deg,
-        rgba(22, 22, 28, 0.8),
-        rgba(22, 22, 28, 0.6));
+        rgba(20, 38, 64, 0.8),
+        rgba(20, 38, 64, 0.6));
     border: 2px solid var(--border-color);
     border-radius: 25px;
     padding: 35px;
@@ -672,8 +672,8 @@ textarea {
 /* === FAQ Section === */
 .faq-section {
     background: linear-gradient(135deg,
-        rgba(22, 22, 28, 0.8),
-        rgba(22, 22, 28, 0.6));
+        rgba(20, 38, 64, 0.8),
+        rgba(20, 38, 64, 0.6));
     border: 2px solid var(--border-color);
     border-radius: 25px;
     padding: 35px;
@@ -727,7 +727,7 @@ details p {
     margin-top: 15px;
     color: var(--muted-color);
     padding: 20px;
-    background: linear-gradient(135deg, rgba(22, 22, 28, 0.3), rgba(22, 22, 28, 0.1));
+    background: linear-gradient(135deg, rgba(20, 38, 64, 0.3), rgba(20, 38, 64, 0.1));
     border-radius: 12px;
     border-left: 3px solid var(--accent-color);
     animation: slide-in 0.3s ease-out;
@@ -835,7 +835,7 @@ details p {
 .donate-button:hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.05);
+    background: rgba(201, 152, 77, 0.05);
 }
 
 .light-theme .donate-button:hover {
