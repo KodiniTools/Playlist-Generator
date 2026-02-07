@@ -20,22 +20,23 @@
 }
 
 /* Light Theme */
+/* Farbschema: #c9984d, #014f99, #003971, #f8e1a9, #f9f2d5 */
 .light-theme {
-    --bg-color: #f5f5f5;
-    --bg-secondary: #e8e8e8;
-    --text-color: #2a2a2e;
-    --accent-color: #A28680;
-    --accent-secondary: #8a6f69;
-    --accent-text-color: #ffffff;
+    --bg-color: #F5F4D6;
+    --bg-secondary: #f0edbe;
+    --text-color: #003971;
+    --accent-color: #014f99;
+    --accent-secondary: #003971;
+    --accent-text-color: #F5F4D6;
     --panel-color: #ffffff;
-    --btn-color: #e8e8e8;
-    --border-color: #AEAFB7;
+    --btn-color: #f8e1a9;
+    --border-color: #c9984d;
     --input-bg: #ffffff;
-    --muted-color: #5E5F69;
-    --shadow-color: rgba(162, 134, 128, 0.2);
-    --glow-color: rgba(162, 134, 128, 0.3);
+    --muted-color: #3d6080;
+    --shadow-color: rgba(1, 79, 153, 0.15);
+    --glow-color: rgba(1, 79, 153, 0.25);
     --success-color: #4caf50;
-    --warning-color: #A28680;
+    --warning-color: #c9984d;
     --error-color: #d32f2f;
 }
 
@@ -254,8 +255,8 @@ header h1 {
 
 .light-theme .important-notice {
     background: linear-gradient(135deg,
-        rgba(162, 134, 128, 0.15),
-        rgba(162, 134, 128, 0.05));
+        rgba(201, 152, 77, 0.15),
+        rgba(201, 152, 77, 0.05));
 }
 
 .notice-icon {
@@ -373,7 +374,7 @@ textarea:focus {
 }
 
 .light-theme .file-upload-label:hover {
-    background: rgba(162, 134, 128, 0.05);
+    background: rgba(1, 79, 153, 0.05);
 }
 
 /* === Drag & Drop Zone === */
@@ -387,8 +388,8 @@ textarea:focus {
 }
 
 .light-theme .file-upload-wrapper.drag-over .file-upload-label {
-    background: rgba(162, 134, 128, 0.15);
-    box-shadow: 0 0 20px var(--glow-color), inset 0 0 30px rgba(162, 134, 128, 0.1);
+    background: rgba(1, 79, 153, 0.15);
+    box-shadow: 0 0 20px var(--glow-color), inset 0 0 30px rgba(1, 79, 153, 0.1);
 }
 
 .file-upload-wrapper.drag-over .upload-icon {
@@ -567,6 +568,10 @@ textarea {
     box-shadow: 0 8px 20px var(--shadow-color);
 }
 
+.light-theme .save-button {
+    color: #F5F4D6;
+}
+
 /* === Output Area === */
 .output-area {
     background: var(--input-bg);
@@ -729,7 +734,7 @@ details p {
 }
 
 .light-theme details p {
-    background: linear-gradient(135deg, rgba(232, 232, 232, 0.5), rgba(232, 232, 232, 0.3));
+    background: linear-gradient(135deg, rgba(248, 225, 169, 0.4), rgba(248, 225, 169, 0.2));
 }
 
 /* === Responsive Design === */
@@ -834,7 +839,7 @@ details p {
 }
 
 .light-theme .donate-button:hover {
-    background: rgba(162, 134, 128, 0.05);
+    background: rgba(201, 152, 77, 0.1);
 }
 
 .paypal-icon {
