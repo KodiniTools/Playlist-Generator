@@ -89,7 +89,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   z-index: 500;
-  background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
+  background: linear-gradient(135deg, rgba(9, 20, 40, 0.95), rgba(14, 28, 50, 0.95));
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
   transition: top 0.3s ease;
@@ -100,7 +100,7 @@ onUnmounted(() => {
 }
 
 .light-theme .app-nav {
-  background: linear-gradient(135deg, rgba(245, 245, 245, 0.95), rgba(232, 232, 232, 0.95));
+  background: linear-gradient(135deg, rgba(245, 244, 214, 0.95), rgba(240, 237, 190, 0.95));
 }
 
 .nav-container {
@@ -148,18 +148,18 @@ onUnmounted(() => {
 .nav-link:hover,
 .nav-link.active {
   color: var(--accent-color);
-  background: rgba(242, 226, 142, 0.1);
+  background: rgba(201, 152, 77, 0.1);
 }
 
 .light-theme .nav-link:hover,
 .light-theme .nav-link.active {
-  background: rgba(162, 134, 128, 0.1);
+  background: rgba(1, 79, 153, 0.1);
 }
 
 .nav-controls {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
 }
 
 .mobile-menu-btn {
@@ -229,7 +229,7 @@ onUnmounted(() => {
 }
 
 .mobile-link:hover {
-  background: rgba(242, 226, 142, 0.1);
+  background: rgba(201, 152, 77, 0.1);
   color: var(--accent-color);
 }
 
