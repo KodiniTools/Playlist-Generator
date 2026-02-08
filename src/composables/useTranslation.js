@@ -315,6 +315,11 @@ export function useTranslation() {
     localStorage.setItem('locale', lang)
     localStorage.setItem('language', lang)
     document.documentElement.lang = lang
+
+    // Sync external SSI nav language buttons (if present)
+    document.querySelectorAll('.global-nav-lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang)
+    })
   }
 
   return {

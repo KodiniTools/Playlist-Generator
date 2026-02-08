@@ -13,6 +13,10 @@
           <router-link to="/faq" class="nav-link">{{ t('nav_faq') }}</router-link>
           <router-link to="/blog" class="nav-link">{{ t('nav_blog') }}</router-link>
         </nav>
+        <div class="header-controls">
+          <LanguageSwitcher />
+          <ThemeSwitcher />
+        </div>
       </div>
     </header>
 
@@ -81,6 +85,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import PlaylistConfig from '../components/PlaylistConfig.vue'
 import PlaylistPreview from '../components/PlaylistPreview.vue'
 import ToolsGrid from '../components/ToolsGrid.vue'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import ThemeSwitcher from '../components/ThemeSwitcher.vue'
 import { useTranslation } from '../composables/useTranslation'
 import { usePlaylist } from '../composables/usePlaylist'
 import { useToast } from '../composables/useToast'
