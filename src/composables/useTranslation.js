@@ -273,7 +273,14 @@ const translations = {
   }
 }
 
-const currentLanguage = ref(localStorage.getItem('language') || (navigator.language.startsWith('de') ? 'de' : 'en'))
+// Read from 'locale' (global nav key) with fallback to 'language' (legacy key)
+const storedLang = localStorage.getItem('locale') || localStorage.getItem('language')
+const currentLanguage = ref(storedLang || (navigator.language.startsWith('de') ? 'de' : 'en'))
+
+// Ensure both keys are in sync on initialization
+if (currentLanguage.value) {
+  localStorage.setItem('locale', currentLanguage.value)
+}
 
 export function useTranslation() {
   const t = computed(() => (key) => {
@@ -282,6 +289,8 @@ export function useTranslation() {
 
   const setLanguage = (lang) => {
     currentLanguage.value = lang
+    // Write to both keys for compatibility with global nav and legacy code
+    localStorage.setItem('locale', lang)
     localStorage.setItem('language', lang)
     document.documentElement.lang = lang
   }
