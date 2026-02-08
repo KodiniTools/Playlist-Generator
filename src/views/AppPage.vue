@@ -53,6 +53,7 @@
         <PlaylistPreview
           :outputFormat="outputFormat"
           :playlistContent="playlistContent"
+          :files="files"
           @update:outputFormat="handleFormatChange"
           @save="handleSave"
         />

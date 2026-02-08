@@ -121,6 +121,17 @@ const translations = {
     shortcut_save: "Speichern (Strg+S)",
     shortcut_copy: "Kopieren (Strg+C)",
 
+    // Audio Player
+    player_title: "Vorschau-Player",
+    player_no_track: "Kein Track ausgewählt",
+    player_play: "Abspielen",
+    player_pause: "Pause",
+    player_stop: "Stopp",
+    player_previous: "Vorheriger Track",
+    player_next: "Nächster Track",
+    player_mute: "Stummschalten",
+    player_unmute: "Ton einschalten",
+
     // Tools Section
     more_tools_title: "Entdecken Sie weitere Audio-Tools",
     tool1_title: "Moderner Musikplayer",
@@ -255,6 +266,17 @@ const translations = {
     shortcut_open: "Open files (Ctrl+O)",
     shortcut_save: "Save (Ctrl+S)",
     shortcut_copy: "Copy (Ctrl+C)",
+
+    // Audio Player
+    player_title: "Preview Player",
+    player_no_track: "No track selected",
+    player_play: "Play",
+    player_pause: "Pause",
+    player_stop: "Stop",
+    player_previous: "Previous track",
+    player_next: "Next track",
+    player_mute: "Mute",
+    player_unmute: "Unmute",
 
     // Tools Section
     more_tools_title: "Discover More Audio Tools",
