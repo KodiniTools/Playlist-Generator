@@ -12,13 +12,21 @@ import { useTheme } from './composables/useTheme'
 import { useTranslation } from './composables/useTranslation'
 
 // Initialize theme (the watch with immediate: true handles DOM updates)
+// Also sets data-theme on <html> for global nav compatibility
 useTheme()
 
-// Set document language
-const { currentLanguage } = useTranslation()
+// Set document language and sync with global nav's locale key
+const { currentLanguage, setLanguage } = useTranslation()
 
 onMounted(() => {
   document.documentElement.lang = currentLanguage.value
+
+  // Sync language from global nav's 'locale' key (in case it was changed
+  // by the global nav before Vue mounted)
+  const globalNavLang = localStorage.getItem('locale')
+  if (globalNavLang && globalNavLang !== currentLanguage.value) {
+    setLanguage(globalNavLang)
+  }
 })
 </script>
 

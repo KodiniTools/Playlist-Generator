@@ -13,10 +13,6 @@
           <router-link to="/faq" class="nav-link">{{ t('nav_faq') }}</router-link>
           <router-link to="/blog" class="nav-link">{{ t('nav_blog') }}</router-link>
         </nav>
-        <div class="header-controls">
-          <LanguageSwitcher />
-          <ThemeSwitcher />
-        </div>
       </div>
     </header>
 
@@ -186,8 +182,6 @@
 
 <script setup>
 import { useTranslation } from '../composables/useTranslation'
-import LanguageSwitcher from '../components/LanguageSwitcher.vue'
-import ThemeSwitcher from '../components/ThemeSwitcher.vue'
 
 const { t } = useTranslation()
 </script>
