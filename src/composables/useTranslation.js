@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 
 const translations = {
   de: {
@@ -315,12 +315,21 @@ export function useTranslation() {
     localStorage.setItem('locale', lang)
     localStorage.setItem('language', lang)
     document.documentElement.lang = lang
-
-    // Sync external SSI nav language buttons (if present)
-    document.querySelectorAll('.global-nav-lang-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang)
-    })
   }
+
+  // Listen for language-changed events from the global navigation (SSI include)
+  const handleGlobalLanguageChange = (e) => {
+    const newLang = e.detail?.lang
+    if (newLang && newLang !== currentLanguage.value) {
+      setLanguage(newLang)
+    }
+  }
+
+  window.addEventListener('language-changed', handleGlobalLanguageChange)
+
+  onUnmounted(() => {
+    window.removeEventListener('language-changed', handleGlobalLanguageChange)
+  })
 
   return {
     currentLanguage,
