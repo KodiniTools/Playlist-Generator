@@ -130,81 +130,7 @@ footer a:hover,
     50% { box-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color); }
 }
 
-/* === Page Controls === */
-.page-controls {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-/* === Switcher Buttons (Language + Theme) === */
-.language-switcher {
-    display: flex;
-    align-items: center;
-}
-
-.language-switcher button {
-    width: 40px;
-    height: 38px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--btn-color);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 0;
-    line-height: 1;
-}
-
-.language-switcher button:first-child {
-    border-radius: 10px 0 0 10px;
-    border-right: none;
-}
-
-.language-switcher button:last-child {
-    border-radius: 0 10px 10px 0;
-}
-
-.language-switcher button.active,
-.language-switcher button:hover {
-    background: var(--accent-color);
-    color: var(--accent-text-color);
-    border-color: var(--accent-color);
-}
-
-.theme-switcher button {
-    width: 40px;
-    height: 38px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--btn-color);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1.1rem;
-    padding: 0;
-    line-height: 1;
-}
-
-.theme-switcher button:hover {
-    background: var(--accent-color);
-    color: var(--accent-text-color);
-}
-
-.light-theme .icon-sun { display: none; }
-.icon-moon { display: none; }
-.light-theme .icon-moon { display: inline; }
+/* Language/Theme switcher controls are provided by the external SSI navigation (nav.html) */
 
 /* === Container & Layout === */
 .container {
@@ -779,12 +705,6 @@ details p {
         font-size: 2rem;
     }
 
-    .page-controls {
-        position: static;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
-
     .tools-grid {
         grid-template-columns: 1fr;
     }
@@ -880,7 +800,6 @@ details p {
 
 /* === Print Styles === */
 @media print {
-    .page-controls,
     .generate-button,
     .tools-grid-section,
     .site-footer {

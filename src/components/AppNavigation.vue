@@ -21,10 +21,7 @@
         </router-link>
       </div>
 
-      <div class="nav-controls">
-        <LanguageSwitcher />
-        <ThemeSwitcher />
-      </div>
+      <!-- Language/Theme controls are handled by the external SSI navigation (nav.html) -->
 
       <button class="mobile-menu-btn" @click="toggleMobileMenu" aria-label="Menu">
         <span class="hamburger" :class="{ open: mobileMenuOpen }"></span>
@@ -44,18 +41,13 @@
       <router-link to="/blog" class="mobile-link" @click="mobileMenuOpen = false">
         {{ t('nav_blog') }}
       </router-link>
-      <div class="mobile-controls">
-        <LanguageSwitcher />
-        <ThemeSwitcher />
-      </div>
+      <!-- Language/Theme controls are handled by the external SSI navigation (nav.html) -->
     </div>
   </nav>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import LanguageSwitcher from './LanguageSwitcher.vue'
-import ThemeSwitcher from './ThemeSwitcher.vue'
 import { useTranslation } from '../composables/useTranslation'
 
 const { t } = useTranslation()
@@ -156,12 +148,6 @@ onUnmounted(() => {
   background: rgba(1, 79, 153, 0.1);
 }
 
-.nav-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .mobile-menu-btn {
   display: none;
   background: none;
@@ -233,18 +219,8 @@ onUnmounted(() => {
   color: var(--accent-color);
 }
 
-.mobile-controls {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  padding-top: 15px;
-  margin-top: 15px;
-  border-top: 1px solid var(--border-color);
-}
-
 @media (max-width: 768px) {
-  .nav-links,
-  .nav-controls {
+  .nav-links {
     display: none;
   }
 
