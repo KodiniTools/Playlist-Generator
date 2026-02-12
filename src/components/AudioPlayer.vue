@@ -476,4 +476,71 @@ const onVolumeChange = (e) => {
   align-items: center;
   flex-shrink: 0;
 }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .audio-player {
+    padding: 14px;
+    border-radius: 12px;
+    margin-top: 15px;
+  }
+
+  .player-title {
+    font-size: 0.9rem;
+    margin: 0 0 10px 0;
+  }
+
+  .track-label {
+    font-size: 0.82rem;
+  }
+
+  .player-progress-wrapper {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .player-time {
+    font-size: 0.7rem;
+    min-width: 30px;
+  }
+
+  .player-controls {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .player-btn-sm {
+    width: 36px;
+    height: 36px;
+  }
+
+  .player-btn-play {
+    width: 42px;
+    height: 42px;
+  }
+
+  .player-volume {
+    margin-bottom: 10px;
+  }
+
+  .volume-slider::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+  }
+
+  .volume-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+  }
+
+  .player-tracklist {
+    max-height: 130px;
+    border-radius: 8px;
+  }
+
+  .player-tracklist-item {
+    padding: 7px 10px;
+    font-size: 0.78rem;
+  }
+}
 </style>

@@ -761,10 +761,24 @@ watch(() => props.selectedIndex, () => {
 }
 
 @media (max-width: 480px) {
+  #fileListCanvas {
+    height: 180px;
+  }
+
   .stats-bar {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
     align-items: flex-start;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .canvas-header h3 {
+    font-size: 0.9rem;
+  }
+
+  .clear-button {
+    font-size: 1rem;
   }
 }
 </style>
