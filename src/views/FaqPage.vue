@@ -455,6 +455,118 @@ details p {
   .cta-content h2 {
     font-size: 1.4rem;
   }
+
+  .header-container {
+    padding: 10px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 25px 12px;
+  }
+
+  .content-header {
+    margin-bottom: 30px;
+  }
+
+  .content-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .content-header .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .privacy-notice {
+    gap: 12px;
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 30px;
+  }
+
+  .privacy-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .privacy-content h3 {
+    font-size: 1.05rem;
+  }
+
+  .privacy-content p {
+    font-size: 0.85rem;
+  }
+
+  .faq-section {
+    margin-bottom: 35px;
+  }
+
+  .section-title {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+
+  .faq-list {
+    gap: 10px;
+  }
+
+  details {
+    border-radius: 10px;
+  }
+
+  summary {
+    padding: 14px 15px;
+    font-size: 0.9rem;
+    gap: 10px;
+  }
+
+  summary::before {
+    font-size: 1.1rem;
+  }
+
+  details p {
+    padding: 18px 15px;
+    font-size: 0.85rem;
+  }
+
+  .cta-content {
+    padding: 28px 18px;
+    border-radius: 18px;
+  }
+
+  .cta-content h2 {
+    font-size: 1.25rem;
+  }
+
+  .cta-content p {
+    font-size: 0.9rem;
+    margin-bottom: 18px;
+  }
+
+  .btn {
+    padding: 12px 25px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+  }
+
+  .btn-large {
+    padding: 14px 30px;
+    font-size: 1rem;
+  }
+
+  .header-container {
+    padding: 10px 12px;
+  }
+
+  .header-logo {
+    font-size: 0.95rem;
+    gap: 8px;
+  }
+
+  .logo-icon {
+    font-size: 1.2rem;
+  }
 }
 
 /* Animations */

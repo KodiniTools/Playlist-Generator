@@ -445,6 +445,77 @@ onUnmounted(() => {
   }
 }
 
+@media (max-width: 480px) {
+  .container {
+    padding: 20px 10px;
+  }
+
+  .container > header {
+    margin-bottom: 20px;
+  }
+
+  .container > header h1 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .description {
+    padding: 15px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+  }
+
+  .description p {
+    font-size: 0.9rem;
+  }
+
+  .important-notice {
+    padding: 12px;
+    gap: 10px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+  .notice-icon {
+    font-size: 1.1rem;
+  }
+
+  .important-notice p {
+    font-size: 0.85rem;
+  }
+
+  .main-content {
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .site-footer {
+    margin-top: 25px;
+    padding: 20px 0;
+  }
+
+  .donate-button {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  .header-container {
+    padding: 10px 12px;
+  }
+
+  .header-logo {
+    font-size: 0.95rem;
+    gap: 8px;
+  }
+
+  .logo-icon {
+    font-size: 1.2rem;
+  }
+}
+
 /* Animations */
 @keyframes fade-in {
   from { opacity: 0; }

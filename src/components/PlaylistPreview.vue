@@ -126,4 +126,11 @@ const handleSave = () => {
   display: flex;
   align-items: center;
 }
+
+@media (max-width: 480px) {
+  .button-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
 </style>

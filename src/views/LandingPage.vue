@@ -554,6 +554,7 @@ const { t } = useTranslation()
 @media (max-width: 600px) {
   .details-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .hero-title {
@@ -580,6 +581,156 @@ const { t } = useTranslation()
 
   .cta-content h2 {
     font-size: 1.5rem;
+  }
+
+  .details-section {
+    padding: 60px 15px;
+  }
+
+  .cta-section {
+    padding: 60px 15px;
+  }
+
+  .section-header {
+    margin: 0 auto 35px;
+  }
+
+  .feature-cards {
+    gap: 20px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 35px 15px;
+    min-height: auto;
+  }
+
+  .hero-content {
+    margin-bottom: 35px;
+  }
+
+  .hero-title {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .hero-description {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .hero-buttons {
+    gap: 12px;
+  }
+
+  .btn {
+    padding: 12px 25px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+  }
+
+  .btn-large {
+    padding: 14px 30px;
+    font-size: 1rem;
+  }
+
+  .feature-card {
+    padding: 22px 18px;
+    border-radius: 15px;
+  }
+
+  .feature-card .card-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 15px;
+    border-radius: 12px;
+  }
+
+  .feature-card .card-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .feature-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  .feature-card p {
+    font-size: 0.85rem;
+  }
+
+  .details-section {
+    padding: 40px 12px;
+  }
+
+  .section-header {
+    margin: 0 auto 25px;
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .section-header p {
+    font-size: 0.95rem;
+  }
+
+  .detail-item {
+    padding: 18px 12px;
+  }
+
+  .detail-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 12px;
+  }
+
+  .detail-item h3 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  .detail-item p {
+    font-size: 0.85rem;
+  }
+
+  .cta-section {
+    padding: 40px 12px;
+  }
+
+  .cta-content {
+    padding: 30px 18px;
+    border-radius: 18px;
+  }
+
+  .cta-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .cta-content p {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .header-container {
+    padding: 10px 12px;
+  }
+
+  .header-logo {
+    font-size: 0.95rem;
+    gap: 8px;
+  }
+
+  .logo-icon {
+    font-size: 1.2rem;
   }
 }
 
