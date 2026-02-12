@@ -100,7 +100,7 @@ const drawFilesOnCanvas = () => {
   if (!props.files.length) return
 
   // Draw files
-  ctx.font = '14px Segoe UI'
+  ctx.font = '14px Supreme, sans-serif'
   ctx.textBaseline = 'middle'
 
   props.files.forEach((file, index) => {
