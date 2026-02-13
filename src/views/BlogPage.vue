@@ -3,10 +3,6 @@
     <!-- Page Header Navigation -->
     <header class="page-header">
       <div class="header-container">
-        <div class="header-logo">
-          <span class="logo-icon">🎵</span>
-          <span class="logo-text">Playlist Generator</span>
-        </div>
         <nav class="header-nav">
           <router-link to="/" class="nav-link">{{ t('nav_home') }}</router-link>
           <router-link to="/app" class="nav-link">{{ t('nav_app') }}</router-link>
@@ -503,20 +499,7 @@ const { t, currentLanguage } = useTranslation()
   padding: 15px 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-.header-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--text-color);
-}
-
-.logo-icon {
-  font-size: 1.5rem;
+  justify-content: center;
 }
 
 .header-nav {
@@ -544,15 +527,14 @@ const { t, currentLanguage } = useTranslation()
   background: rgba(162, 134, 128, 0.1);
 }
 
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
 @media (max-width: 768px) {
   .header-nav {
-    display: none;
+    gap: 15px;
+  }
+
+  .header-nav .nav-link {
+    padding: 8px 10px;
+    font-size: 0.9rem;
   }
 }
 
@@ -963,13 +945,13 @@ kbd {
     padding: 10px 12px;
   }
 
-  .header-logo {
-    font-size: 0.95rem;
-    gap: 8px;
+  .header-nav {
+    gap: 6px;
   }
 
-  .logo-icon {
-    font-size: 1.2rem;
+  .header-nav .nav-link {
+    padding: 6px 8px;
+    font-size: 0.82rem;
   }
 }
 
