@@ -3,10 +3,6 @@
     <!-- Page Header Navigation -->
     <header class="page-header">
       <div class="header-container">
-        <div class="header-logo">
-          <span class="logo-icon">🎵</span>
-          <span class="logo-text">Playlist Generator</span>
-        </div>
         <nav class="header-nav">
           <router-link to="/" class="nav-link active">{{ t('nav_home') }}</router-link>
           <router-link to="/app" class="nav-link">{{ t('nav_app') }}</router-link>
@@ -167,16 +163,6 @@
       </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-      <div class="cta-content">
-        <h2>{{ t('cta_title') }}</h2>
-        <p>{{ t('cta_desc') }}</p>
-        <router-link to="/app" class="btn btn-primary btn-large">
-          {{ t('cta_button') }}
-        </router-link>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -208,20 +194,7 @@ const { t } = useTranslation()
   padding: 15px 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-.header-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--text-color);
-}
-
-.logo-icon {
-  font-size: 1.5rem;
+  justify-content: center;
 }
 
 .header-nav {
@@ -249,19 +222,29 @@ const { t } = useTranslation()
   background: rgba(162, 134, 128, 0.1);
 }
 
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
 @media (max-width: 768px) {
   .header-nav {
-    display: none;
+    gap: 15px;
   }
 
-  .header-controls {
-    gap: 10px;
+  .header-nav .nav-link {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: 10px 12px;
+  }
+
+  .header-nav {
+    gap: 6px;
+  }
+
+  .header-nav .nav-link {
+    padding: 6px 8px;
+    font-size: 0.82rem;
   }
 }
 
@@ -497,39 +480,6 @@ const { t } = useTranslation()
   line-height: 1.6;
 }
 
-/* CTA Section */
-.cta-section {
-  padding: 100px 20px;
-  text-align: center;
-}
-
-.cta-content {
-  max-width: 600px;
-  margin: 0 auto;
-  background: linear-gradient(135deg, rgba(22, 22, 28, 0.8), rgba(22, 22, 28, 0.6));
-  border: 1px solid var(--border-color);
-  border-radius: 25px;
-  padding: 60px 40px;
-  backdrop-filter: blur(15px);
-}
-
-.light-theme .cta-content {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
-}
-
-.cta-content h2 {
-  font-size: 2rem;
-  color: var(--text-color);
-  margin-bottom: 15px;
-  font-weight: 700;
-}
-
-.cta-content p {
-  font-size: 1.1rem;
-  color: var(--muted-color);
-  margin-bottom: 30px;
-}
-
 /* Responsive */
 @media (max-width: 900px) {
   .feature-cards {
@@ -575,19 +525,7 @@ const { t } = useTranslation()
     font-size: 1.8rem;
   }
 
-  .cta-content {
-    padding: 40px 25px;
-  }
-
-  .cta-content h2 {
-    font-size: 1.5rem;
-  }
-
   .details-section {
-    padding: 60px 15px;
-  }
-
-  .cta-section {
     padding: 60px 15px;
   }
 
@@ -702,36 +640,6 @@ const { t } = useTranslation()
     font-size: 0.85rem;
   }
 
-  .cta-section {
-    padding: 40px 12px;
-  }
-
-  .cta-content {
-    padding: 30px 18px;
-    border-radius: 18px;
-  }
-
-  .cta-content h2 {
-    font-size: 1.3rem;
-  }
-
-  .cta-content p {
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-  }
-
-  .header-container {
-    padding: 10px 12px;
-  }
-
-  .header-logo {
-    font-size: 0.95rem;
-    gap: 8px;
-  }
-
-  .logo-icon {
-    font-size: 1.2rem;
-  }
 }
 
 /* Animations */
