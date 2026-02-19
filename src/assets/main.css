@@ -131,6 +131,10 @@ footer a:hover,
 }
 
 /* Language/Theme switcher controls are provided by the external SSI navigation (nav.html) */
+/* Light-Mode: Hintergrund für besseren Kontrast des Sprach-Switchers */
+.light-theme .global-nav-lang-switcher {
+    background: rgba(255, 255, 255, 0.85);
+}
 
 /* === Container & Layout === */
 .container {
