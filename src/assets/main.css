@@ -132,7 +132,27 @@ footer a:hover,
 
 /* Light-Mode: hellerer Hintergrund für besseren Kontrast der SSI Navigation */
 .light-theme .global-nav {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Light-Mode: Sprach-Switcher Buttons in der SSI Navigation */
+.light-theme .global-nav-lang-btn {
+    color: var(--text-color) !important;
+}
+
+.light-theme .global-nav-lang-btn.active {
+    color: #ffffff !important;
+    background: var(--accent-color) !important;
+}
+
+.light-theme .global-nav-lang-btn:hover:not(.active) {
+    background: rgba(1, 79, 153, 0.1) !important;
+}
+
+/* Dark-Mode: aktiver Sprach-Button mit hellem Text */
+.global-nav-lang-btn.active {
+    color: #ffffff !important;
+    background: var(--accent-color) !important;
 }
 
 /* === Container & Layout === */
