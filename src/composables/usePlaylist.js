@@ -159,6 +159,58 @@ const sortFiles = () => {
   generatePlaylist()
 }
 
+const analyzeBlob = async (blob, name) => {
+  const arrayBuffer = await blob.arrayBuffer()
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+  audioContext.close()
+
+  // Create a File object from the Blob so it integrates with the existing playlist system
+  const file = new File([blob], name, {
+    type: blob.type || 'audio/wav',
+    lastModified: Date.now()
+  })
+
+  return {
+    file,
+    name,
+    duration: audioBuffer.duration,
+    sampleRate: audioBuffer.sampleRate,
+    channels: audioBuffer.numberOfChannels
+  }
+}
+
+const handleSharedFiles = async (sharedRecords) => {
+  let processed = 0
+
+  for (const record of sharedRecords) {
+    const blob = record.blob instanceof Blob
+      ? record.blob
+      : new Blob([record.blob], { type: record.mimeType || 'audio/wav' })
+
+    if (blob.size === 0) continue
+
+    try {
+      const result = await analyzeBlob(blob, record.name)
+      // Check for duplicates
+      const existingNames = new Set(files.value.map(f => f.name.toLowerCase()))
+      if (!existingNames.has(result.file.name.toLowerCase())) {
+        files.value = [...files.value, result.file]
+        processed++
+      }
+    } catch (err) {
+      console.warn('Could not process shared file:', record.name, err)
+    }
+  }
+
+  if (processed > 0) {
+    sortFiles()
+    generatePlaylist()
+  }
+
+  return { processed }
+}
+
 const savePlaylist = async () => {
   if (!playlistContent.value) {
     return false
@@ -232,6 +284,8 @@ export function usePlaylist() {
     moveFile,
     sortFiles,
     generatePlaylist,
-    savePlaylist
+    savePlaylist,
+    analyzeBlob,
+    handleSharedFiles
   }
 }

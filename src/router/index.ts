@@ -34,4 +34,12 @@ const router = createRouter({
   }
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.name === 'landing' && to.query.source === 'audiokonverter') {
+    next({ name: 'app', query: { source: 'audiokonverter' } })
+  } else {
+    next()
+  }
+})
+
 export default router

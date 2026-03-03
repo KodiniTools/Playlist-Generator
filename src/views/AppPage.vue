@@ -27,6 +27,16 @@
         <p>{{ t('notice_m3u') }}</p>
       </section>
 
+      <div v-if="sharedBanner" class="shared-banner" :class="'shared-banner-' + sharedBanner.type">
+        <span class="shared-banner-icon">
+          <template v-if="sharedBanner.type === 'success'">&#10003;</template>
+          <template v-else-if="sharedBanner.type === 'error'">&#10007;</template>
+          <template v-else-if="sharedBanner.type === 'warning'">&#9888;</template>
+          <template v-else>&#8505;</template>
+        </span>
+        <span>{{ sharedBanner.message }}</span>
+      </div>
+
       <div class="main-content">
         <PlaylistConfig
           ref="playlistConfigRef"
@@ -73,16 +83,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import PlaylistConfig from '../components/PlaylistConfig.vue'
 import PlaylistPreview from '../components/PlaylistPreview.vue'
 import ToolsGrid from '../components/ToolsGrid.vue'
 import { useTranslation } from '../composables/useTranslation'
 import { usePlaylist } from '../composables/usePlaylist'
 import { useToast } from '../composables/useToast'
+import { getSharedFiles, clearSharedFiles } from '../utils/sharedFileRepository'
 
 const { t } = useTranslation()
 const toast = useToast()
+const route = useRoute()
+const router = useRouter()
 const {
   files,
   sortOption,
@@ -96,8 +110,59 @@ const {
   removeFile,
   moveFile,
   sortFiles,
-  savePlaylist
+  savePlaylist,
+  handleSharedFiles
 } = usePlaylist()
+
+// --- Shared files receiver ---
+const sharedBanner = ref(null)
+let sharedFilesHandled = false
+
+async function loadSharedFiles() {
+  if (sharedFilesHandled) return
+  sharedFilesHandled = true
+
+  try {
+    const records = await getSharedFiles()
+    if (!records?.length) {
+      sharedBanner.value = { type: 'warning', message: t.value('sharedFilesEmpty') }
+      setTimeout(() => { sharedBanner.value = null }, 5000)
+      return
+    }
+
+    sharedBanner.value = {
+      type: 'info',
+      message: t.value('sharedFilesLoading').replace('{count}', records.length)
+    }
+
+    const { processed } = await handleSharedFiles(records)
+
+    if (processed > 0) {
+      sharedBanner.value = {
+        type: 'success',
+        message: t.value('sharedFilesLoaded').replace('{count}', processed)
+      }
+      await clearSharedFiles()
+    } else {
+      sharedBanner.value = { type: 'warning', message: t.value('sharedFilesEmpty') }
+    }
+  } catch (err) {
+    console.error('Error loading shared files:', err)
+    sharedBanner.value = { type: 'error', message: t.value('sharedFilesError') }
+  }
+
+  setTimeout(() => { sharedBanner.value = null }, 5000)
+}
+
+// Primary: after router is ready
+router.isReady().then(() => {
+  if (route.query.source === 'audiokonverter') loadSharedFiles()
+})
+
+// Fallback: route watcher
+watch(() => route.query.source, (s) => {
+  if (s === 'audiokonverter') loadSharedFiles()
+})
 
 // Template refs for child components
 const playlistConfigRef = ref(null)
@@ -495,6 +560,79 @@ onUnmounted(() => {
   .header-nav .nav-link {
     padding: 6px 8px;
     font-size: 0.82rem;
+  }
+}
+
+/* Shared Banner */
+.shared-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  animation: slideIn 0.4s ease-out;
+}
+
+.shared-banner-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.shared-banner-success {
+  background: rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  color: #66bb6a;
+}
+
+.shared-banner-error {
+  background: rgba(244, 67, 54, 0.15);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: #ef5350;
+}
+
+.shared-banner-warning {
+  background: rgba(255, 193, 7, 0.15);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  color: #ffca28;
+}
+
+.shared-banner-info {
+  background: rgba(33, 150, 243, 0.15);
+  border: 1px solid rgba(33, 150, 243, 0.4);
+  color: #42a5f5;
+}
+
+.light-theme .shared-banner-success {
+  background: rgba(76, 175, 80, 0.1);
+  color: #2e7d32;
+}
+
+.light-theme .shared-banner-error {
+  background: rgba(244, 67, 54, 0.1);
+  color: #c62828;
+}
+
+.light-theme .shared-banner-warning {
+  background: rgba(255, 193, 7, 0.1);
+  color: #f57f17;
+}
+
+.light-theme .shared-banner-info {
+  background: rgba(33, 150, 243, 0.1);
+  color: #1565c0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
