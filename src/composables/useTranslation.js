@@ -116,6 +116,12 @@ const translations = {
     toast_copy_error: "Kopieren fehlgeschlagen",
     replace_list_option: "Bestehende Liste ersetzen",
 
+    // Shared Files
+    sharedFilesLoading: "{count} Datei(en) vom Audio Konverter werden importiert…",
+    sharedFilesLoaded: "{count} Datei(en) erfolgreich importiert",
+    sharedFilesEmpty: "Keine Dateien vom Audio Konverter gefunden",
+    sharedFilesError: "Fehler beim Importieren",
+
     // Shortcuts
     shortcut_open: "Dateien öffnen (Strg+O)",
     shortcut_save: "Speichern (Strg+S)",
@@ -261,6 +267,12 @@ const translations = {
     toast_copied: "Copied to clipboard ✓",
     toast_copy_error: "Copy failed",
     replace_list_option: "Replace existing list",
+
+    // Shared Files
+    sharedFilesLoading: "Importing {count} file(s) from Audio Converter…",
+    sharedFilesLoaded: "{count} file(s) successfully imported",
+    sharedFilesEmpty: "No files found from Audio Converter",
+    sharedFilesError: "Error importing files",
 
     // Shortcuts
     shortcut_open: "Open files (Ctrl+O)",
