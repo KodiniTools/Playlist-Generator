@@ -369,17 +369,20 @@ function translateExternalNav(lang) {
 }
 
 /**
- * Translate SSI footer/cookie-banner elements that use data-lang-* attributes
- * and dispatch a language-changed CustomEvent
+ * Update SSI footer/cookie-banner elements that use data-lang-* attributes.
+ * DOM updates happen FIRST, then the CustomEvent is dispatched so that
+ * external listeners (footer/cookie-banner scripts) also receive the signal.
  */
 function dispatchLanguageChanged(lang) {
-  window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang } }))
-
+  // 1. Direct DOM updates for data-lang-* elements (footer, cookie-banner, nav)
   const attr = `data-lang-${lang}`
   document.querySelectorAll(`[${attr}]`).forEach(el => {
     const text = el.getAttribute(attr)
     if (text) el.textContent = text
   })
+
+  // 2. Dispatch event AFTER DOM updates so external scripts pick up the change
+  window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang } }))
 }
 
 /**
@@ -442,16 +445,41 @@ export function useTranslation() {
 
   window.addEventListener('language-changed', handleGlobalLanguageChange)
 
-  // Watch locale changes and sync all external SSI elements
+  // MutationObserver on <html> to catch direct lang attribute changes from SSI nav.
+  // If the SSI nav sets document.documentElement.lang directly (without event),
+  // we still detect and sync.
+  const htmlLangObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.attributeName === 'lang') {
+        const newLang = document.documentElement.getAttribute('lang')
+        if (newLang && newLang !== currentLanguage.value) {
+          setLanguage(newLang)
+        }
+      }
+    }
+  })
+  htmlLangObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['lang']
+  })
+
+  // Watch locale changes and sync ALL external SSI elements
   watch(currentLanguage, (newLocale) => {
     document.documentElement.setAttribute('lang', newLocale)
+
+    // Sync SSI-Partial lang buttons active state
     syncExternalLangButtons(newLocale)
+
+    // Translate SSI nav elements (data-nav-i18n attributes)
     translateExternalNav(newLocale)
+
+    // Translate SSI footer/cookie-banner (data-lang-* attributes) + dispatch event
     dispatchLanguageChanged(newLocale)
-  })
+  }, { immediate: true })
 
   onUnmounted(() => {
     window.removeEventListener('language-changed', handleGlobalLanguageChange)
+    htmlLangObserver.disconnect()
     if (langSwitcherAbortController) {
       langSwitcherAbortController.abort()
       langSwitcherAbortController = null

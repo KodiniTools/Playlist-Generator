@@ -40,8 +40,27 @@ export function useTheme() {
 
   window.addEventListener('theme-changed', handleGlobalThemeChange)
 
+  // MutationObserver on <html> to catch direct data-theme changes from SSI nav
+  // This is the robust fallback: if the SSI nav changes data-theme directly
+  // (without dispatching theme-changed event), we still detect and sync it.
+  const htmlThemeObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.attributeName === 'data-theme') {
+        const newTheme = document.documentElement.getAttribute('data-theme')
+        if (newTheme && newTheme !== currentTheme.value) {
+          currentTheme.value = newTheme
+        }
+      }
+    }
+  })
+  htmlThemeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme']
+  })
+
   onUnmounted(() => {
     window.removeEventListener('theme-changed', handleGlobalThemeChange)
+    htmlThemeObserver.disconnect()
   })
 
   return {
