@@ -1,4 +1,4 @@
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 
 const translations = {
   de: {
@@ -311,13 +311,111 @@ const translations = {
   }
 }
 
-// Read from 'locale' (global nav key) with fallback to 'language' (legacy key)
-const storedLang = localStorage.getItem('locale') || localStorage.getItem('language')
+// Nav-Uebersetzungen fuer SSI-Partial data-nav-i18n Attribute
+const navTranslations = {
+  de: {
+    'nav.home': 'Startseite',
+    'nav.playlist': 'Playlist Generator',
+    'nav.audioconv': 'Audio Konverter',
+    'nav.imageconv': 'Bildkonverter',
+    'nav.equalizer': 'Equalizer',
+    'nav.musicplayer': 'Musikplayer',
+    'nav.themeTitle': 'Design wechseln',
+    'nav.themeAria': 'Zwischen hell und dunkel wechseln'
+  },
+  en: {
+    'nav.home': 'Home',
+    'nav.playlist': 'Playlist Generator',
+    'nav.audioconv': 'Audio Converter',
+    'nav.imageconv': 'Image Converter',
+    'nav.equalizer': 'Equalizer',
+    'nav.musicplayer': 'Music Player',
+    'nav.themeTitle': 'Switch theme',
+    'nav.themeAria': 'Toggle between light and dark mode'
+  }
+}
+
+// Read from 'locale' (global nav key) with fallback to 'playlist-generator-locale' / 'language' (legacy)
+const storedLang = localStorage.getItem('locale')
+  || localStorage.getItem('playlist-generator-locale')
+  || localStorage.getItem('language')
 const currentLanguage = ref(storedLang || (navigator.language.startsWith('de') ? 'de' : 'en'))
 
 // Ensure both keys are in sync on initialization
 if (currentLanguage.value) {
   localStorage.setItem('locale', currentLanguage.value)
+  localStorage.setItem('playlist-generator-locale', currentLanguage.value)
+}
+
+/**
+ * Translate SSI nav elements that use data-nav-i18n attributes
+ */
+function translateExternalNav(lang) {
+  const t = navTranslations[lang]
+  if (!t) return
+
+  document.querySelectorAll('[data-nav-i18n]').forEach(el => {
+    const key = el.getAttribute('data-nav-i18n')
+    if (t[key]) el.textContent = t[key]
+  })
+  document.querySelectorAll('[data-nav-i18n-aria]').forEach(el => {
+    const key = el.getAttribute('data-nav-i18n-aria')
+    if (t[key]) el.setAttribute('aria-label', t[key])
+  })
+  document.querySelectorAll('[data-nav-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-nav-i18n-title')
+    if (t[key]) el.setAttribute('title', t[key])
+  })
+}
+
+/**
+ * Translate SSI footer/cookie-banner elements that use data-lang-* attributes
+ * and dispatch a language-changed CustomEvent
+ */
+function dispatchLanguageChanged(lang) {
+  window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang } }))
+
+  const attr = `data-lang-${lang}`
+  document.querySelectorAll(`[${attr}]`).forEach(el => {
+    const text = el.getAttribute(attr)
+    if (text) el.textContent = text
+  })
+}
+
+/**
+ * Sync the active state of external lang buttons in SSI nav
+ */
+function syncExternalLangButtons(lang) {
+  document.querySelectorAll('.global-nav-lang-btn').forEach(btn => {
+    const btnLang = btn.getAttribute('data-lang')
+    if (btnLang === lang) {
+      btn.classList.add('active')
+    } else {
+      btn.classList.remove('active')
+    }
+  })
+}
+
+/**
+ * Intercept external nav lang buttons to prevent page reload (capture phase)
+ */
+let langSwitcherAbortController = null
+
+function interceptExternalLangSwitcher(setLanguageFn) {
+  // Abort previous listeners to prevent duplicates
+  if (langSwitcherAbortController) {
+    langSwitcherAbortController.abort()
+  }
+  langSwitcherAbortController = new AbortController()
+
+  document.querySelectorAll('.global-nav-lang-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      const targetLang = btn.getAttribute('data-lang')
+      if (targetLang) setLanguageFn(targetLang)
+    }, { capture: true, signal: langSwitcherAbortController.signal })
+  })
 }
 
 export function useTranslation() {
@@ -327,8 +425,9 @@ export function useTranslation() {
 
   const setLanguage = (lang) => {
     currentLanguage.value = lang
-    // Write to both keys for compatibility with global nav and legacy code
+    // Dual-Key localStorage (global + app-specific + legacy)
     localStorage.setItem('locale', lang)
+    localStorage.setItem('playlist-generator-locale', lang)
     localStorage.setItem('language', lang)
     document.documentElement.lang = lang
   }
@@ -343,13 +442,29 @@ export function useTranslation() {
 
   window.addEventListener('language-changed', handleGlobalLanguageChange)
 
+  // Watch locale changes and sync all external SSI elements
+  watch(currentLanguage, (newLocale) => {
+    document.documentElement.setAttribute('lang', newLocale)
+    syncExternalLangButtons(newLocale)
+    translateExternalNav(newLocale)
+    dispatchLanguageChanged(newLocale)
+  })
+
   onUnmounted(() => {
     window.removeEventListener('language-changed', handleGlobalLanguageChange)
+    if (langSwitcherAbortController) {
+      langSwitcherAbortController.abort()
+      langSwitcherAbortController = null
+    }
   })
 
   return {
     currentLanguage,
     t,
-    setLanguage
+    setLanguage,
+    translateExternalNav,
+    dispatchLanguageChanged,
+    syncExternalLangButtons,
+    interceptExternalLangSwitcher
   }
 }
