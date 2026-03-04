@@ -151,6 +151,8 @@ const translations = {
     // Footer
     donate_button: "spenden",
     donate_title: "Mit PayPal spenden",
+    facebook_share: "Teilen",
+    facebook_share_title: "Auf Facebook teilen",
     footer_copyright: "Audio Playlist Generator"
   },
   en: {
@@ -303,6 +305,8 @@ const translations = {
     // Footer
     donate_button: "donate",
     donate_title: "Donate with PayPal",
+    facebook_share: "Share",
+    facebook_share_title: "Share on Facebook",
     footer_copyright: "Audio Playlist Generator"
   }
 }
