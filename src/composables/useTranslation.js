@@ -1,4 +1,4 @@
-import { ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 
 const translations = {
   de: {
@@ -421,6 +421,12 @@ function interceptExternalLangSwitcher(setLanguageFn) {
   })
 }
 
+/**
+ * Pure composable: provides reactive translations and language state.
+ * NO side-effects (no watch, no observer, no event listener).
+ * SSI-Partial synchronisation is handled ONCE in App.vue to prevent
+ * duplicate events when multiple components call useTranslation().
+ */
 export function useTranslation() {
   const t = computed(() => (key) => {
     return translations[currentLanguage.value]?.[key] || key
@@ -434,57 +440,6 @@ export function useTranslation() {
     localStorage.setItem('language', lang)
     document.documentElement.lang = lang
   }
-
-  // Listen for language-changed events from the global navigation (SSI include)
-  const handleGlobalLanguageChange = (e) => {
-    const newLang = e.detail?.lang
-    if (newLang && newLang !== currentLanguage.value) {
-      setLanguage(newLang)
-    }
-  }
-
-  window.addEventListener('language-changed', handleGlobalLanguageChange)
-
-  // MutationObserver on <html> to catch direct lang attribute changes from SSI nav.
-  // If the SSI nav sets document.documentElement.lang directly (without event),
-  // we still detect and sync.
-  const htmlLangObserver = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.attributeName === 'lang') {
-        const newLang = document.documentElement.getAttribute('lang')
-        if (newLang && newLang !== currentLanguage.value) {
-          setLanguage(newLang)
-        }
-      }
-    }
-  })
-  htmlLangObserver.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['lang']
-  })
-
-  // Watch locale changes and sync ALL external SSI elements
-  watch(currentLanguage, (newLocale) => {
-    document.documentElement.setAttribute('lang', newLocale)
-
-    // Sync SSI-Partial lang buttons active state
-    syncExternalLangButtons(newLocale)
-
-    // Translate SSI nav elements (data-nav-i18n attributes)
-    translateExternalNav(newLocale)
-
-    // Translate SSI footer/cookie-banner (data-lang-* attributes) + dispatch event
-    dispatchLanguageChanged(newLocale)
-  }, { immediate: true })
-
-  onUnmounted(() => {
-    window.removeEventListener('language-changed', handleGlobalLanguageChange)
-    htmlLangObserver.disconnect()
-    if (langSwitcherAbortController) {
-      langSwitcherAbortController.abort()
-      langSwitcherAbortController = null
-    }
-  })
 
   return {
     currentLanguage,
