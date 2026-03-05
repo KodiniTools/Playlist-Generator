@@ -312,26 +312,59 @@ const translations = {
 }
 
 // Nav-Uebersetzungen fuer SSI-Partial data-nav-i18n Attribute
+// Keys muessen EXAKT mit den data-nav-i18n Attributen in nav.html uebereinstimmen
 const navTranslations = {
   de: {
-    'nav.home': 'Startseite',
-    'nav.playlist': 'Playlist Generator',
-    'nav.audioconv': 'Audio Konverter',
-    'nav.imageconv': 'Bildkonverter',
-    'nav.equalizer': 'Equalizer',
-    'nav.musicplayer': 'Musikplayer',
-    'nav.themeTitle': 'Design wechseln',
-    'nav.themeAria': 'Zwischen hell und dunkel wechseln'
+    'nav.aria':           'Hauptnavigation',
+    'nav.audiotools':     'Audiotools',
+    'nav.mp3converter':   'MP3 Konverter',
+    'nav.audioequalizer': 'Interactive Audio Equalizer',
+    'nav.modernplayer':   'Moderner Musikplayer',
+    'nav.ultimateplayer': 'Ultimativer Musikplayer',
+    'nav.playlistgen':    'Audio Playlist Generator',
+    'nav.playlistconv':   'Audio Playlist Konverter',
+    'nav.alarmtool':      'Modernes Alarmtool',
+    'nav.normalizer':     'Audio Normalizer',
+    'nav.visualizer':     'Audio Visualizer',
+    'nav.eq19':           '19 Band Equalizer',
+    'nav.audioconv':      'Audio Konverter',
+    'nav.imagetools':     'Bildtools',
+    'nav.imageconv':      'Bildkonverter',
+    'nav.batchedit':      'Bildserie bearbeiten',
+    'nav.collage':        'Fotocollage',
+    'nav.tools':          'Tools',
+    'nav.colorextractor': 'Kodini Farbextraktor',
+    'nav.videoconv':      'Videokonverter',
+    'nav.contact':        'Kontakt',
+    'nav.themeAria':      'Theme wechseln',
+    'nav.themeTitle':     'Hell/Dunkel umschalten',
+    'nav.langAria':       'Sprache wählen'
   },
   en: {
-    'nav.home': 'Home',
-    'nav.playlist': 'Playlist Generator',
-    'nav.audioconv': 'Audio Converter',
-    'nav.imageconv': 'Image Converter',
-    'nav.equalizer': 'Equalizer',
-    'nav.musicplayer': 'Music Player',
-    'nav.themeTitle': 'Switch theme',
-    'nav.themeAria': 'Toggle between light and dark mode'
+    'nav.aria':           'Main Navigation',
+    'nav.audiotools':     'Audio Tools',
+    'nav.mp3converter':   'MP3 Converter',
+    'nav.audioequalizer': 'Interactive Audio Equalizer',
+    'nav.modernplayer':   'Modern Music Player',
+    'nav.ultimateplayer': 'Ultimate Music Player',
+    'nav.playlistgen':    'Audio Playlist Generator',
+    'nav.playlistconv':   'Audio Playlist Converter',
+    'nav.alarmtool':      'Modern Alarm Tool',
+    'nav.normalizer':     'Audio Normalizer',
+    'nav.visualizer':     'Audio Visualizer',
+    'nav.eq19':           '19 Band Equalizer',
+    'nav.audioconv':      'Audio Converter',
+    'nav.imagetools':     'Image Tools',
+    'nav.imageconv':      'Image Converter',
+    'nav.batchedit':      'Batch Image Editor',
+    'nav.collage':        'Photo Collage',
+    'nav.tools':          'Tools',
+    'nav.colorextractor': 'Kodini Color Extractor',
+    'nav.videoconv':      'Video Converter',
+    'nav.contact':        'Contact',
+    'nav.themeAria':      'Toggle theme',
+    'nav.themeTitle':     'Switch Light/Dark',
+    'nav.langAria':       'Select language'
   }
 }
 
@@ -371,9 +404,7 @@ function translateExternalNav(lang) {
 /**
  * Update ALL SSI-Partial elements for the given language.
  * Combines nav (data-nav-i18n), footer/cookie-banner (data-lang-*),
- * and lang button active states into one synchronous call.
- * NO event dispatch – the lang attribute on <html> signals the change.
- * (Event dispatch was causing SSI scripts to overwrite our DOM updates.)
+ * lang button active states, and language-changed event dispatch.
  */
 function syncAllExternalElements(lang) {
   // 1. Nav elements: data-nav-i18n attributes
@@ -388,6 +419,9 @@ function syncAllExternalElements(lang) {
 
   // 3. Lang button active states
   syncExternalLangButtons(lang)
+
+  // 4. Dispatch event for footer/cookie-banner SSI scripts
+  window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang } }))
 }
 
 /**
@@ -405,30 +439,12 @@ function syncExternalLangButtons(lang) {
 }
 
 /**
- * Intercept external nav lang buttons to prevent page reload (capture phase)
- */
-let langSwitcherAbortController = null
-
-function interceptExternalLangSwitcher(setLanguageFn) {
-  // Abort previous listeners to prevent duplicates
-  if (langSwitcherAbortController) {
-    langSwitcherAbortController.abort()
-  }
-  langSwitcherAbortController = new AbortController()
-
-  document.querySelectorAll('.global-nav-lang-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault()
-      e.stopImmediatePropagation()
-      const targetLang = btn.getAttribute('data-lang')
-      if (targetLang) setLanguageFn(targetLang)
-    }, { capture: true, signal: langSwitcherAbortController.signal })
-  })
-}
-
-/**
- * Pure composable: provides reactive translations and language state.
- * setLanguage() includes SYNCHRONOUS SSI-Partial sync (no async watch).
+ * Composable: provides reactive translations and language state.
+ * setLanguage() includes SYNCHRONOUS SSI-Partial sync.
+ *
+ * NOTE: No interceptExternalLangSwitcher needed – the SSI nav's own
+ * script does NOT cause a page reload. It translates the nav itself
+ * and dispatches 'language-changed', which App.vue listens for.
  */
 export function useTranslation() {
   const t = computed(() => (key) => {
@@ -451,7 +467,6 @@ export function useTranslation() {
     currentLanguage,
     t,
     setLanguage,
-    syncAllExternalElements,
-    interceptExternalLangSwitcher
+    syncAllExternalElements
   }
 }
