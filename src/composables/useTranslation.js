@@ -369,20 +369,25 @@ function translateExternalNav(lang) {
 }
 
 /**
- * Update SSI footer/cookie-banner elements that use data-lang-* attributes.
- * DOM updates happen FIRST, then the CustomEvent is dispatched so that
- * external listeners (footer/cookie-banner scripts) also receive the signal.
+ * Update ALL SSI-Partial elements for the given language.
+ * Combines nav (data-nav-i18n), footer/cookie-banner (data-lang-*),
+ * and lang button active states into one synchronous call.
+ * NO event dispatch – the lang attribute on <html> signals the change.
+ * (Event dispatch was causing SSI scripts to overwrite our DOM updates.)
  */
-function dispatchLanguageChanged(lang) {
-  // 1. Direct DOM updates for data-lang-* elements (footer, cookie-banner, nav)
+function syncAllExternalElements(lang) {
+  // 1. Nav elements: data-nav-i18n attributes
+  translateExternalNav(lang)
+
+  // 2. Footer/cookie-banner: data-lang-* attributes
   const attr = `data-lang-${lang}`
   document.querySelectorAll(`[${attr}]`).forEach(el => {
     const text = el.getAttribute(attr)
     if (text) el.textContent = text
   })
 
-  // 2. Dispatch event AFTER DOM updates so external scripts pick up the change
-  window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang } }))
+  // 3. Lang button active states
+  syncExternalLangButtons(lang)
 }
 
 /**
@@ -423,9 +428,7 @@ function interceptExternalLangSwitcher(setLanguageFn) {
 
 /**
  * Pure composable: provides reactive translations and language state.
- * NO side-effects (no watch, no observer, no event listener).
- * SSI-Partial synchronisation is handled ONCE in App.vue to prevent
- * duplicate events when multiple components call useTranslation().
+ * setLanguage() includes SYNCHRONOUS SSI-Partial sync (no async watch).
  */
 export function useTranslation() {
   const t = computed(() => (key) => {
@@ -439,15 +442,16 @@ export function useTranslation() {
     localStorage.setItem('playlist-generator-locale', lang)
     localStorage.setItem('language', lang)
     document.documentElement.lang = lang
+
+    // Synchronous SSI-Partial sync – runs immediately, no async watch needed
+    syncAllExternalElements(lang)
   }
 
   return {
     currentLanguage,
     t,
     setLanguage,
-    translateExternalNav,
-    dispatchLanguageChanged,
-    syncExternalLangButtons,
+    syncAllExternalElements,
     interceptExternalLangSwitcher
   }
 }
