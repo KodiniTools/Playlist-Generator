@@ -15,19 +15,21 @@ import { useTranslation } from './composables/useTranslation'
 useTheme()
 
 // Initialize translation
-// setLanguage() now includes SYNCHRONOUS SSI sync (no async watch needed)
+// setLanguage() includes SYNCHRONOUS SSI sync (nav, footer, cookie-banner)
 const {
   currentLanguage,
   setLanguage,
-  syncAllExternalElements,
-  interceptExternalLangSwitcher
+  syncAllExternalElements
 } = useTranslation()
 
 // =====================================================================
 // Incoming language changes from SSI nav (event + attribute observers)
 // =====================================================================
 
-// Listen for language-changed events from the global navigation (SSI include)
+// The SSI nav's own script handles its button clicks:
+//   1. Translates the nav itself (via its own translateNav())
+//   2. Dispatches 'language-changed' CustomEvent
+// We listen for that event and update the Vue app + footer/cookie-banner.
 function handleGlobalLanguageChange(e) {
   const newLang = e.detail?.lang
   if (newLang && newLang !== currentLanguage.value) {
@@ -87,7 +89,6 @@ function initMutationObserver() {
     domMutationObserver.disconnect()
 
     updateExternalNavHeight()
-    interceptExternalLangSwitcher(setLanguage)
     syncAllExternalElements(currentLanguage.value)
 
     // Re-enable observer after DOM settles
@@ -112,9 +113,8 @@ onMounted(() => {
     syncAllExternalElements(currentLanguage.value)
   }
 
-  // Initialize SSI-Partial interactions that require DOM elements
+  // Measure external nav height
   updateExternalNavHeight()
-  interceptExternalLangSwitcher(setLanguage)
 
   // Start watching for dynamically loaded partials
   initMutationObserver()
