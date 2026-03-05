@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { watch, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import ToastContainer from './components/ToastContainer.vue'
 import { useTheme } from './composables/useTheme'
 import { useTranslation } from './composables/useTranslation'
@@ -14,38 +14,20 @@ import { useTranslation } from './composables/useTranslation'
 // Initialize theme – reacts to theme-changed CustomEvent from SSI nav
 useTheme()
 
-// Initialize translation (pure data, no side-effects)
+// Initialize translation
+// setLanguage() now includes SYNCHRONOUS SSI sync (no async watch needed)
 const {
   currentLanguage,
   setLanguage,
-  translateExternalNav,
-  dispatchLanguageChanged,
-  syncExternalLangButtons,
+  syncAllExternalElements,
   interceptExternalLangSwitcher
 } = useTranslation()
 
 // =====================================================================
-// SSI-Partial Synchronisation (SINGLETON – only here, never in children)
+// Incoming language changes from SSI nav (event + attribute observers)
 // =====================================================================
 
-// --- Watch: sync ALL external SSI elements on every language change ---
-// { immediate: true } ensures the initial sync runs during setup.
-// This watch exists ONLY in App.vue to prevent duplicate events when
-// multiple components (LanguageSwitcher etc.) also call useTranslation().
-watch(currentLanguage, (newLocale) => {
-  document.documentElement.setAttribute('lang', newLocale)
-
-  // Sync SSI-Partial lang buttons active state
-  syncExternalLangButtons(newLocale)
-
-  // Translate SSI nav elements (data-nav-i18n attributes)
-  translateExternalNav(newLocale)
-
-  // Translate SSI footer/cookie-banner (data-lang-* attributes) + dispatch event
-  dispatchLanguageChanged(newLocale)
-}, { immediate: true })
-
-// --- Listen for language-changed events from the global navigation (SSI include) ---
+// Listen for language-changed events from the global navigation (SSI include)
 function handleGlobalLanguageChange(e) {
   const newLang = e.detail?.lang
   if (newLang && newLang !== currentLanguage.value) {
@@ -54,7 +36,7 @@ function handleGlobalLanguageChange(e) {
 }
 window.addEventListener('language-changed', handleGlobalLanguageChange)
 
-// --- MutationObserver on <html> lang attribute (fallback for direct SSI changes) ---
+// MutationObserver on <html> lang attribute (fallback for direct SSI changes)
 const htmlLangObserver = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     if (mutation.attributeName === 'lang') {
@@ -104,12 +86,9 @@ function initMutationObserver() {
     // Pause observer to prevent infinite loop (translateExternalNav mutates DOM)
     domMutationObserver.disconnect()
 
-    const locale = currentLanguage.value
     updateExternalNavHeight()
     interceptExternalLangSwitcher(setLanguage)
-    syncExternalLangButtons(locale)
-    translateExternalNav(locale)
-    dispatchLanguageChanged(locale)
+    syncAllExternalElements(currentLanguage.value)
 
     // Re-enable observer after DOM settles
     requestAnimationFrame(() => {
@@ -128,6 +107,9 @@ onMounted(() => {
   const globalNavLang = localStorage.getItem('locale')
   if (globalNavLang && globalNavLang !== currentLanguage.value) {
     setLanguage(globalNavLang)
+  } else {
+    // Force initial SSI sync for current language
+    syncAllExternalElements(currentLanguage.value)
   }
 
   // Initialize SSI-Partial interactions that require DOM elements
