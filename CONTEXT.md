@@ -7,34 +7,39 @@ Diese Datei dokumentiert den technischen Kontext des Playlist-Generator-Projekts
 ## Tech-Stack
 
 ### Core Framework & Build Tools
-| Technologie | Version | Beschreibung |
-|-------------|---------|--------------|
-| **Vue 3** | ^3.5.22 | Frontend UI Framework mit Composition API |
-| **Vite** | ^7.1.7 | Moderner Build-Tool und Dev-Server |
-| **TypeScript** | ~5.9.0 | Typsicheres JavaScript |
-| **Node.js** | ^20.19.0 \|\| >=22.12.0 | Runtime-Umgebung |
+
+| Technologie    | Version                 | Beschreibung                              |
+| -------------- | ----------------------- | ----------------------------------------- |
+| **Vue 3**      | ^3.5.22                 | Frontend UI Framework mit Composition API |
+| **Vite**       | ^7.1.7                  | Moderner Build-Tool und Dev-Server        |
+| **TypeScript** | ~5.9.0                  | Typsicheres JavaScript                    |
+| **Node.js**    | ^20.19.0 \|\| >=22.12.0 | Runtime-Umgebung                          |
 
 ### State Management & Routing
-| Technologie | Version | Beschreibung |
-|-------------|---------|--------------|
-| **Pinia** | ^3.0.3 | Vue State Management |
-| **Vue Router** | ^4.5.1 | Client-seitiges Routing |
+
+| Technologie    | Version | Beschreibung            |
+| -------------- | ------- | ----------------------- |
+| **Pinia**      | ^3.0.3  | Vue State Management    |
+| **Vue Router** | ^4.5.1  | Client-seitiges Routing |
 
 ### Testing
-| Technologie | Version | Beschreibung |
-|-------------|---------|--------------|
-| **Playwright** | ^1.55.1 | E2E-Testing |
-| **Vitest** | ^3.2.4 | Unit-Testing Framework |
-| **@vue/test-utils** | ^2.4.6 | Vue Component Testing |
-| **JSDOM** | ^27.0.0 | DOM-Implementation für Tests |
+
+| Technologie         | Version | Beschreibung                 |
+| ------------------- | ------- | ---------------------------- |
+| **Playwright**      | ^1.55.1 | E2E-Testing                  |
+| **Vitest**          | ^3.2.4  | Unit-Testing Framework       |
+| **@vue/test-utils** | ^2.4.6  | Vue Component Testing        |
+| **JSDOM**           | ^27.0.0 | DOM-Implementation für Tests |
 
 ### Code-Qualität
-| Technologie | Version | Beschreibung |
-|-------------|---------|--------------|
-| **ESLint** | ^9.33.0 | Code Linting |
+
+| Technologie           | Version | Beschreibung                  |
+| --------------------- | ------- | ----------------------------- |
+| **ESLint**            | ^9.33.0 | Code Linting                  |
 | **eslint-plugin-vue** | ~10.4.0 | Vue-spezifische ESLint-Regeln |
 
 ### Browser-APIs (Keine Backend-Abhängigkeiten)
+
 - **File API** - Datei-Uploads und Verarbeitung
 - **Canvas API** - Interaktive Dateilisten-Darstellung
 - **File System Access API** - Dateien speichern (Chrome 86+, Edge 86+)
@@ -128,34 +133,36 @@ Dies ist eine **100% Client-seitige Anwendung** ohne Backend-Server oder Datenba
 
 ```javascript
 // Theme-Präferenz
-localStorage.getItem('theme')     // Werte: 'light' oder 'dark'
+localStorage.getItem('theme') // Werte: 'light' oder 'dark'
 
 // Sprach-Präferenz
-localStorage.getItem('language')  // Werte: 'de' oder 'en'
+localStorage.getItem('language') // Werte: 'de' oder 'en'
 ```
 
 ### In-Memory Datenstrukturen
 
 #### File-Objekt (Browser File API)
+
 ```typescript
 interface FileObject {
-  name: string           // Dateiname mit Erweiterung
-  size: number           // Dateigröße in Bytes
-  lastModified: number   // Zeitstempel
-  type: string           // MIME-Type
+  name: string // Dateiname mit Erweiterung
+  size: number // Dateigröße in Bytes
+  lastModified: number // Zeitstempel
+  type: string // MIME-Type
 }
 ```
 
 #### Playlist State (usePlaylist Composable)
+
 ```typescript
 interface PlaylistState {
-  files: File[]                // Array der ausgewählten Audio-Dateien
-  sortOption: SortOption       // Sortierungsoption
-  playlistName: string         // Benutzerdefinierter Playlist-Name
-  outputFormat: OutputFormat   // Ausgabeformat
-  playlistContent: string      // Generierter Playlist-Text
-  replaceMode: boolean         // Dateien ersetzen vs. anhängen
-  selectedFileIndex: number    // Aktuell ausgewählte Datei
+  files: File[] // Array der ausgewählten Audio-Dateien
+  sortOption: SortOption // Sortierungsoption
+  playlistName: string // Benutzerdefinierter Playlist-Name
+  outputFormat: OutputFormat // Ausgabeformat
+  playlistContent: string // Generierter Playlist-Text
+  replaceMode: boolean // Dateien ersetzen vs. anhängen
+  selectedFileIndex: number // Aktuell ausgewählte Datei
 }
 
 type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
@@ -171,6 +178,7 @@ const supportedFormats = ['.mp3', '.wav', '.flac']
 ### Generierte Playlist-Formate
 
 #### M3U Format
+
 ```
 #EXTM3U
 #EXTINF:-1,Track Titel
@@ -180,6 +188,7 @@ weitere.mp3
 ```
 
 #### XSPF Format (XML Shareable Playlist Format)
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <playlist version="1" xmlns="http://xspf.org/ns/0/">
@@ -194,6 +203,7 @@ weitere.mp3
 ```
 
 #### JSON Format
+
 ```json
 [
   {
@@ -208,12 +218,12 @@ weitere.mp3
 
 ## Routen
 
-| Pfad | View | Beschreibung |
-|------|------|--------------|
-| `/` | LandingPage.vue | Landing/Home-Seite |
-| `/app` | AppPage.vue | Haupt-Anwendung |
-| `/faq` | FaqPage.vue | FAQ-Seite |
-| `/blog` | BlogPage.vue | Blog-Seite |
+| Pfad    | View            | Beschreibung       |
+| ------- | --------------- | ------------------ |
+| `/`     | LandingPage.vue | Landing/Home-Seite |
+| `/app`  | AppPage.vue     | Haupt-Anwendung    |
+| `/faq`  | FaqPage.vue     | FAQ-Seite          |
+| `/blog` | BlogPage.vue    | Blog-Seite         |
 
 ---
 
@@ -233,15 +243,15 @@ npm run type-check   # TypeScript Type-Checking
 
 ## Tastenkürzel
 
-| Kürzel | Aktion |
-|--------|--------|
-| `Ctrl+O` | Datei-Dialog öffnen |
-| `Ctrl+S` | Playlist speichern |
-| `Ctrl+C` | In Zwischenablage kopieren |
+| Kürzel   | Aktion                      |
+| -------- | --------------------------- |
+| `Ctrl+O` | Datei-Dialog öffnen         |
+| `Ctrl+S` | Playlist speichern          |
+| `Ctrl+C` | In Zwischenablage kopieren  |
 | `Delete` | Ausgewählte Datei entfernen |
-| `↑/↓` | Dateien navigieren |
-| `Escape` | Auswahl aufheben |
+| `↑/↓`    | Dateien navigieren          |
+| `Escape` | Auswahl aufheben            |
 
 ---
 
-*Zuletzt aktualisiert: Januar 2026*
+_Zuletzt aktualisiert: Januar 2026_

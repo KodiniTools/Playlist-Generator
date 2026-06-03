@@ -10,7 +10,7 @@ export function useToast() {
       id,
       message,
       type, // 'success', 'error', 'info'
-      duration
+      duration,
     })
 
     // Auto-remove after duration
@@ -24,7 +24,7 @@ export function useToast() {
   }
 
   const removeToast = (id) => {
-    const index = toasts.value.findIndex(t => t.id === id)
+    const index = toasts.value.findIndex((t) => t.id === id)
     if (index > -1) {
       toasts.value.splice(index, 1)
     }
@@ -48,6 +48,6 @@ export function useToast() {
     removeToast,
     success,
     error,
-    info
+    info,
   }
 }

@@ -15,40 +15,48 @@ const supportedFormats = ['.mp3', '.wav', '.flac']
 const escapeXml = (str) => {
   return str.replace(/[<>&'"]/g, (char) => {
     switch (char) {
-      case '<': return '&lt;'
-      case '>': return '&gt;'
-      case '&': return '&amp;'
-      case "'": return '&apos;'
-      case '"': return '&quot;'
-      default: return char
+      case '<':
+        return '&lt;'
+      case '>':
+        return '&gt;'
+      case '&':
+        return '&amp;'
+      case "'":
+        return '&apos;'
+      case '"':
+        return '&quot;'
+      default:
+        return char
     }
   })
 }
 
 const generateM3u = () => {
-  let output = "#EXTM3U\n"
-  files.value.forEach(file => {
-    const title = file.name.replace(/\.[^/.]+$/, "")
+  let output = '#EXTM3U\n'
+  files.value.forEach((file) => {
+    const title = file.name.replace(/\.[^/.]+$/, '')
     output += `#EXTINF:-1,${title}\n${file.name}\n`
   })
   return output
 }
 
 const generateJson = () => {
-  const playlistData = files.value.map(file => ({
+  const playlistData = files.value.map((file) => ({
     filename: file.name,
-    title: file.name.replace(/\.[^/.]+$/, ""),
-    size: file.size
+    title: file.name.replace(/\.[^/.]+$/, ''),
+    size: file.size,
   }))
   return JSON.stringify(playlistData, null, 4)
 }
 
 const generateXspf = () => {
-  const tracks = files.value.map(file => {
-    const title = escapeXml(file.name.replace(/\.[^/.]+$/, ""))
-    const location = escapeXml(file.name)
-    return `    <track>\n      <location>${location}</location>\n      <title>${title}</title>\n    </track>`
-  }).join('\n')
+  const tracks = files.value
+    .map((file) => {
+      const title = escapeXml(file.name.replace(/\.[^/.]+$/, ''))
+      const location = escapeXml(file.name)
+      return `    <track>\n      <location>${location}</location>\n      <title>${title}</title>\n    </track>`
+    })
+    .join('\n')
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <playlist version="1" xmlns="http://xspf.org/ns/0/">
@@ -76,13 +84,13 @@ const generatePlaylist = () => {
       playlistContent.value = generateXspf()
       break
     default:
-      playlistContent.value = "Unsupported format."
+      playlistContent.value = 'Unsupported format.'
   }
 }
 
 const addFiles = (fileList) => {
-  const validFiles = Array.from(fileList).filter(f =>
-    supportedFormats.some(ext => f.name.toLowerCase().endsWith(ext))
+  const validFiles = Array.from(fileList).filter((f) =>
+    supportedFormats.some((ext) => f.name.toLowerCase().endsWith(ext)),
   )
 
   if (replaceMode.value) {
@@ -94,7 +102,7 @@ const addFiles = (fileList) => {
   }
 
   // Append mode: check for duplicates by filename
-  const existingNames = new Set(files.value.map(f => f.name.toLowerCase()))
+  const existingNames = new Set(files.value.map((f) => f.name.toLowerCase()))
   const newFiles = []
   let skipped = 0
 
@@ -152,8 +160,8 @@ const sortFiles = () => {
     files.value.sort((a, b) => a.lastModified - b.lastModified)
   } else if (option === 'random') {
     for (let i = files.value.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [files.value[i], files.value[j]] = [files.value[j], files.value[i]]
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[files.value[i], files.value[j]] = [files.value[j], files.value[i]]
     }
   }
   generatePlaylist()
@@ -168,7 +176,7 @@ const analyzeBlob = async (blob, name) => {
   // Create a File object from the Blob so it integrates with the existing playlist system
   const file = new File([blob], name, {
     type: blob.type || 'audio/wav',
-    lastModified: Date.now()
+    lastModified: Date.now(),
   })
 
   return {
@@ -176,7 +184,7 @@ const analyzeBlob = async (blob, name) => {
     name,
     duration: audioBuffer.duration,
     sampleRate: audioBuffer.sampleRate,
-    channels: audioBuffer.numberOfChannels
+    channels: audioBuffer.numberOfChannels,
   }
 }
 
@@ -184,16 +192,17 @@ const handleSharedFiles = async (sharedRecords) => {
   let processed = 0
 
   for (const record of sharedRecords) {
-    const blob = record.blob instanceof Blob
-      ? record.blob
-      : new Blob([record.blob], { type: record.mimeType || 'audio/wav' })
+    const blob =
+      record.blob instanceof Blob
+        ? record.blob
+        : new Blob([record.blob], { type: record.mimeType || 'audio/wav' })
 
     if (blob.size === 0) continue
 
     try {
       const result = await analyzeBlob(blob, record.name)
       // Check for duplicates
-      const existingNames = new Set(files.value.map(f => f.name.toLowerCase()))
+      const existingNames = new Set(files.value.map((f) => f.name.toLowerCase()))
       if (!existingNames.has(result.file.name.toLowerCase())) {
         files.value = [...files.value, result.file]
         processed++
@@ -219,7 +228,7 @@ const savePlaylist = async () => {
   const formatDetails = {
     m3u: { ext: '.m3u', mime: 'audio/x-mpegurl' },
     json: { ext: '.json', mime: 'application/json' },
-    xspf: { ext: '.xspf', mime: 'application/xspf+xml' }
+    xspf: { ext: '.xspf', mime: 'application/xspf+xml' },
   }
 
   const details = formatDetails[outputFormat.value]
@@ -227,10 +236,12 @@ const savePlaylist = async () => {
 
   const options = {
     suggestedName: `${playlistName.value}${details.ext}`,
-    types: [{
-      description: `${outputFormat.value.toUpperCase()} Playlist`,
-      accept: { [details.mime]: [details.ext] }
-    }]
+    types: [
+      {
+        description: `${outputFormat.value.toUpperCase()} Playlist`,
+        accept: { [details.mime]: [details.ext] },
+      },
+    ],
   }
 
   try {
@@ -241,7 +252,7 @@ const savePlaylist = async () => {
     return true
   } catch (err) {
     if (err.name !== 'AbortError') {
-      console.error("Could not save the file:", err)
+      console.error('Could not save the file:', err)
       return false
     }
     return null // User cancelled
@@ -286,6 +297,6 @@ export function usePlaylist() {
     generatePlaylist,
     savePlaylist,
     analyzeBlob,
-    handleSharedFiles
+    handleSharedFiles,
   }
 }

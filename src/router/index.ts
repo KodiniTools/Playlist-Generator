@@ -31,7 +31,7 @@ const router = createRouter({
     } else {
       return { top: 0 }
     }
-  }
+  },
 })
 
 router.beforeEach((to, from, next) => {

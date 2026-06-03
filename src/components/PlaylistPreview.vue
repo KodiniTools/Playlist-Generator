@@ -26,23 +26,48 @@
       >
         <span class="button-icon">
           <svg viewBox="0 0 24 24" width="18" height="18">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2"></path>
+            <rect
+              x="9"
+              y="9"
+              width="13"
+              height="13"
+              rx="2"
+              ry="2"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            ></rect>
+            <path
+              d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            ></path>
           </svg>
         </span>
         {{ t('button_copy') }}
       </button>
-      <button
-        type="button"
-        class="save-button"
-        @click="handleSave"
-        :title="t('shortcut_save')"
-      >
+      <button type="button" class="save-button" @click="handleSave" :title="t('shortcut_save')">
         <span class="button-icon">
           <svg viewBox="0 0 24 24" width="18" height="18">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" fill="none" stroke="currentColor" stroke-width="2"></path>
-            <polyline points="17 21 17 13 7 13 7 21" fill="none" stroke="currentColor" stroke-width="2"></polyline>
-            <polyline points="7 3 7 8 15 8" fill="none" stroke="currentColor" stroke-width="2"></polyline>
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            ></path>
+            <polyline
+              points="17 21 17 13 7 13 7 21"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            ></polyline>
+            <polyline
+              points="7 3 7 8 15 8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            ></polyline>
           </svg>
         </span>
         {{ t('button_save') }}
@@ -53,84 +78,87 @@
   </section>
 </template>
 
-<script setup>
-import { ref, watch } from 'vue'
-import { useTranslation } from '../composables/useTranslation'
-import { useToast } from '../composables/useToast'
-import AudioPlayer from './AudioPlayer.vue'
+<script setup lang="ts">
+  import { ref, watch } from 'vue'
+  import { useTranslation } from '../composables/useTranslation'
+  import { useToast } from '../composables/useToast'
+  import AudioPlayer from './AudioPlayer.vue'
 
-const props = defineProps({
-  outputFormat: String,
-  playlistContent: String,
-  files: {
-    type: Array,
-    default: () => []
-  }
-})
+  const props = defineProps({
+    outputFormat: String,
+    playlistContent: String,
+    files: {
+      type: Array,
+      default: () => [],
+    },
+  })
 
-const emit = defineEmits(['update:outputFormat', 'save'])
+  const emit = defineEmits(['update:outputFormat', 'save'])
 
-const { t } = useTranslation()
-const toast = useToast()
-const localFormat = ref(props.outputFormat)
+  const { t } = useTranslation()
+  const toast = useToast()
+  const localFormat = ref(props.outputFormat)
 
-watch(() => props.outputFormat, (newVal) => {
-  localFormat.value = newVal
-})
+  watch(
+    () => props.outputFormat,
+    (newVal) => {
+      localFormat.value = newVal
+    },
+  )
 
-const handleFormatChange = () => {
-  emit('update:outputFormat', localFormat.value)
-}
-
-const handleCopy = async () => {
-  if (!props.playlistContent) {
-    toast.error(t.value('alert_create_first'))
-    return
+  const handleFormatChange = () => {
+    emit('update:outputFormat', localFormat.value)
   }
 
-  try {
-    await navigator.clipboard.writeText(props.playlistContent)
-    toast.success(t.value('toast_copied'))
-  } catch (err) {
-    toast.error(t.value('toast_copy_error'))
-  }
-}
+  const handleCopy = async () => {
+    if (!props.playlistContent) {
+      toast.error(t.value('alert_create_first'))
+      return
+    }
 
-const handleSave = () => {
-  emit('save')
-}
+    try {
+      await navigator.clipboard.writeText(props.playlistContent)
+      toast.success(t.value('toast_copied'))
+    } catch {
+      toast.error(t.value('toast_copy_error'))
+    }
+  }
+
+  const handleSave = () => {
+    emit('save')
+  }
 </script>
 
 <style scoped>
-.button-row {
-  display: flex;
-  gap: 12px;
-  margin-top: 15px;
-}
-
-.copy-button,
-.save-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  flex: 1;
-}
-
-.copy-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.button-icon {
-  display: flex;
-  align-items: center;
-}
-
-@media (max-width: 480px) {
   .button-row {
-    flex-direction: column;
-    gap: 8px;
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
   }
-}
+
+  .copy-button,
+  .save-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .copy-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .button-icon {
+    display: flex;
+    align-items: center;
+  }
+
+  @media (max-width: 480px) {
+    .button-row {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
 </style>

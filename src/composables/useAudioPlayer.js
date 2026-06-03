@@ -14,12 +14,14 @@ export function useAudioPlayer(filesRef) {
   const isMuted = ref(false)
 
   // Ordered playlist derived from files
-  const playlist = computed(() => filesRef.value.map((file, index) => ({
-    index,
-    name: file.name,
-    title: file.name.replace(/\.[^/.]+$/, ''),
-    file
-  })))
+  const playlist = computed(() =>
+    filesRef.value.map((file, index) => ({
+      index,
+      name: file.name,
+      title: file.name.replace(/\.[^/.]+$/, ''),
+      file,
+    })),
+  )
 
   const currentTrack = computed(() => {
     if (currentTrackIndex.value >= 0 && currentTrackIndex.value < playlist.value.length) {
@@ -39,7 +41,7 @@ export function useAudioPlayer(filesRef) {
 
   // Clean up all object URLs
   const revokeAllUrls = () => {
-    objectUrls.forEach(url => URL.revokeObjectURL(url))
+    objectUrls.forEach((url) => URL.revokeObjectURL(url))
     objectUrls.clear()
   }
 
@@ -65,12 +67,15 @@ export function useAudioPlayer(filesRef) {
       if (!loadTrack(0)) return
     }
 
-    audio.play().then(() => {
-      isPlaying.value = true
-      isPaused.value = false
-    }).catch(err => {
-      console.error('Playback failed:', err)
-    })
+    audio
+      .play()
+      .then(() => {
+        isPlaying.value = true
+        isPaused.value = false
+      })
+      .catch((err) => {
+        console.error('Playback failed:', err)
+      })
   }
 
   const pause = () => {
@@ -108,9 +113,8 @@ export function useAudioPlayer(filesRef) {
       audio.currentTime = 0
       return
     }
-    const prevIndex = currentTrackIndex.value <= 0
-      ? filesRef.value.length - 1
-      : currentTrackIndex.value - 1
+    const prevIndex =
+      currentTrackIndex.value <= 0 ? filesRef.value.length - 1 : currentTrackIndex.value - 1
     play(prevIndex)
   }
 
@@ -165,29 +169,33 @@ export function useAudioPlayer(filesRef) {
   // When files are reordered, find the currently playing track in the new order
   let currentPlayingFileName = null
 
-  watch(() => filesRef.value, (newFiles) => {
-    if (currentTrackIndex.value >= 0 && currentPlayingFileName) {
-      // Find the track in the new order
-      const newIndex = newFiles.findIndex(f => f.name === currentPlayingFileName)
-      if (newIndex >= 0) {
-        // Track still exists, update index without interrupting playback
-        currentTrackIndex.value = newIndex
-      } else {
-        // Track was removed, stop playback
+  watch(
+    () => filesRef.value,
+    (newFiles) => {
+      if (currentTrackIndex.value >= 0 && currentPlayingFileName) {
+        // Find the track in the new order
+        const newIndex = newFiles.findIndex((f) => f.name === currentPlayingFileName)
+        if (newIndex >= 0) {
+          // Track still exists, update index without interrupting playback
+          currentTrackIndex.value = newIndex
+        } else {
+          // Track was removed, stop playback
+          stop()
+          currentTrackIndex.value = -1
+          currentPlayingFileName = null
+        }
+      }
+
+      // If all files were cleared, reset player
+      if (newFiles.length === 0) {
         stop()
         currentTrackIndex.value = -1
         currentPlayingFileName = null
+        revokeAllUrls()
       }
-    }
-
-    // If all files were cleared, reset player
-    if (newFiles.length === 0) {
-      stop()
-      currentTrackIndex.value = -1
-      currentPlayingFileName = null
-      revokeAllUrls()
-    }
-  }, { deep: true })
+    },
+    { deep: true },
+  )
 
   // Track the currently playing file name for sync purposes
   watch(currentTrackIndex, (index) => {
@@ -234,6 +242,6 @@ export function useAudioPlayer(filesRef) {
     seek,
     setVolume,
     toggleMute,
-    formatTime
+    formatTime,
   }
 }

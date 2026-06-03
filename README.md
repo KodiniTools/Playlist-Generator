@@ -91,14 +91,14 @@ src/
 ## Browser-Kompatibilität
 
 Die Anwendung nutzt moderne Web-APIs:
+
 - **File API**: Alle modernen Browser
 - **Canvas API**: Alle modernen Browser
 - **File System Access API**: Chrome 86+, Edge 86+ (für das Speichern)
 
 ## Lizenz
+
 MIT License
-
-
 
 ## Migrationshinweise
 
@@ -111,6 +111,9 @@ Diese Anwendung wurde von Vanilla JavaScript zu Vue 3 migriert. Wichtige Änderu
 5. **Build-System**: Vite für schnelles HMR (Hot Module Replacement)
 
 ```
+
 ```
+
 ## Author
+
 - Dinko Ramić - Kodini Tools - kodinitools.com

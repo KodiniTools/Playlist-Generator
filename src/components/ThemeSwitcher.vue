@@ -7,8 +7,8 @@
   </div>
 </template>
 
-<script setup>
-import { useTheme } from '../composables/useTheme'
+<script setup lang="ts">
+  import { useTheme } from '../composables/useTheme'
 
-const { toggleTheme } = useTheme()
+  const { toggleTheme } = useTheme()
 </script>

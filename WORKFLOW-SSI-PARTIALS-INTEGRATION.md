@@ -60,7 +60,7 @@ Die CSS Custom Properties werden auf `:root` (= `<html>`) definiert in `src/styl
   // ... ~40 weitere Variablen
 }
 
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
   --color-bg: #091428;
   --color-text: #f9f2d5;
   --color-border: #1c3a5e;
@@ -76,6 +76,7 @@ Die CSS Custom Properties werden auf `:root` (= `<html>`) definiert in `src/styl
 4. Wenn Vite/Vue das CSS laedt, gelten die `:root`-Variablen automatisch fuer alles
 
 **Reihenfolge im Browser:**
+
 ```
 1. Apache injiziert Partials in index.html (SSI)
 2. Browser parst HTML → nav, footer, cookie-banner sind im DOM
@@ -109,6 +110,7 @@ App.vue: handleGlobalThemeChange()
 ```
 
 **Kritische Dateien:**
+
 - `src/stores/settingsStore.js` Zeilen 81-102: `setTheme()`
 - `src/App.vue` Zeilen 254-260: `handleGlobalThemeChange()`
 - `src/styles/variables.scss` Zeilen 281-306: `:root[data-theme="dark"]`
@@ -118,38 +120,41 @@ App.vue: handleGlobalThemeChange()
 Dies ist der komplexeste Teil. Es gibt **drei separate Mechanismen**:
 
 #### Mechanismus A: Vue-interne i18n (vue-i18n)
+
 Fuer alle Vue-Komponenten. Nutzt `$t('key')` mit Uebersetzungsdateien in `src/i18n/index.js`.
 
 #### Mechanismus B: `data-nav-i18n` Attribute (Externe Navigation)
+
 Fuer die SSI-Navigation (`nav.html`). Die Nav-Elemente tragen Attribute:
 
 ```html
 <!-- In nav.html (SSI-Partial): -->
 <a data-nav-i18n="nav.imageconv" href="/bildkonverter/">Bildkonverter</a>
-<button data-nav-i18n-aria="nav.themeAria" data-nav-i18n-title="nav.themeTitle">
+<button data-nav-i18n-aria="nav.themeAria" data-nav-i18n-title="nav.themeTitle"></button>
 ```
 
 Die Vue-App uebersetzt diese in `App.vue` Zeilen 147-175:
 
 ```javascript
 function translateExternalNav(lang) {
-  const t = navTranslations[lang]  // Lokales Uebersetzungsobjekt in App.vue
-  nav.querySelectorAll('[data-nav-i18n]').forEach(el => {
+  const t = navTranslations[lang] // Lokales Uebersetzungsobjekt in App.vue
+  nav.querySelectorAll('[data-nav-i18n]').forEach((el) => {
     const key = el.getAttribute('data-nav-i18n')
-    if (t[key]) el.textContent = t[key]       // Text ersetzen
+    if (t[key]) el.textContent = t[key] // Text ersetzen
   })
-  nav.querySelectorAll('[data-nav-i18n-aria]').forEach(el => {
+  nav.querySelectorAll('[data-nav-i18n-aria]').forEach((el) => {
     const key = el.getAttribute('data-nav-i18n-aria')
-    if (t[key]) el.setAttribute('aria-label', t[key])  // ARIA ersetzen
+    if (t[key]) el.setAttribute('aria-label', t[key]) // ARIA ersetzen
   })
-  nav.querySelectorAll('[data-nav-i18n-title]').forEach(el => {
+  nav.querySelectorAll('[data-nav-i18n-title]').forEach((el) => {
     const key = el.getAttribute('data-nav-i18n-title')
-    if (t[key]) el.setAttribute('title', t[key])       // Title ersetzen
+    if (t[key]) el.setAttribute('title', t[key]) // Title ersetzen
   })
 }
 ```
 
 #### Mechanismus C: `data-lang-*` Attribute (Footer, Cookie-Banner)
+
 Fuer die anderen SSI-Partials. Elemente tragen beide Sprachen als Attribute:
 
 ```html
@@ -164,7 +169,7 @@ function dispatchLanguageChanged(lang) {
   window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang } }))
 
   const attr = `data-lang-${lang}`
-  document.querySelectorAll(`[${attr}]`).forEach(el => {
+  document.querySelectorAll(`[${attr}]`).forEach((el) => {
     const text = el.getAttribute(attr)
     if (text) el.textContent = text
   })
@@ -215,13 +220,14 @@ function updateExternalNavHeight() {
   document.documentElement.style.setProperty('--external-nav-height', `${height}px`)
 
   // ResizeObserver fuer dynamische Aenderungen
-  externalNavObserver = new ResizeObserver(entries => {
+  externalNavObserver = new ResizeObserver((entries) => {
     document.documentElement.style.setProperty('--external-nav-height', `${newHeight}px`)
   })
 }
 ```
 
 Der AppHeader nutzt diese Variable fuer sticky Positioning:
+
 ```css
 position: sticky;
 top: var(--external-nav-height, 50px);
@@ -255,16 +261,16 @@ domMutationObserver = new MutationObserver((mutations) => {
 
 Dual-Key-System fuer Kompatibilitaet zwischen SSI-Partials und Vue-App:
 
-| Zweck    | Globaler Key (Partials lesen) | App-spezifischer Key (Legacy) |
-|----------|-------------------------------|-------------------------------|
-| Theme    | `theme`                       | `bildkonverter-theme`         |
-| Sprache  | `locale`                      | `bildkonverter-locale`        |
+| Zweck   | Globaler Key (Partials lesen) | App-spezifischer Key (Legacy) |
+| ------- | ----------------------------- | ----------------------------- |
+| Theme   | `theme`                       | `bildkonverter-theme`         |
+| Sprache | `locale`                      | `bildkonverter-locale`        |
 
 **Lesereihenfolge:** Globaler Key > App-spezifischer Key > Fallback
 
 ```javascript
 const theme = ref(
-  localStorage.getItem('theme') || localStorage.getItem('bildkonverter-theme') || 'light'
+  localStorage.getItem('theme') || localStorage.getItem('bildkonverter-theme') || 'light',
 )
 ```
 
@@ -273,30 +279,36 @@ const theme = ref(
 ## Teil 2: Haeufige Missstaende in anderen Tools
 
 ### Problem 1: Eigene CSS-Variablen in Partials / Konflikte
+
 **Symptom:** Partials ueberschreiben `:root`-Variablen oder definieren eigene.
 **Loesung:** Partials duerfen KEINE eigenen `:root`-Variablen mitbringen. Sie muessen die vom Tool definierten Variablen nutzen.
 
 ### Problem 2: Theme wechselt nicht synchron
+
 **Symptom:** Tool wechselt auf Dark, aber Nav/Footer bleiben hell (oder umgekehrt).
 **Ursache:** `data-theme` wird nicht auf `<html>` gesetzt, oder Partials nutzen keine `var(--color-*)`.
 **Loesung:** Theme muss per `document.documentElement.setAttribute('data-theme', theme)` gesetzt werden.
 
 ### Problem 3: Sprachwechsel laedt die Seite neu
+
 **Symptom:** Klick auf Sprach-Button in der Nav laedt die komplette Seite neu.
 **Ursache:** Das Default-Verhalten der SSI-Nav Sprach-Buttons wird nicht abgefangen.
 **Loesung:** `e.preventDefault()` + `e.stopImmediatePropagation()` im capture-Phase Handler.
 
 ### Problem 4: i18n-Texte in Partials aendern sich nicht
+
 **Symptom:** Vue-App wechselt Sprache, aber Nav/Footer zeigen alte Sprache.
 **Ursache:** Kein `translateExternalNav()` / `dispatchLanguageChanged()` implementiert.
 **Loesung:** Beide Funktionen im App-Root-Component implementieren.
 
 ### Problem 5: Hintergrund-Gradient und Partials passen nicht zusammen
+
 **Symptom:** Farbbrueche zwischen App-Hintergrund und Partials.
 **Ursache:** Partials haben eigene `background`-Definitionen statt CSS-Variablen.
 **Loesung:** Alle Hintergruende muessen `var(--color-bg)` o.ae. nutzen.
 
 ### Problem 6: Doppelte localStorage-Keys
+
 **Symptom:** Theme/Sprache springt beim Reload zurueck.
 **Ursache:** Tool schreibt nur seinen eigenen Key, liest aber den globalen nicht.
 **Loesung:** Dual-Key-System wie oben beschrieben.
@@ -318,12 +330,13 @@ Fuehre diese Schritte in exakt dieser Reihenfolge durch:
 - [ ] Background des Tools nutzt CSS-Variablen: `var(--color-bg)`, `var(--color-bg-gradient)`
 
 **Minimale CSS-Variablen die vorhanden sein muessen:**
+
 ```scss
 :root {
   --color-primary: #014f99;
   --color-bg: #ffffff;
   --color-bg-secondary: #f9f2d5;
-  --color-bg-gradient: #F5F4D6;
+  --color-bg-gradient: #f5f4d6;
   --color-text: #212529;
   --color-text-light: #6c757d;
   --color-text-muted: #adb5bd;
@@ -335,23 +348,23 @@ Fuehre diese Schritte in exakt dieser Reihenfolge durch:
   --color-warning: #f8e71c;
   --color-error: #f44336;
   --color-info: #2196f3;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --transition-base: 0.2s ease;
   --external-nav-height: 50px;
 }
 
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
   --color-bg: #091428;
-  --color-bg-secondary: #0E1C32;
+  --color-bg-secondary: #0e1c32;
   --color-bg-gradient: #091428;
   --color-text: #f9f2d5;
   --color-text-light: #f8e1a9;
-  --color-text-muted: #7A8DA0;
+  --color-text-muted: #7a8da0;
   --color-border: #1c3a5e;
   --color-white: #142640;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 ```
 
@@ -388,9 +401,7 @@ function setTheme(newTheme) {
 }
 
 // Beim Lesen (Initialisierung):
-const theme = localStorage.getItem('theme')
-  || localStorage.getItem('<toolname>-theme')
-  || 'light'
+const theme = localStorage.getItem('theme') || localStorage.getItem('<toolname>-theme') || 'light'
 ```
 
 Im Root-Component:
@@ -409,13 +420,17 @@ window.addEventListener('theme-changed', (e) => {
 
 ```javascript
 function interceptExternalLangSwitcher() {
-  document.querySelectorAll('.global-nav-lang-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault()
-      e.stopImmediatePropagation()
-      const targetLang = btn.getAttribute('data-lang')
-      if (targetLang) setLocale(targetLang)
-    }, { capture: true })
+  document.querySelectorAll('.global-nav-lang-btn').forEach((btn) => {
+    btn.addEventListener(
+      'click',
+      (e) => {
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        const targetLang = btn.getAttribute('data-lang')
+        if (targetLang) setLocale(targetLang)
+      },
+      { capture: true },
+    )
   })
 }
 ```
@@ -425,21 +440,21 @@ function interceptExternalLangSwitcher() {
 ```javascript
 // Uebersetzungsobjekt fuer Nav-Elemente (an eigenes Tool anpassen!)
 const navTranslations = {
-  de: { 'nav.imageconv': 'Bildkonverter', /* ... */ },
-  en: { 'nav.imageconv': 'Image Converter', /* ... */ }
+  de: { 'nav.imageconv': 'Bildkonverter' /* ... */ },
+  en: { 'nav.imageconv': 'Image Converter' /* ... */ },
 }
 
 function translateExternalNav(lang) {
   const t = navTranslations[lang]
-  document.querySelectorAll('[data-nav-i18n]').forEach(el => {
+  document.querySelectorAll('[data-nav-i18n]').forEach((el) => {
     const key = el.getAttribute('data-nav-i18n')
     if (t[key]) el.textContent = t[key]
   })
-  document.querySelectorAll('[data-nav-i18n-aria]').forEach(el => {
+  document.querySelectorAll('[data-nav-i18n-aria]').forEach((el) => {
     const key = el.getAttribute('data-nav-i18n-aria')
     if (t[key]) el.setAttribute('aria-label', t[key])
   })
-  document.querySelectorAll('[data-nav-i18n-title]').forEach(el => {
+  document.querySelectorAll('[data-nav-i18n-title]').forEach((el) => {
     const key = el.getAttribute('data-nav-i18n-title')
     if (t[key]) el.setAttribute('title', t[key])
   })
@@ -453,7 +468,7 @@ function dispatchLanguageChanged(lang) {
   window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang } }))
 
   const attr = `data-lang-${lang}`
-  document.querySelectorAll(`[${attr}]`).forEach(el => {
+  document.querySelectorAll(`[${attr}]`).forEach((el) => {
     const text = el.getAttribute(attr)
     if (text) el.textContent = text
   })
@@ -468,9 +483,7 @@ localStorage.setItem('locale', newLocale)
 localStorage.setItem('<toolname>-locale', newLocale)
 
 // Lesen:
-const locale = localStorage.getItem('locale')
-  || localStorage.getItem('<toolname>-locale')
-  || 'de'
+const locale = localStorage.getItem('locale') || localStorage.getItem('<toolname>-locale') || 'de'
 ```
 
 #### Schritt 5: Externe Nav-Hoehe messen
@@ -485,7 +498,7 @@ function updateExternalNavHeight() {
   document.documentElement.style.setProperty('--external-nav-height', `${height}px`)
 
   // ResizeObserver fuer dynamische Aenderungen
-  new ResizeObserver(entries => {
+  new ResizeObserver((entries) => {
     const h = entries[0].contentRect.height
     document.documentElement.style.setProperty('--external-nav-height', `${h}px`)
   }).observe(navEl)
@@ -496,9 +509,11 @@ function updateExternalNavHeight() {
 
 ```javascript
 const domObserver = new MutationObserver((mutations) => {
-  const hasNewElements = mutations.some(m =>
-    m.type === 'childList' && m.addedNodes.length > 0 &&
-    Array.from(m.addedNodes).some(n => n.nodeType === Node.ELEMENT_NODE)
+  const hasNewElements = mutations.some(
+    (m) =>
+      m.type === 'childList' &&
+      m.addedNodes.length > 0 &&
+      Array.from(m.addedNodes).some((n) => n.nodeType === Node.ELEMENT_NODE),
   )
   if (!hasNewElements) return
 
@@ -523,13 +538,17 @@ Bei jeder Sprachaenderung muessen ALLE Synchronisations-Funktionen aufgerufen we
 
 ```javascript
 // Vue-Beispiel:
-watch(locale, (newLocale) => {
-  i18n.global.locale.value = newLocale
-  document.documentElement.setAttribute('lang', newLocale)
-  syncExternalLangButtons(newLocale)
-  translateExternalNav(newLocale)
-  dispatchLanguageChanged(newLocale)
-}, { immediate: true })
+watch(
+  locale,
+  (newLocale) => {
+    i18n.global.locale.value = newLocale
+    document.documentElement.setAttribute('lang', newLocale)
+    syncExternalLangButtons(newLocale)
+    translateExternalNav(newLocale)
+    dispatchLanguageChanged(newLocale)
+  },
+  { immediate: true },
+)
 
 // Vanilla JS / anderes Framework:
 function onLocaleChange(newLocale) {
@@ -547,7 +566,7 @@ function onLocaleChange(newLocale) {
 resizeObserver?.disconnect()
 mutationObserver?.disconnect()
 window.removeEventListener('theme-changed', handler)
-abortController.abort()  // Entfernt alle Lang-Button-Listener
+abortController.abort() // Entfernt alle Lang-Button-Listener
 ```
 
 ---
@@ -555,6 +574,7 @@ abortController.abort()  // Entfernt alle Lang-Button-Listener
 ## Teil 4: Schnell-Diagnose fuer bestehende Tools
 
 ### Test 1: Theme-Sync
+
 ```
 1. Tool oeffnen
 2. In SSI-Nav auf Theme-Button klicken
@@ -563,6 +583,7 @@ abortController.abort()  // Entfernt alle Lang-Button-Listener
 ```
 
 ### Test 2: i18n-Sync
+
 ```
 1. Tool oeffnen (Standard: DE)
 2. In SSI-Nav auf "EN" klicken
@@ -575,6 +596,7 @@ abortController.abort()  // Entfernt alle Lang-Button-Listener
 ```
 
 ### Test 3: CSS-Variablen
+
 ```
 1. DevTools oeffnen → Elements → <html>
 2. Pruefen: Existiert data-theme="light" / "dark"?
@@ -586,6 +608,7 @@ abortController.abort()  // Entfernt alle Lang-Button-Listener
 ```
 
 ### Test 4: Hintergrund-Sync
+
 ```
 1. DevTools → Body/App-Container inspizieren
 2. Pruefen: Nutzt background var(--color-bg) oder hartcodierte Farbe?
@@ -597,15 +620,15 @@ abortController.abort()  // Entfernt alle Lang-Button-Listener
 
 ## Teil 5: Zusammenfassung der Synchronisations-Kanaele
 
-| Kanal                  | Richtung              | Mechanismus                      | Betroffene Elemente          |
-|------------------------|-----------------------|----------------------------------|------------------------------|
-| CSS Custom Properties  | Tool → Partials       | `:root` Vererbung                | Alle Farben, Spacing, etc.   |
-| `data-theme` Attribut  | Bidirektional         | `setAttribute` auf `<html>`      | Theme (Light/Dark)           |
-| `theme-changed` Event  | SSI-Nav → Tool        | `CustomEvent` auf `window`       | Theme-Sync                   |
-| `language-changed` Ev. | Tool → SSI-Partials   | `CustomEvent` auf `window`       | Footer, Cookie-Banner        |
-| `data-nav-i18n`        | Tool → SSI-Nav        | `querySelectorAll` + `textContent`| Nav-Texte                   |
-| `data-lang-*`          | Tool → SSI-Partials   | `querySelectorAll` + `textContent`| Footer, Cookie-Banner Texte  |
-| `localStorage`         | Bidirektional         | Dual-Key-System                  | Persistenz Theme + Sprache   |
-| `lang` Attribut        | Tool → Browser        | `setAttribute` auf `<html>`      | Screenreader, SEO            |
-| `--external-nav-height`| SSI-Nav → Tool        | `ResizeObserver` + CSS-Variable  | Sticky Header Positioning    |
-| `MutationObserver`     | DOM → Tool            | Erkennung neuer Elemente         | Verzoegert geladene Partials |
+| Kanal                   | Richtung            | Mechanismus                        | Betroffene Elemente          |
+| ----------------------- | ------------------- | ---------------------------------- | ---------------------------- |
+| CSS Custom Properties   | Tool → Partials     | `:root` Vererbung                  | Alle Farben, Spacing, etc.   |
+| `data-theme` Attribut   | Bidirektional       | `setAttribute` auf `<html>`        | Theme (Light/Dark)           |
+| `theme-changed` Event   | SSI-Nav → Tool      | `CustomEvent` auf `window`         | Theme-Sync                   |
+| `language-changed` Ev.  | Tool → SSI-Partials | `CustomEvent` auf `window`         | Footer, Cookie-Banner        |
+| `data-nav-i18n`         | Tool → SSI-Nav      | `querySelectorAll` + `textContent` | Nav-Texte                    |
+| `data-lang-*`           | Tool → SSI-Partials | `querySelectorAll` + `textContent` | Footer, Cookie-Banner Texte  |
+| `localStorage`          | Bidirektional       | Dual-Key-System                    | Persistenz Theme + Sprache   |
+| `lang` Attribut         | Tool → Browser      | `setAttribute` auf `<html>`        | Screenreader, SEO            |
+| `--external-nav-height` | SSI-Nav → Tool      | `ResizeObserver` + CSS-Variable    | Sticky Header Positioning    |
+| `MutationObserver`      | DOM → Tool          | Erkennung neuer Elemente           | Verzoegert geladene Partials |

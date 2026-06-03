@@ -5,137 +5,135 @@
   </div>
 </template>
 
-<script setup>
-import { onMounted, onUnmounted } from 'vue'
-import ToastContainer from './components/ToastContainer.vue'
-import { useTheme } from './composables/useTheme'
-import { useTranslation } from './composables/useTranslation'
+<script setup lang="ts">
+  import { onMounted, onUnmounted } from 'vue'
+  import ToastContainer from './components/ToastContainer.vue'
+  import { useTheme } from './composables/useTheme'
+  import { useTranslation } from './composables/useTranslation'
 
-// Initialize theme – reacts to theme-changed CustomEvent from SSI nav
-useTheme()
+  // Initialize theme – reacts to theme-changed CustomEvent from SSI nav
+  useTheme()
 
-// Initialize translation
-// setLanguage() includes SYNCHRONOUS SSI sync (nav, footer, cookie-banner)
-const {
-  currentLanguage,
-  setLanguage,
-  syncAllExternalElements
-} = useTranslation()
+  // Initialize translation
+  // setLanguage() includes SYNCHRONOUS SSI sync (nav, footer, cookie-banner)
+  const { currentLanguage, setLanguage, syncAllExternalElements } = useTranslation()
 
-// =====================================================================
-// Incoming language changes from SSI nav (event + attribute observers)
-// =====================================================================
+  // =====================================================================
+  // Incoming language changes from SSI nav (event + attribute observers)
+  // =====================================================================
 
-// The SSI nav's own script handles its button clicks:
-//   1. Translates the nav itself (via its own translateNav())
-//   2. Dispatches 'language-changed' CustomEvent
-// We listen for that event and update the Vue app + footer/cookie-banner.
-function handleGlobalLanguageChange(e) {
-  const newLang = e.detail?.lang
-  if (newLang && newLang !== currentLanguage.value) {
-    setLanguage(newLang)
-  }
-}
-window.addEventListener('language-changed', handleGlobalLanguageChange)
-
-// MutationObserver on <html> lang attribute (fallback for direct SSI changes)
-const htmlLangObserver = new MutationObserver((mutations) => {
-  for (const mutation of mutations) {
-    if (mutation.attributeName === 'lang') {
-      const newLang = document.documentElement.getAttribute('lang')
-      if (newLang && newLang !== currentLanguage.value) {
-        setLanguage(newLang)
-      }
+  // The SSI nav's own script handles its button clicks:
+  //   1. Translates the nav itself (via its own translateNav())
+  //   2. Dispatches 'language-changed' CustomEvent
+  // We listen for that event and update the Vue app + footer/cookie-banner.
+  function handleGlobalLanguageChange(e) {
+    const newLang = e.detail?.lang
+    if (newLang && newLang !== currentLanguage.value) {
+      setLanguage(newLang)
     }
   }
-})
-htmlLangObserver.observe(document.documentElement, {
-  attributes: true,
-  attributeFilter: ['lang']
-})
+  window.addEventListener('language-changed', handleGlobalLanguageChange)
 
-// --- External Nav Height Measurement (ResizeObserver) ---
-let externalNavResizeObserver = null
-
-function updateExternalNavHeight() {
-  const wrapper = document.querySelector('.external-nav-wrapper')
-  if (!wrapper) return
-
-  const navEl = wrapper.querySelector('nav, header') || wrapper
-  const height = navEl.getBoundingClientRect().height
-  document.documentElement.style.setProperty('--external-nav-height', `${height}px`)
-
-  // Observe size changes dynamically
-  if (externalNavResizeObserver) externalNavResizeObserver.disconnect()
-  externalNavResizeObserver = new ResizeObserver(entries => {
-    const h = entries[0].contentRect.height
-    document.documentElement.style.setProperty('--external-nav-height', `${h}px`)
-  })
-  externalNavResizeObserver.observe(navEl)
-}
-
-// --- MutationObserver for dynamically loaded SSI partials ---
-let domMutationObserver = null
-
-function initMutationObserver() {
-  domMutationObserver = new MutationObserver((mutations) => {
-    const hasNewElements = mutations.some(m =>
-      m.type === 'childList' && m.addedNodes.length > 0 &&
-      Array.from(m.addedNodes).some(n => n.nodeType === Node.ELEMENT_NODE)
-    )
-    if (!hasNewElements) return
-
-    // Pause observer to prevent infinite loop (translateExternalNav mutates DOM)
-    domMutationObserver.disconnect()
-
-    updateExternalNavHeight()
-    syncAllExternalElements(currentLanguage.value)
-
-    // Re-enable observer after DOM settles
-    requestAnimationFrame(() => {
-      if (domMutationObserver) {
-        domMutationObserver.observe(document.body, { childList: true, subtree: true })
+  // MutationObserver on <html> lang attribute (fallback for direct SSI changes)
+  const htmlLangObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.attributeName === 'lang') {
+        const newLang = document.documentElement.getAttribute('lang')
+        if (newLang && newLang !== currentLanguage.value) {
+          setLanguage(newLang)
+        }
       }
-    })
+    }
   })
-  domMutationObserver.observe(document.body, { childList: true, subtree: true })
-}
+  htmlLangObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['lang'],
+  })
 
-// --- Lifecycle ---
-onMounted(() => {
-  // Sync language from global nav's 'locale' key (in case it was changed
-  // by the global nav before Vue mounted)
-  const globalNavLang = localStorage.getItem('locale')
-  if (globalNavLang && globalNavLang !== currentLanguage.value) {
-    setLanguage(globalNavLang)
-  } else {
-    // Force initial SSI sync for current language
-    syncAllExternalElements(currentLanguage.value)
+  // --- External Nav Height Measurement (ResizeObserver) ---
+  let externalNavResizeObserver = null
+
+  function updateExternalNavHeight() {
+    const wrapper = document.querySelector('.external-nav-wrapper')
+    if (!wrapper) return
+
+    const navEl = wrapper.querySelector('nav, header') || wrapper
+    const height = navEl.getBoundingClientRect().height
+    document.documentElement.style.setProperty('--external-nav-height', `${height}px`)
+
+    // Observe size changes dynamically
+    if (externalNavResizeObserver) externalNavResizeObserver.disconnect()
+    externalNavResizeObserver = new ResizeObserver((entries) => {
+      const h = entries[0].contentRect.height
+      document.documentElement.style.setProperty('--external-nav-height', `${h}px`)
+    })
+    externalNavResizeObserver.observe(navEl)
   }
 
-  // Measure external nav height
-  updateExternalNavHeight()
+  // --- MutationObserver for dynamically loaded SSI partials ---
+  let domMutationObserver = null
 
-  // Start watching for dynamically loaded partials
-  initMutationObserver()
-})
+  function initMutationObserver() {
+    domMutationObserver = new MutationObserver((mutations) => {
+      const hasNewElements = mutations.some(
+        (m) =>
+          m.type === 'childList' &&
+          m.addedNodes.length > 0 &&
+          Array.from(m.addedNodes).some((n) => n.nodeType === Node.ELEMENT_NODE),
+      )
+      if (!hasNewElements) return
 
-onUnmounted(() => {
-  window.removeEventListener('language-changed', handleGlobalLanguageChange)
-  htmlLangObserver.disconnect()
-  if (externalNavResizeObserver) {
-    externalNavResizeObserver.disconnect()
-    externalNavResizeObserver = null
+      // Pause observer to prevent infinite loop (translateExternalNav mutates DOM)
+      domMutationObserver.disconnect()
+
+      updateExternalNavHeight()
+      syncAllExternalElements(currentLanguage.value)
+
+      // Re-enable observer after DOM settles
+      requestAnimationFrame(() => {
+        if (domMutationObserver) {
+          domMutationObserver.observe(document.body, { childList: true, subtree: true })
+        }
+      })
+    })
+    domMutationObserver.observe(document.body, { childList: true, subtree: true })
   }
-  if (domMutationObserver) {
-    domMutationObserver.disconnect()
-    domMutationObserver = null
-  }
-})
+
+  // --- Lifecycle ---
+  onMounted(() => {
+    // Sync language from global nav's 'locale' key (in case it was changed
+    // by the global nav before Vue mounted)
+    const globalNavLang = localStorage.getItem('locale')
+    if (globalNavLang && globalNavLang !== currentLanguage.value) {
+      setLanguage(globalNavLang)
+    } else {
+      // Force initial SSI sync for current language
+      syncAllExternalElements(currentLanguage.value)
+    }
+
+    // Measure external nav height
+    updateExternalNavHeight()
+
+    // Start watching for dynamically loaded partials
+    initMutationObserver()
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('language-changed', handleGlobalLanguageChange)
+    htmlLangObserver.disconnect()
+    if (externalNavResizeObserver) {
+      externalNavResizeObserver.disconnect()
+      externalNavResizeObserver = null
+    }
+    if (domMutationObserver) {
+      domMutationObserver.disconnect()
+      domMutationObserver = null
+    }
+  })
 </script>
 
 <style>
-.app-wrapper {
-  min-height: 100vh;
-}
+  .app-wrapper {
+    min-height: 100vh;
+  }
 </style>
