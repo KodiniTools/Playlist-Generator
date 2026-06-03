@@ -7,11 +7,15 @@
         <div class="card-icon">🎵</div>
         <h3>{{ t('tool1_title') }}</h3>
         <p>{{ t('tool1_desc') }}</p>
-        <a href="https://kodinitools.com/ultimativermusikplayer/" target="_blank" class="card-button">
+        <a
+          href="https://kodinitools.com/ultimativermusikplayer/"
+          target="_blank"
+          class="card-button"
+        >
           {{ t('tool_button') }}
         </a>
       </div>
-      
+
       <!-- Card 2: Equalizer -->
       <div class="tool-card">
         <div class="card-icon">🎚️</div>
@@ -21,7 +25,7 @@
           {{ t('tool_button') }}
         </a>
       </div>
-      
+
       <!-- Card 3: Audio Converter -->
       <div class="tool-card">
         <div class="card-icon">🔄</div>
@@ -35,8 +39,8 @@
   </section>
 </template>
 
-<script setup>
-import { useTranslation } from '../composables/useTranslation'
+<script setup lang="ts">
+  import { useTranslation } from '../composables/useTranslation'
 
-const { t } = useTranslation()
+  const { t } = useTranslation()
 </script>

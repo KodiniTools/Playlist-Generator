@@ -28,8 +28,8 @@
   </section>
 </template>
 
-<script setup>
-import { useTranslation } from '../composables/useTranslation'
+<script setup lang="ts">
+  import { useTranslation } from '../composables/useTranslation'
 
-const { t } = useTranslation()
+  const { t } = useTranslation()
 </script>

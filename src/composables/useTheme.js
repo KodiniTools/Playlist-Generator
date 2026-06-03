@@ -1,7 +1,7 @@
 import { ref, watch, onUnmounted } from 'vue'
 
 const currentTheme = ref(
-  localStorage.getItem('theme') || localStorage.getItem('playlist-generator-theme') || 'dark'
+  localStorage.getItem('theme') || localStorage.getItem('playlist-generator-theme') || 'dark',
 )
 
 export function useTheme() {
@@ -14,21 +14,25 @@ export function useTheme() {
   }
 
   // Watch for theme changes and apply to document
-  watch(currentTheme, (newTheme) => {
-    // Dual-Key localStorage (global + app-specific)
-    localStorage.setItem('theme', newTheme)
-    localStorage.setItem('playlist-generator-theme', newTheme)
+  watch(
+    currentTheme,
+    (newTheme) => {
+      // Dual-Key localStorage (global + app-specific)
+      localStorage.setItem('theme', newTheme)
+      localStorage.setItem('playlist-generator-theme', newTheme)
 
-    // Apply .light-theme class on body (for Vue app CSS variables)
-    if (newTheme === 'light') {
-      document.body.classList.add('light-theme')
-    } else {
-      document.body.classList.remove('light-theme')
-    }
+      // Apply .light-theme class on body (for Vue app CSS variables)
+      if (newTheme === 'light') {
+        document.body.classList.add('light-theme')
+      } else {
+        document.body.classList.remove('light-theme')
+      }
 
-    // Apply data-theme attribute on <html> (for SSI partials CSS)
-    document.documentElement.setAttribute('data-theme', newTheme)
-  }, { immediate: true })
+      // Apply data-theme attribute on <html> (for SSI partials CSS)
+      document.documentElement.setAttribute('data-theme', newTheme)
+    },
+    { immediate: true },
+  )
 
   // Listen for theme-changed events from the global navigation (SSI include)
   const handleGlobalThemeChange = (e) => {
@@ -55,7 +59,7 @@ export function useTheme() {
   })
   htmlThemeObserver.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['data-theme']
+    attributeFilter: ['data-theme'],
   })
 
   onUnmounted(() => {
@@ -67,6 +71,6 @@ export function useTheme() {
     currentTheme,
     toggleTheme,
     setTheme,
-    isLight: () => currentTheme.value === 'light'
+    isLight: () => currentTheme.value === 'light',
   }
 }

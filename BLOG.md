@@ -1,6 +1,6 @@
 # Der ultimative Audio Playlist Generator: Alle Funktionen im Detail
 
-*Erstelle professionelle Playlists in Sekundenschnelle - direkt im Browser*
+_Erstelle professionelle Playlists in Sekundenschnelle - direkt im Browser_
 
 ---
 
@@ -75,12 +75,15 @@ Wenn du eigene Audio-Anwendungen entwickelst oder Playlists programmatisch verar
 Der Playlist Generator arbeitet mit den drei wichtigsten Audioformaten:
 
 ### MP3 (.mp3)
+
 Das weltweit verbreitetste Audioformat. MP3-Dateien bieten eine gute Balance zwischen Dateigröße und Audioqualität und werden von praktisch jedem Gerät unterstützt.
 
 ### WAV (.wav)
+
 Das unkomprimierte Audioformat für höchste Qualitätsansprüche. WAV-Dateien sind größer, bieten aber verlustfreie Audioqualität - ideal für Audiophile und professionelle Anwendungen.
 
 ### FLAC (.flac)
+
 Der goldene Mittelweg: FLAC komprimiert Audiodaten verlustfrei, sodass du Speicherplatz sparst, ohne an Qualität einzubüßen. Perfekt für hochwertige Musiksammlungen.
 
 ---
@@ -240,15 +243,15 @@ Wie beim Theme wird auch deine Spracheinstellung gespeichert. Die Anwendung begr
 
 Für alle, die Effizienz schätzen, bietet der Playlist Generator ein umfassendes Set an Tastaturkürzeln:
 
-| Tastenkombination | Funktion |
-|-------------------|----------|
-| **Strg + O** | Dateiauswahl-Dialog öffnen |
-| **Strg + S** | Playlist speichern |
-| **Strg + C** | Playlist in Zwischenablage kopieren |
-| **Entf / Delete** | Ausgewählte Datei löschen |
-| **Pfeil nach oben** | Vorherige Datei auswählen |
-| **Pfeil nach unten** | Nächste Datei auswählen |
-| **Escape** | Auswahl aufheben |
+| Tastenkombination    | Funktion                            |
+| -------------------- | ----------------------------------- |
+| **Strg + O**         | Dateiauswahl-Dialog öffnen          |
+| **Strg + S**         | Playlist speichern                  |
+| **Strg + C**         | Playlist in Zwischenablage kopieren |
+| **Entf / Delete**    | Ausgewählte Datei löschen           |
+| **Pfeil nach oben**  | Vorherige Datei auswählen           |
+| **Pfeil nach unten** | Nächste Datei auswählen             |
+| **Escape**           | Auswahl aufheben                    |
 
 Mit diesen Shortcuts kannst du die komplette Anwendung steuern, ohne die Maus zu benutzen.
 
@@ -389,4 +392,4 @@ Die Kombination aus:
 
 ---
 
-*Dieser Artikel wurde erstellt, um dir alle Funktionen des Audio Playlist Generators vorzustellen. Bei Fragen oder Anregungen nutze die Kontaktmöglichkeiten auf der Webseite oder unterstütze die Weiterentwicklung über die Spendenfunktion.*
+_Dieser Artikel wurde erstellt, um dir alle Funktionen des Audio Playlist Generators vorzustellen. Bei Fragen oder Anregungen nutze die Kontaktmöglichkeiten auf der Webseite oder unterstütze die Weiterentwicklung über die Spendenfunktion._

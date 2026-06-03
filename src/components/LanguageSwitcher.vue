@@ -1,22 +1,12 @@
 <template>
   <div class="language-switcher">
-    <button
-      :class="{ active: currentLanguage === 'de' }"
-      @click="setLanguage('de')"
-    >
-      DE
-    </button>
-    <button
-      :class="{ active: currentLanguage === 'en' }"
-      @click="setLanguage('en')"
-    >
-      EN
-    </button>
+    <button :class="{ active: currentLanguage === 'de' }" @click="setLanguage('de')">DE</button>
+    <button :class="{ active: currentLanguage === 'en' }" @click="setLanguage('en')">EN</button>
   </div>
 </template>
 
-<script setup>
-import { useTranslation } from '../composables/useTranslation'
+<script setup lang="ts">
+  import { useTranslation } from '../composables/useTranslation'
 
-const { currentLanguage, setLanguage } = useTranslation()
+  const { currentLanguage, setLanguage } = useTranslation()
 </script>
