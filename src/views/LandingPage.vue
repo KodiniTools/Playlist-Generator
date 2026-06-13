@@ -26,9 +26,94 @@
             {{ t('hero_learn_more') }}
           </a>
         </div>
+
+        <!-- Trust Badges -->
+        <div class="trust-badges">
+          <span class="trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            {{ t('trust_free') }}
+          </span>
+          <span class="trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            {{ t('trust_no_registration') }}
+          </span>
+          <span class="trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            {{ t('trust_private') }}
+          </span>
+        </div>
       </div>
 
-      <!-- Feature Cards Grid -->
+      <!-- App Preview -->
+      <div class="app-preview">
+        <div class="preview-window">
+          <div class="preview-titlebar">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="preview-title-text">Audio Playlist Generator</span>
+          </div>
+          <div class="preview-body">
+            <div class="preview-sidebar">
+              <div class="preview-section-label">{{ t('preview_files_label') }}</div>
+              <div class="preview-track-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                Summer_Mix.mp3
+              </div>
+              <div class="preview-track-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                Chill_Vibes.mp3
+              </div>
+              <div class="preview-track-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                Road_Trip.flac
+              </div>
+              <div class="preview-track-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                Evening_Jazz.wav
+              </div>
+              <div class="preview-track-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                Workout_Beats.mp3
+              </div>
+            </div>
+            <div class="preview-output">
+              <div class="preview-section-label">{{ t('preview_output_label') }}</div>
+              <div class="preview-code">
+                <span class="code-comment">#EXTM3U</span><br />
+                <span class="code-comment">#EXTINF:0,Summer Mix</span><br />
+                <span class="code-path">Summer_Mix.mp3</span><br />
+                <span class="code-comment">#EXTINF:0,Chill Vibes</span><br />
+                <span class="code-path active-line">Chill_Vibes.mp3</span><br />
+                <span class="code-comment">#EXTINF:0,Road Trip</span><br />
+                <span class="code-path">Road_Trip.flac</span>
+              </div>
+              <div class="preview-actions">
+                <span class="preview-btn">M3U</span>
+                <span class="preview-btn">XSPF</span>
+                <span class="preview-btn active-btn">JSON</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll Indicator -->
+      <a href="#features" class="scroll-indicator" aria-label="Mehr erfahren">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </a>
+    </section>
+
+    <!-- Feature Cards Grid -->
+    <div class="feature-cards-wrapper">
       <div class="feature-cards">
         <div class="feature-card">
           <div class="card-icon">
@@ -68,7 +153,7 @@
           <p>{{ t('feature3_desc') }}</p>
         </div>
       </div>
-    </section>
+    </div>
 
     <!-- Features Details Section -->
     <section id="features" class="details-section">
@@ -166,6 +251,17 @@
         </div>
       </div>
     </section>
+
+    <!-- Final CTA Section -->
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2 class="cta-title">{{ t('cta_title') }}</h2>
+        <p class="cta-desc">{{ t('cta_desc') }}</p>
+        <router-link to="/app" class="btn btn-primary btn-large">
+          {{ t('cta_button') }}
+        </router-link>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -253,18 +349,19 @@
 
   /* Hero Section */
   .hero {
-    min-height: calc(100vh - 70px);
+    min-height: calc(100vh - 70px - var(--external-nav-height, 0px));
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 60px 20px;
+    padding: 60px 20px 40px;
     text-align: center;
+    position: relative;
   }
 
   .hero-content {
     max-width: 800px;
-    margin-bottom: 60px;
+    margin-bottom: 50px;
     animation: fade-in 0.8s ease-out;
   }
 
@@ -298,64 +395,239 @@
     gap: 20px;
     justify-content: center;
     flex-wrap: wrap;
+    margin-bottom: 28px;
   }
 
-  .btn {
+  /* Trust Badges */
+  .trust-badges {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .trust-badge {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 15px 35px;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-    border: none;
+    gap: 6px;
+    font-size: 0.88rem;
+    color: var(--muted-color);
+    font-weight: 500;
   }
 
-  .btn-primary {
+  .trust-badge svg {
+    width: 14px;
+    height: 14px;
+    color: var(--accent-color);
+    flex-shrink: 0;
+  }
+
+  /* App Preview */
+  .app-preview {
+    width: 100%;
+    max-width: 820px;
+    margin-bottom: 40px;
+    animation: slide-in 1s ease-out 0.4s both;
+  }
+
+  .preview-window {
+    background: linear-gradient(135deg, rgba(14, 28, 50, 0.95), rgba(20, 38, 64, 0.9));
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.4),
+      0 0 40px var(--glow-color);
+  }
+
+  .light-theme .preview-window {
+    background: linear-gradient(135deg, rgba(240, 240, 240, 0.98), rgba(255, 255, 255, 0.95));
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.12),
+      0 0 40px var(--glow-color);
+  }
+
+  .preview-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .light-theme .preview-titlebar {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #28ca42; }
+
+  .preview-title-text {
+    font-size: 0.8rem;
+    color: var(--muted-color);
+    margin-left: 8px;
+    font-weight: 500;
+  }
+
+  .preview-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 200px;
+  }
+
+  .preview-sidebar {
+    padding: 16px;
+    border-right: 1px solid var(--border-color);
+  }
+
+  .preview-output {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .preview-section-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-color);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .preview-track-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: var(--muted-color);
+    padding: 6px 8px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .preview-track-item svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    color: var(--muted-color);
+  }
+
+  .preview-track-item.active {
+    background: rgba(201, 152, 77, 0.15);
+    color: var(--accent-color);
+  }
+
+  .light-theme .preview-track-item.active {
+    background: rgba(1, 79, 153, 0.1);
+    color: var(--accent-color);
+  }
+
+  .preview-track-item.active svg {
+    color: var(--accent-color);
+  }
+
+  .preview-code {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    line-height: 1.7;
+    flex: 1;
+    text-align: left;
+  }
+
+  .light-theme .preview-code {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .code-comment {
+    color: var(--muted-color);
+  }
+
+  .code-path {
+    color: var(--accent-color);
+  }
+
+  .code-path.active-line {
+    background: rgba(201, 152, 77, 0.15);
+    border-radius: 3px;
+    padding: 0 4px;
+  }
+
+  .preview-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .preview-btn {
+    font-size: 0.72rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    color: var(--muted-color);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .preview-btn.active-btn {
     background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
     color: var(--accent-text-color);
-    box-shadow: 0 4px 20px var(--shadow-color);
+    border-color: transparent;
   }
 
-  .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 8px 30px var(--shadow-color),
-      0 0 20px var(--glow-color);
+  /* Scroll Indicator */
+  .scroll-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-color);
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+    animation: scroll-bounce 2s ease-in-out infinite;
+    margin-bottom: 10px;
   }
 
-  .btn-secondary {
-    background: transparent;
-    color: var(--text-color);
-    border: 2px solid var(--border-color);
-  }
-
-  .btn-secondary:hover {
-    border-color: var(--accent-color);
+  .scroll-indicator:hover {
     color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.05);
+    transform: translateY(3px);
   }
 
-  .light-theme .btn-secondary:hover {
-    background: rgba(162, 134, 128, 0.05);
+  .scroll-indicator svg {
+    width: 28px;
+    height: 28px;
   }
 
-  .btn-large {
-    padding: 18px 45px;
-    font-size: 1.1rem;
+  @keyframes scroll-bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.6; }
+    50% { transform: translateY(6px); opacity: 1; }
   }
 
   /* Feature Cards */
+  .feature-cards-wrapper {
+    padding: 0 20px 80px;
+    display: flex;
+    justify-content: center;
+  }
+
   .feature-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
     max-width: 1100px;
     width: 100%;
-    padding: 0 20px;
     animation: slide-in 1s ease-out 0.3s both;
   }
 
@@ -452,10 +724,12 @@
     padding: 30px 20px;
     border-radius: 16px;
     transition: all 0.3s ease;
+    border: 1px solid transparent;
   }
 
   .detail-item:hover {
     background: rgba(22, 22, 28, 0.4);
+    border-color: var(--border-color);
   }
 
   .light-theme .detail-item:hover {
@@ -487,11 +761,95 @@
     line-height: 1.6;
   }
 
+  /* CTA Section */
+  .cta-section {
+    padding: 80px 20px 100px;
+    text-align: center;
+  }
+
+  .cta-content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 60px 40px;
+    background: linear-gradient(135deg, rgba(201, 152, 77, 0.08), rgba(1, 79, 153, 0.08));
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    backdrop-filter: blur(15px);
+    animation: fade-in 0.8s ease-out;
+  }
+
+  .light-theme .cta-content {
+    background: linear-gradient(135deg, rgba(201, 152, 77, 0.06), rgba(1, 79, 153, 0.06));
+  }
+
+  .cta-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 16px;
+  }
+
+  .cta-desc {
+    font-size: 1.05rem;
+    color: var(--muted-color);
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 35px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    color: var(--accent-text-color);
+    box-shadow: 0 4px 20px var(--shadow-color);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 8px 30px var(--shadow-color),
+      0 0 20px var(--glow-color);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: rgba(242, 226, 142, 0.05);
+  }
+
+  .light-theme .btn-secondary:hover {
+    background: rgba(162, 134, 128, 0.05);
+  }
+
+  .btn-large {
+    padding: 18px 45px;
+    font-size: 1.1rem;
+  }
+
   /* Responsive */
   @media (max-width: 900px) {
     .feature-cards {
-      grid-template-columns: 1fr;
-      max-width: 400px;
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 700px;
     }
 
     .details-grid {
@@ -506,9 +864,36 @@
     .hero-subtitle {
       font-size: 1.2rem;
     }
+
+    .preview-body {
+      grid-template-columns: 1fr;
+    }
+
+    .preview-sidebar {
+      border-right: none;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .preview-sidebar .preview-section-label {
+      width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .preview-track-item {
+      margin-bottom: 0;
+    }
   }
 
   @media (max-width: 600px) {
+    .feature-cards {
+      grid-template-columns: 1fr;
+      max-width: 400px;
+    }
+
     .details-grid {
       grid-template-columns: 1fr;
       gap: 20px;
@@ -540,20 +925,31 @@
       margin: 0 auto 35px;
     }
 
-    .feature-cards {
-      gap: 20px;
-      padding: 0 10px;
+    .feature-cards-wrapper {
+      padding: 0 10px 60px;
+    }
+
+    .trust-badges {
+      gap: 12px;
+    }
+
+    .cta-content {
+      padding: 40px 24px;
+    }
+
+    .cta-title {
+      font-size: 1.6rem;
     }
   }
 
   @media (max-width: 480px) {
     .hero {
-      padding: 35px 15px;
+      padding: 35px 15px 30px;
       min-height: auto;
     }
 
     .hero-content {
-      margin-bottom: 35px;
+      margin-bottom: 30px;
     }
 
     .hero-title {
@@ -645,6 +1041,30 @@
 
     .detail-item p {
       font-size: 0.85rem;
+    }
+
+    .app-preview {
+      margin-bottom: 20px;
+    }
+
+    .trust-badge {
+      font-size: 0.8rem;
+    }
+
+    .cta-section {
+      padding: 50px 15px 70px;
+    }
+
+    .cta-content {
+      padding: 32px 20px;
+    }
+
+    .cta-title {
+      font-size: 1.4rem;
+    }
+
+    .cta-desc {
+      font-size: 0.95rem;
     }
   }
 
