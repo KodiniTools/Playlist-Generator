@@ -53,10 +53,19 @@ const translations = {
     detail6_desc:
       'Funktioniert direkt im Browser – kein Download, keine Installation erforderlich.',
 
+    // Trust Badges
+    trust_free: 'Kostenlos',
+    trust_no_registration: 'Keine Registrierung',
+    trust_private: '100% Lokal & Privat',
+
+    // App Preview Labels
+    preview_files_label: 'Audiodateien',
+    preview_output_label: 'Playlist-Vorschau',
+
     // CTA Section
     cta_title: 'Bereit, loszulegen?',
     cta_desc: 'Erstellen Sie jetzt Ihre erste Playlist – kostenlos und ohne Registrierung.',
-    cta_button: 'Playlist erstellen',
+    cta_button: 'Kostenlos Playlist erstellen',
 
     // App Page
     notice_m3u:
@@ -231,10 +240,19 @@ const translations = {
     detail6_title: 'No Installation',
     detail6_desc: 'Works directly in the browser – no download, no installation required.',
 
+    // Trust Badges
+    trust_free: 'Free',
+    trust_no_registration: 'No Registration',
+    trust_private: '100% Local & Private',
+
+    // App Preview Labels
+    preview_files_label: 'Audio Files',
+    preview_output_label: 'Playlist Preview',
+
     // CTA Section
     cta_title: 'Ready to get started?',
     cta_desc: 'Create your first playlist now – free and without registration.',
-    cta_button: 'Create Playlist',
+    cta_button: 'Create Playlist for Free',
 
     // App Page
     notice_m3u:
