@@ -89,13 +89,6 @@
             @click="handleSortClick('alphabetical')"
             :title="t('sort_alpha')"
           >
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="3" y1="6" x2="15" y2="6"/>
-              <line x1="3" y1="12" x2="11" y2="12"/>
-              <line x1="3" y1="18" x2="7" y2="18"/>
-              <polyline points="17 4 21 8 17 12"/>
-              <line x1="21" y1="8" x2="13" y2="8"/>
-            </svg>
             <span>{{ t('sort_alpha') }}</span>
           </button>
           <button
@@ -104,10 +97,6 @@
             @click="handleSortClick('date')"
             :title="t('sort_date')"
           >
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
             <span>{{ t('sort_date') }}</span>
           </button>
           <button
@@ -116,12 +105,6 @@
             @click="handleSortClick('random')"
             :title="t('sort_random')"
           >
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 3 21 3 21 8"/>
-              <line x1="4" y1="20" x2="21" y2="3"/>
-              <polyline points="21 16 21 21 16 21"/>
-              <line x1="15" y1="15" x2="21" y2="21"/>
-            </svg>
             <span>{{ t('sort_random') }}</span>
           </button>
           <button
@@ -130,14 +113,6 @@
             @click="handleSortClick('manual')"
             :title="t('sort_manual')"
           >
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-              <circle cx="9" cy="5" r="1.2"/>
-              <circle cx="15" cy="5" r="1.2"/>
-              <circle cx="9" cy="12" r="1.2"/>
-              <circle cx="15" cy="12" r="1.2"/>
-              <circle cx="9" cy="19" r="1.2"/>
-              <circle cx="15" cy="19" r="1.2"/>
-            </svg>
             <span>{{ t('sort_manual') }}</span>
           </button>
         </div>
@@ -453,8 +428,9 @@
 
   /* Sort Buttons */
   .sort-buttons {
-    display: flex;
-    gap: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
     background: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
@@ -466,9 +442,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    flex: 1;
-    padding: 7px 4px;
+    text-align: center;
+    padding: 7px 6px;
     border: none;
     border-radius: 7px;
     background: transparent;
@@ -478,8 +453,10 @@
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: inherit;
-    white-space: nowrap;
-    overflow: hidden;
+    line-height: 1.25;
+    word-break: break-word;
+    hyphens: auto;
+    min-width: 0;
   }
 
   .sort-btn:hover {
@@ -490,20 +467,6 @@
     background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
     color: var(--accent-text-color);
     box-shadow: 0 2px 8px var(--shadow-color);
-  }
-
-  .sort-btn svg {
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 480px) {
-    .sort-btn span {
-      display: none;
-    }
-
-    .sort-btn {
-      padding: 8px;
-    }
   }
 
   /* Checkbox */
