@@ -1,21 +1,40 @@
 <template>
   <section class="output-section">
     <h2 class="section-title">{{ t('preview_title') }}</h2>
+
     <div class="form-group">
-      <label for="outputFormat">{{ t('label_format') }}</label>
-      <select id="outputFormat" v-model="localFormat" @change="handleFormatChange">
-        <option value="m3u">{{ t('format_m3u') }}</option>
-        <option value="xspf">{{ t('format_xspf') }}</option>
-        <option value="json">{{ t('format_json') }}</option>
-      </select>
+      <label>{{ t('label_format') }}</label>
+      <div class="format-tabs" role="group" :aria-label="t('label_format')">
+        <button
+          v-for="fmt in formats"
+          :key="fmt.value"
+          type="button"
+          class="format-tab"
+          :class="{ active: localFormat === fmt.value }"
+          @click="setFormat(fmt.value)"
+        >{{ fmt.label }}</button>
+      </div>
     </div>
-    <textarea
-      id="output"
-      class="output-area"
-      readonly
-      :placeholder="t('placeholder_output')"
-      :value="playlistContent"
-    ></textarea>
+
+    <div class="code-viewer" :class="{ empty: !playlistContent }">
+      <div class="code-viewer-header">
+        <span class="code-lang-badge">{{ localFormat.toUpperCase() }}</span>
+        <span v-if="playlistContent" class="code-stats">{{ lineCount }} {{ t('lines') || 'Zeilen' }}</span>
+      </div>
+      <div class="code-viewer-body">
+        <pre v-if="playlistContent" class="code-content"><code>{{ playlistContent }}</code></pre>
+        <div v-else class="code-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <span>{{ t('placeholder_output') }}</span>
+        </div>
+      </div>
+    </div>
+
     <div class="button-row">
       <button
         type="button"
@@ -79,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watch } from 'vue'
+  import { ref, watch, computed } from 'vue'
   import { useTranslation } from '../composables/useTranslation'
   import { useToast } from '../composables/useToast'
   import AudioPlayer from './AudioPlayer.vue'
@@ -99,6 +118,12 @@
   const toast = useToast()
   const localFormat = ref(props.outputFormat)
 
+  const formats = [
+    { value: 'm3u', label: 'M3U' },
+    { value: 'xspf', label: 'XSPF' },
+    { value: 'json', label: 'JSON' },
+  ]
+
   watch(
     () => props.outputFormat,
     (newVal) => {
@@ -106,9 +131,14 @@
     },
   )
 
-  const handleFormatChange = () => {
-    emit('update:outputFormat', localFormat.value)
+  const setFormat = (format) => {
+    localFormat.value = format
+    emit('update:outputFormat', format)
   }
+
+  const lineCount = computed(() =>
+    props.playlistContent ? props.playlistContent.split('\n').length : 0,
+  )
 
   const handleCopy = async () => {
     if (!props.playlistContent) {
@@ -130,6 +160,130 @@
 </script>
 
 <style scoped>
+  /* Format Tabs (Segmented Control) */
+  .format-tabs {
+    display: flex;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 3px;
+    width: fit-content;
+    gap: 2px;
+  }
+
+  .format-tab {
+    padding: 6px 20px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--muted-color);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.04em;
+    font-family: inherit;
+  }
+
+  .format-tab:hover {
+    color: var(--text-color);
+  }
+
+  .format-tab.active {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    color: var(--accent-text-color);
+    box-shadow: 0 2px 8px var(--shadow-color);
+  }
+
+  /* Code Viewer */
+  .code-viewer {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--input-bg);
+    transition: border-color 0.2s ease;
+    margin-top: 4px;
+  }
+
+  .code-viewer:not(.empty):hover {
+    border-color: var(--accent-color);
+  }
+
+  .code-viewer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 14px;
+    background: rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .light-theme .code-viewer-header {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .code-lang-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--accent-color);
+    font-family: 'Courier New', monospace;
+  }
+
+  .code-stats {
+    font-size: 0.7rem;
+    color: var(--muted-color);
+    font-family: 'Courier New', monospace;
+    opacity: 0.7;
+  }
+
+  .code-viewer-body {
+    min-height: 200px;
+    max-height: 340px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+  }
+
+  .code-viewer-body::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .code-viewer-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .code-viewer-body::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+  }
+
+  .code-content {
+    margin: 0;
+    padding: 14px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: var(--text-color);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .code-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 200px;
+    color: var(--muted-color);
+    opacity: 0.45;
+    font-size: 0.88rem;
+    text-align: center;
+    padding: 20px;
+  }
+
+  /* Button Row */
   .button-row {
     display: flex;
     gap: 12px;
