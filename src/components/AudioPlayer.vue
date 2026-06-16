@@ -209,6 +209,7 @@
     volume,
     isMuted,
     playlist,
+    play,
     stop,
     togglePlay,
     next,
