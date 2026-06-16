@@ -185,9 +185,10 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, toRef } from 'vue'
+  import { ref, computed, toRef, watch } from 'vue'
   import { useAudioPlayer } from '../composables/useAudioPlayer'
   import { useTranslation } from '../composables/useTranslation'
+  import { useToast } from '../composables/useToast'
 
   const props = defineProps({
     files: {
@@ -197,6 +198,7 @@
   })
 
   const { t } = useTranslation()
+  const toast = useToast()
   const filesRef = toRef(props, 'files')
   const progressBarRef = ref(null)
 
@@ -219,6 +221,12 @@
     toggleMute,
     formatTime,
   } = useAudioPlayer(filesRef)
+
+  watch(currentTrackIndex, (idx) => {
+    if (idx >= 0 && playlist.value[idx]) {
+      toast.info(`♪ ${playlist.value[idx].title}`)
+    }
+  })
 
   const progressPercent = computed(() => {
     if (!duration.value || duration.value === 0) return 0
