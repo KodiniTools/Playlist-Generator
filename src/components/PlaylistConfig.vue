@@ -61,7 +61,6 @@
               {{ t('button_add_folder') || 'Ordner' }}
             </button>
           </div>
-          <p class="drop-hint">Strg+V {{ t('keyboard_paste') || '· zum Einfügen' }}</p>
         </div>
         <div class="checkbox-option" v-if="files.length > 0">
           <label class="checkbox-label">
