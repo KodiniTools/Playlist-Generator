@@ -55,7 +55,7 @@
               {{ t('button_add_folder') || 'Ordner hinzufügen' }}
             </button>
           </div>
-          <p class="drop-hint">{{ t('drop_hint') || 'oder Dateien / Ordner hier ablegen' }}</p>
+          <p class="drop-hint">{{ t('drop_hint') || 'oder Dateien / Ordner hier ablegen · Strg+V zum Einfügen' }}</p>
         </div>
         <div class="checkbox-option" v-if="files.length > 0">
           <label class="checkbox-label">

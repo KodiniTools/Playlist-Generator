@@ -321,6 +321,10 @@
                 <td>Playlist in Zwischenablage kopieren</td>
               </tr>
               <tr>
+                <td><kbd>Strg + V</kbd></td>
+                <td>Audiodateien aus Zwischenablage einfügen</td>
+              </tr>
+              <tr>
                 <td><kbd>Entf</kbd></td>
                 <td>Ausgewählte Datei löschen</td>
               </tr>
@@ -683,6 +687,10 @@
               <tr>
                 <td><kbd>Ctrl + C</kbd></td>
                 <td>Copy playlist to clipboard</td>
+              </tr>
+              <tr>
+                <td><kbd>Ctrl + V</kbd></td>
+                <td>Paste audio files from clipboard</td>
               </tr>
               <tr>
                 <td><kbd>Delete</kbd></td>
