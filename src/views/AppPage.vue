@@ -306,12 +306,26 @@
     }
   }
 
+  const AUDIO_EXTENSIONS = /\.(mp3|wav|flac|ogg|aac|m4a|wma|opus)$/i
+
+  const handlePaste = (e) => {
+    const items = e.clipboardData?.files
+    if (!items || items.length === 0) return
+    const audioFiles = Array.from(items).filter((f) => AUDIO_EXTENSIONS.test(f.name))
+    if (audioFiles.length > 0) {
+      e.preventDefault()
+      handleAddFiles(audioFiles)
+    }
+  }
+
   onMounted(() => {
     window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('paste', handlePaste)
   })
 
   onUnmounted(() => {
     window.removeEventListener('keydown', handleKeyDown)
+    window.removeEventListener('paste', handlePaste)
   })
 </script>
 
