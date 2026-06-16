@@ -32,30 +32,36 @@
           @dragleave.prevent="handleDragLeave"
           @drop.prevent="handleDrop"
         >
+          <div class="zone-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <p class="zone-title">{{ t('drop_hint') || 'Dateien / Ordner hier ablegen' }}</p>
           <div class="upload-buttons">
             <button
               type="button"
-              class="upload-btn"
+              class="upload-btn primary"
               :title="t('shortcut_open')"
               @click="fileInputRef?.click()"
             >
-              <svg viewBox="0 0 24 24" width="18" height="18">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
-              {{ t('button_add_files') || 'Dateien hinzufügen' }}
+              {{ t('button_add_files') || 'Dateien' }}
             </button>
             <button type="button" class="upload-btn" @click="folderInputRef?.click()">
-              <svg viewBox="0 0 24 24" width="18" height="18">
-                <path
-                  d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
-                ></path>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
               </svg>
-              {{ t('button_add_folder') || 'Ordner hinzufügen' }}
+              {{ t('button_add_folder') || 'Ordner' }}
             </button>
           </div>
-          <p class="drop-hint">{{ t('drop_hint') || 'oder Dateien / Ordner hier ablegen · Strg+V zum Einfügen' }}</p>
+          <p class="drop-hint">Strg+V {{ t('keyboard_paste') || '· zum Einfügen' }}</p>
         </div>
         <div class="checkbox-option" v-if="files.length > 0">
           <label class="checkbox-label">
@@ -75,13 +81,66 @@
       />
 
       <div class="form-group">
-        <label for="sortOption">{{ t('label_sort') }}</label>
-        <select id="sortOption" :value="sortOption" @change="handleSortChange">
-          <option value="alphabetical">{{ t('sort_alpha') }}</option>
-          <option value="date">{{ t('sort_date') }}</option>
-          <option value="random">{{ t('sort_random') }}</option>
-          <option value="manual">{{ t('sort_manual') }}</option>
-        </select>
+        <label>{{ t('label_sort') }}</label>
+        <div class="sort-buttons" role="group" :aria-label="t('label_sort')">
+          <button
+            type="button"
+            :class="['sort-btn', { active: sortOption === 'alphabetical' }]"
+            @click="handleSortClick('alphabetical')"
+            :title="t('sort_alpha')"
+          >
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="15" y2="6"/>
+              <line x1="3" y1="12" x2="11" y2="12"/>
+              <line x1="3" y1="18" x2="7" y2="18"/>
+              <polyline points="17 4 21 8 17 12"/>
+              <line x1="21" y1="8" x2="13" y2="8"/>
+            </svg>
+            <span>{{ t('sort_alpha') }}</span>
+          </button>
+          <button
+            type="button"
+            :class="['sort-btn', { active: sortOption === 'date' }]"
+            @click="handleSortClick('date')"
+            :title="t('sort_date')"
+          >
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>{{ t('sort_date') }}</span>
+          </button>
+          <button
+            type="button"
+            :class="['sort-btn', { active: sortOption === 'random' }]"
+            @click="handleSortClick('random')"
+            :title="t('sort_random')"
+          >
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"/>
+              <line x1="4" y1="20" x2="21" y2="3"/>
+              <polyline points="21 16 21 21 16 21"/>
+              <line x1="15" y1="15" x2="21" y2="21"/>
+            </svg>
+            <span>{{ t('sort_random') }}</span>
+          </button>
+          <button
+            type="button"
+            :class="['sort-btn', { active: sortOption === 'manual' }]"
+            @click="handleSortClick('manual')"
+            :title="t('sort_manual')"
+          >
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+              <circle cx="9" cy="5" r="1.2"/>
+              <circle cx="15" cy="5" r="1.2"/>
+              <circle cx="9" cy="12" r="1.2"/>
+              <circle cx="15" cy="12" r="1.2"/>
+              <circle cx="9" cy="19" r="1.2"/>
+              <circle cx="15" cy="19" r="1.2"/>
+            </svg>
+            <span>{{ t('sort_manual') }}</span>
+          </button>
+        </div>
       </div>
 
       <div class="form-group">
@@ -260,8 +319,8 @@
     emit('moveFile', fromIndex, toIndex)
   }
 
-  const handleSortChange = (e) => {
-    emit('update:sortOption', e.target.value)
+  const handleSortClick = (value) => {
+    emit('update:sortOption', value)
     emit('sortFiles')
   }
 
@@ -288,28 +347,60 @@
     display: none;
   }
 
+  /* Upload Zone */
   .file-upload-wrapper {
     border: 2px dashed var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 14px;
+    padding: 28px 20px 20px;
     text-align: center;
     transition:
-      border-color 0.2s ease,
-      background 0.2s ease;
+      border-color 0.25s ease,
+      background 0.25s ease;
   }
 
   .file-upload-wrapper.drag-over {
     border-color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.06);
+    border-style: solid;
+    background: rgba(201, 152, 77, 0.06);
   }
 
   .light-theme .file-upload-wrapper.drag-over {
-    background: rgba(162, 134, 128, 0.06);
+    background: rgba(1, 79, 153, 0.06);
+  }
+
+  .zone-icon {
+    color: var(--muted-color);
+    margin-bottom: 10px;
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.25s ease;
+  }
+
+  .file-upload-wrapper:hover .zone-icon,
+  .file-upload-wrapper.drag-over .zone-icon {
+    color: var(--accent-color);
+    transform: translateY(-5px);
+  }
+
+  .file-upload-wrapper.drag-over .zone-icon {
+    animation: zone-bounce 0.55s ease infinite;
+  }
+
+  @keyframes zone-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .zone-title {
+    font-size: 0.88rem;
+    color: var(--muted-color);
+    margin-bottom: 14px;
+    font-weight: 500;
   }
 
   .upload-buttons {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     justify-content: center;
     flex-wrap: wrap;
   }
@@ -317,13 +408,14 @@
   .upload-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 9px 18px;
+    gap: 7px;
+    padding: 8px 16px;
     background: transparent;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--muted-color);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+    font-family: inherit;
     cursor: pointer;
     transition: all 0.2s ease;
   }
@@ -331,29 +423,90 @@
   .upload-btn:hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.05);
+    background: rgba(201, 152, 77, 0.05);
   }
 
   .light-theme .upload-btn:hover {
-    background: rgba(162, 134, 128, 0.05);
+    background: rgba(1, 79, 153, 0.05);
   }
 
-  .upload-btn svg {
-    flex-shrink: 0;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  .upload-btn.primary {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    color: var(--accent-text-color);
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .upload-btn.primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    color: var(--accent-text-color);
   }
 
   .drop-hint {
     margin: 12px 0 0;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     color: var(--muted-color);
-    opacity: 0.65;
+    opacity: 0.55;
   }
 
+  /* Sort Buttons */
+  .sort-buttons {
+    display: flex;
+    gap: 0;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 3px;
+    width: 100%;
+  }
+
+  .sort-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex: 1;
+    padding: 7px 4px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--muted-color);
+    font-size: 0.76rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .sort-btn:hover {
+    color: var(--text-color);
+  }
+
+  .sort-btn.active {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    color: var(--accent-text-color);
+    box-shadow: 0 2px 8px var(--shadow-color);
+  }
+
+  .sort-btn svg {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 480px) {
+    .sort-btn span {
+      display: none;
+    }
+
+    .sort-btn {
+      padding: 8px;
+    }
+  }
+
+  /* Checkbox */
   .checkbox-option {
     margin-top: 10px;
   }
@@ -371,7 +524,7 @@
     width: 16px;
     height: 16px;
     cursor: pointer;
-    accent-color: var(--primary-color, #00ff9d);
+    accent-color: var(--accent-color);
   }
 
   .checkbox-text {
