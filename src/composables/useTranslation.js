@@ -149,11 +149,16 @@ const translations = {
     toast_copy_error: 'Kopieren fehlgeschlagen',
     replace_list_option: 'Bestehende Liste ersetzen',
 
-    // Shared Files
+    // Shared Files (audiokonverter)
     sharedFilesLoading: '{count} Datei(en) vom Audio Konverter werden importiert…',
     sharedFilesLoaded: '{count} Datei(en) erfolgreich importiert',
     sharedFilesEmpty: 'Keine Dateien vom Audio Konverter gefunden',
     sharedFilesError: 'Fehler beim Importieren',
+
+    // Shared Files (audionormalizer)
+    sharedFilesNormalizerLoading: '{count} normalisierte Datei(en) werden importiert…',
+    sharedFilesNormalizerLoaded: '{count} normalisierte Datei(en) erfolgreich importiert',
+    sharedFilesNormalizerEmpty: 'Keine normalisierten Dateien gefunden',
 
     // Shortcuts
     shortcut_open: 'Dateien öffnen (Strg+O)',
@@ -336,11 +341,16 @@ const translations = {
     toast_copy_error: 'Copy failed',
     replace_list_option: 'Replace existing list',
 
-    // Shared Files
+    // Shared Files (audiokonverter)
     sharedFilesLoading: 'Importing {count} file(s) from Audio Converter…',
     sharedFilesLoaded: '{count} file(s) successfully imported',
     sharedFilesEmpty: 'No files found from Audio Converter',
     sharedFilesError: 'Error importing files',
+
+    // Shared Files (audionormalizer)
+    sharedFilesNormalizerLoading: 'Importing {count} normalised file(s)…',
+    sharedFilesNormalizerLoaded: '{count} normalised file(s) successfully imported',
+    sharedFilesNormalizerEmpty: 'No normalised files found',
 
     // Shortcuts
     shortcut_open: 'Open files (Ctrl+O)',
