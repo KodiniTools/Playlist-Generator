@@ -151,7 +151,20 @@
     const isNormalizer = source === 'audionormalizer'
 
     try {
-      const records = await getSharedFiles()
+      let records = await getSharedFiles()
+
+      // If IndexedDB is empty on first read, wait 1 s and retry once.
+      // This handles the race where the sender's async write has not yet
+      // committed by the time this tab finishes loading.
+      if (isNormalizer && (!records || records.length === 0)) {
+        sharedBanner.value = {
+          type: 'info',
+          message: t.value('sharedFilesNormalizerLoading').replace('{count}', '...'),
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        records = await getSharedFiles()
+      }
+
       if (!records?.length) {
         sharedBanner.value = {
           type: 'warning',
