@@ -34,9 +34,11 @@ const router = createRouter({
   },
 })
 
+const SHARED_SOURCES = ['audiokonverter', 'audionormalizer']
+
 router.beforeEach((to, from, next) => {
-  if (to.name === 'landing' && to.query.source === 'audiokonverter') {
-    next({ name: 'app', query: { source: 'audiokonverter' } })
+  if (to.name === 'landing' && SHARED_SOURCES.includes(to.query.source as string)) {
+    next({ name: 'app', query: { source: to.query.source } })
   } else {
     next()
   }

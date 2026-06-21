@@ -141,6 +141,8 @@
   const sharedBanner = ref(null)
   let sharedFilesHandled = false
 
+  const SHARED_SOURCES = ['audiokonverter', 'audionormalizer']
+
   async function loadSharedFiles() {
     if (sharedFilesHandled) return
     sharedFilesHandled = true
@@ -183,14 +185,14 @@
 
   // Primary: after router is ready
   router.isReady().then(() => {
-    if (route.query.source === 'audiokonverter') loadSharedFiles()
+    if (SHARED_SOURCES.includes(route.query.source as string)) loadSharedFiles()
   })
 
   // Fallback: route watcher
   watch(
     () => route.query.source,
     (s) => {
-      if (s === 'audiokonverter') loadSharedFiles()
+      if (SHARED_SOURCES.includes(s as string)) loadSharedFiles()
     },
   )
 
