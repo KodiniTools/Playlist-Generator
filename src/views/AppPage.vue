@@ -147,40 +147,75 @@
     if (sharedFilesHandled) return
     sharedFilesHandled = true
 
+    const source = route.query.source as string
+    const isNormalizer = source === 'audionormalizer'
+
     try {
       const records = await getSharedFiles()
       if (!records?.length) {
-        sharedBanner.value = { type: 'warning', message: t.value('sharedFilesEmpty') }
-        setTimeout(() => {
-          sharedBanner.value = null
-        }, 5000)
+        sharedBanner.value = {
+          type: 'warning',
+          message: isNormalizer ? t.value('sharedFilesNormalizerEmpty') : t.value('sharedFilesEmpty'),
+        }
+        setTimeout(() => { sharedBanner.value = null }, 5000)
         return
       }
 
       sharedBanner.value = {
         type: 'info',
-        message: t.value('sharedFilesLoading').replace('{count}', records.length),
+        message: (isNormalizer
+          ? t.value('sharedFilesNormalizerLoading')
+          : t.value('sharedFilesLoading')
+        ).replace('{count}', String(records.length)),
       }
 
-      const { processed } = await handleSharedFiles(records)
+      let loaded = 0
 
-      if (processed > 0) {
+      if (isNormalizer) {
+        // Bypass analyzeBlob — normalizer files are already valid WAV.
+        // Build File objects directly and hand them to addFiles().
+        const normFiles = records
+          .map((r) => {
+            const blob =
+              r.blob instanceof Blob
+                ? r.blob
+                : new Blob([r.blob], { type: r.mimeType || 'audio/wav' })
+            if (blob.size === 0) return null
+            return new File([blob], r.name, {
+              type: r.mimeType || blob.type || 'audio/wav',
+              lastModified: Date.now(),
+            })
+          })
+          .filter((f): f is File => f !== null)
+
+        const result = addFiles(normFiles)
+        loaded = result.added
+      } else {
+        const { processed } = await handleSharedFiles(records)
+        loaded = processed
+      }
+
+      if (loaded > 0) {
+        await clearSharedFiles()
         sharedBanner.value = {
           type: 'success',
-          message: t.value('sharedFilesLoaded').replace('{count}', processed),
+          message: (isNormalizer
+            ? t.value('sharedFilesNormalizerLoaded')
+            : t.value('sharedFilesLoaded')
+          ).replace('{count}', String(loaded)),
         }
-        await clearSharedFiles()
       } else {
-        sharedBanner.value = { type: 'warning', message: t.value('sharedFilesEmpty') }
+        sharedBanner.value = {
+          type: 'warning',
+          message: isNormalizer ? t.value('sharedFilesNormalizerEmpty') : t.value('sharedFilesEmpty'),
+        }
       }
     } catch (err) {
       console.error('Error loading shared files:', err)
       sharedBanner.value = { type: 'error', message: t.value('sharedFilesError') }
     }
 
-    setTimeout(() => {
-      sharedBanner.value = null
-    }, 5000)
+    setTimeout(() => { sharedBanner.value = null }, 5000)
   }
 
   // Primary: after router is ready
