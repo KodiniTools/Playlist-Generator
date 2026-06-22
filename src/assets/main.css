@@ -315,28 +315,28 @@ header h1 {
 /* === Form Sections === */
 .form-section,
 .output-section {
-  background: linear-gradient(135deg, rgba(20, 38, 64, 0.8), rgba(20, 38, 64, 0.6));
-  border: 2px solid var(--border-color);
-  border-radius: 25px;
-  padding: 35px;
-  backdrop-filter: blur(15px);
-  box-shadow:
-    0 12px 40px var(--shadow-color),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: var(--panel-color);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
   animation: slide-in 1s ease-out 0.4s both;
 }
 
 .light-theme .form-section,
 .light-theme .output-section {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+  background: var(--panel-color);
 }
 
 .section-title {
-  font-size: 1.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--accent-color);
-  margin-bottom: 25px;
-  text-align: center;
-  font-weight: 600;
+  margin-bottom: 20px;
+  padding-left: 10px;
+  border-left: 3px solid var(--accent-color);
+  text-align: left;
 }
 
 /* === Form Groups === */
@@ -791,7 +791,7 @@ details p {
 
   .form-section,
   .output-section {
-    padding: 25px;
+    padding: 18px;
   }
 }
 
@@ -840,8 +840,8 @@ details p {
 
   .form-section,
   .output-section {
-    padding: 18px;
-    border-radius: 18px;
+    padding: 14px;
+    border-radius: 12px;
   }
 
   .form-group {
