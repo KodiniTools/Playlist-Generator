@@ -165,6 +165,18 @@ const translations = {
     shortcut_save: 'Speichern (Strg+S)',
     shortcut_copy: 'Kopieren (Strg+C)',
 
+    // Keyboard Shortcuts Panel
+    shortcuts_panel_title: 'Tastaturkürzel',
+    shortcuts_close_btn: 'Schließen',
+    shortcuts_hint_btn: 'Tastaturkürzel anzeigen',
+    shortcut_open_desc: 'Dateien öffnen',
+    shortcut_save_desc: 'Playlist speichern',
+    shortcut_copy_desc: 'In Zwischenablage kopieren',
+    shortcut_delete_desc: 'Ausgewählten Track löschen',
+    shortcut_arrows_desc: 'Track auswählen',
+    shortcut_escape_desc: 'Auswahl aufheben',
+    shortcut_question_desc: 'Dieses Panel öffnen / schließen',
+
     // Audio Player
     player_title: 'Vorschau-Player',
     player_no_track: 'Kein Track ausgewählt',
@@ -356,6 +368,18 @@ const translations = {
     shortcut_open: 'Open files (Ctrl+O)',
     shortcut_save: 'Save (Ctrl+S)',
     shortcut_copy: 'Copy (Ctrl+C)',
+
+    // Keyboard Shortcuts Panel
+    shortcuts_panel_title: 'Keyboard Shortcuts',
+    shortcuts_close_btn: 'Close',
+    shortcuts_hint_btn: 'Show keyboard shortcuts',
+    shortcut_open_desc: 'Open files',
+    shortcut_save_desc: 'Save playlist',
+    shortcut_copy_desc: 'Copy to clipboard',
+    shortcut_delete_desc: 'Delete selected track',
+    shortcut_arrows_desc: 'Select track',
+    shortcut_escape_desc: 'Clear selection',
+    shortcut_question_desc: 'Open / close this panel',
 
     // Audio Player
     player_title: 'Preview Player',

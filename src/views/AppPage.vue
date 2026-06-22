@@ -9,6 +9,7 @@
           <router-link to="/faq" class="nav-link">{{ t('nav_faq') }}</router-link>
           <router-link to="/blog" class="nav-link">{{ t('nav_blog') }}</router-link>
         </nav>
+        <KeyboardShortcutsPanel />
       </div>
     </header>
 
@@ -111,6 +112,7 @@
   import PlaylistConfig from '../components/PlaylistConfig.vue'
   import PlaylistPreview from '../components/PlaylistPreview.vue'
   import ToolsGrid from '../components/ToolsGrid.vue'
+  import KeyboardShortcutsPanel from '../components/KeyboardShortcutsPanel.vue'
   import { useTranslation } from '../composables/useTranslation'
   import { usePlaylist } from '../composables/usePlaylist'
   import { useToast } from '../composables/useToast'
@@ -402,6 +404,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 16px;
   }
 
   .header-nav {
