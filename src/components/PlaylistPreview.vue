@@ -14,6 +14,11 @@
           @click="setFormat(fmt.value)"
         >{{ fmt.label }}</button>
       </div>
+      <Transition name="desc">
+        <p class="format-desc" :key="localFormat" aria-live="polite">
+          {{ t('format_desc_' + localFormat) }}
+        </p>
+      </Transition>
     </div>
 
     <div class="code-viewer" :class="{ empty: !playlistContent }">
@@ -193,6 +198,35 @@
     background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
     color: var(--accent-text-color);
     box-shadow: 0 2px 8px var(--shadow-color);
+  }
+
+  .form-group {
+    position: relative;
+  }
+
+  /* Format description */
+  .format-desc {
+    margin: 8px 0 0;
+    font-size: 0.8rem;
+    color: var(--muted-color);
+    opacity: 0.8;
+    line-height: 1.5;
+  }
+
+  .desc-enter-active,
+  .desc-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .desc-enter-from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  .desc-leave-to {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  .desc-leave-active {
+    position: absolute;
   }
 
   /* Code Viewer */

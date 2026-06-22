@@ -183,6 +183,11 @@ const translations = {
     shortcut_escape_desc: 'Auswahl aufheben',
     shortcut_question_desc: 'Dieses Panel öffnen / schließen',
 
+    // Format descriptions (shown below format tabs)
+    format_desc_m3u: 'Kompatibel mit VLC, Winamp, Foobar2000 und den meisten Mediaplayern.',
+    format_desc_xspf: 'Moderner XML-Standard – ideal für VLC und Austausch zwischen Programmen.',
+    format_desc_json: 'Für Entwickler und Webanwendungen – nicht für normale Mediaplayer geeignet.',
+
     // Audio Player
     player_title: 'Vorschau-Player',
     player_no_track: 'Kein Track ausgewählt',
@@ -392,6 +397,11 @@ const translations = {
     shortcut_arrows_desc: 'Select track',
     shortcut_escape_desc: 'Clear selection',
     shortcut_question_desc: 'Open / close this panel',
+
+    // Format descriptions (shown below format tabs)
+    format_desc_m3u: 'Compatible with VLC, Winamp, Foobar2000 and most media players.',
+    format_desc_xspf: 'Modern XML standard – ideal for VLC and sharing between applications.',
+    format_desc_json: 'For developers and web apps – not suitable for regular media players.',
 
     // Audio Player
     player_title: 'Preview Player',
