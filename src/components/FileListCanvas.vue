@@ -19,6 +19,9 @@
       @mousemove="handleMouseMove"
       @click="handleClick"
       @mouseleave="handleMouseLeave"
+      @touchstart.prevent="handleTouchStart"
+      @touchmove.prevent="handleTouchMove"
+      @touchend.prevent="handleTouchEnd"
     ></canvas>
     <div class="stats-bar">
       <span class="stat-item">
@@ -719,10 +722,65 @@
     canvasRef.value.style.cursor = 'default'
   }
 
+  // ── Touch support ──────────────────────────────────────────────────────────
+  // Track last touch Y for scroll-delta calculation (single-finger scroll)
+  let lastTouchY = 0
+  // Distinguish tap from drag: only emit click if finger barely moved
+  let touchStartX = 0
+  let touchStartY = 0
+  const TAP_THRESHOLD = 8 // px
+
+  const touchToMouseEvent = (touch) => ({
+    clientX: touch.clientX,
+    clientY: touch.clientY,
+  })
+
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0]
+    lastTouchY = touch.clientY
+    touchStartX = touch.clientX
+    touchStartY = touch.clientY
+    handleMouseDown(touchToMouseEvent(touch))
+  }
+
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0]
+
+    // If not dragging a file, treat vertical swipe as scroll
+    if (!isDraggingFile.value) {
+      const deltaY = lastTouchY - touch.clientY
+      lastTouchY = touch.clientY
+      const geo = getScrollbarGeometry()
+      if (geo) {
+        scrollY.value = Math.max(0, Math.min(scrollY.value + deltaY, geo.maxScroll))
+        drawFilesOnCanvas()
+      }
+      return
+    }
+
+    lastTouchY = touch.clientY
+    handleMouseMove(touchToMouseEvent(touch))
+  }
+
+  const handleTouchEnd = (e) => {
+    const touch = e.changedTouches[0]
+    const dx = Math.abs(touch.clientX - touchStartX)
+    const dy = Math.abs(touch.clientY - touchStartY)
+
+    handleMouseUp()
+
+    // Emit a synthetic click only for taps (finger barely moved)
+    if (dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) {
+      handleClick(touchToMouseEvent(touch))
+    }
+  }
+  // ───────────────────────────────────────────────────────────────────────────
+
   onMounted(() => {
     window.addEventListener('resize', resizeCanvas)
     window.addEventListener('mouseup', handleMouseUp)
     window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('touchend', handleMouseUp)
     resizeCanvas()
   })
 
@@ -730,6 +788,7 @@
     window.removeEventListener('resize', resizeCanvas)
     window.removeEventListener('mouseup', handleMouseUp)
     window.removeEventListener('mousemove', handleMouseMove)
+    window.removeEventListener('touchend', handleMouseUp)
     stopAutoScroll() // Clean up interval on unmount
   })
 
