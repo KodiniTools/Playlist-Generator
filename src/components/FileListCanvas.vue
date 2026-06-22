@@ -49,7 +49,7 @@
             d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"
           />
         </svg>
-        ~{{ estimatedDuration }}
+        <span :title="durationIsApproximate ? t('duration_approx_title') : t('duration_exact_title')">{{ durationIsApproximate ? '~' : '' }}{{ estimatedDuration }}</span>
       </span>
     </div>
   </div>
@@ -59,6 +59,7 @@
   import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
   import { useTranslation } from '../composables/useTranslation'
   import { useTheme } from '../composables/useTheme'
+  import { useDurations } from '../composables/useDurations'
 
   const props = defineProps({
     files: {
@@ -85,24 +86,47 @@
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
   })
 
-  const estimatedDuration = computed(() => {
-    // Estimate based on average bitrate (~2 MB per minute for 256-320kbps MP3)
-    // This is a rough estimate as actual duration depends on bitrate/format
-    const totalMB = totalSize.value / (1024 * 1024)
-    const estimatedMinutes = Math.round(totalMB / 2) // ~2 MB per minute average
+  const durationInfo = computed(() => {
+    // Trigger reactivity on the known-durations Map
+    knownDurations.size
 
-    if (estimatedMinutes < 1) return '< 1 min'
-    if (estimatedMinutes < 60) return `${estimatedMinutes} min`
+    let totalSeconds = 0
+    let hasEstimates = false
 
-    const hours = Math.floor(estimatedMinutes / 60)
-    const mins = estimatedMinutes % 60
-    return `${hours}h ${mins}min`
+    for (const file of props.files) {
+      const real = knownDurations.get(file.name)
+      if (real != null) {
+        totalSeconds += real
+      } else {
+        // Fallback: ~2 MB per minute for 256–320 kbps MP3
+        totalSeconds += (file.size / (1024 * 1024)) / 2 * 60
+        hasEstimates = true
+      }
+    }
+
+    const totalMinutes = Math.round(totalSeconds / 60)
+    let label
+    if (totalMinutes < 1) {
+      label = '< 1 min'
+    } else if (totalMinutes < 60) {
+      label = `${totalMinutes} min`
+    } else {
+      const h = Math.floor(totalMinutes / 60)
+      const m = totalMinutes % 60
+      label = m > 0 ? `${h}h ${m}min` : `${h}h`
+    }
+
+    return { label, approximate: hasEstimates }
   })
+
+  const estimatedDuration = computed(() => durationInfo.value.label)
+  const durationIsApproximate = computed(() => durationInfo.value.approximate)
 
   const emit = defineEmits(['clear', 'removeFile', 'moveFile', 'selectFile'])
 
   const { t } = useTranslation()
   const { currentTheme } = useTheme()
+  const { known: knownDurations } = useDurations()
 
   const canvasRef = ref(null)
   const scrollY = ref(0)
