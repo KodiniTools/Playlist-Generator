@@ -147,6 +147,9 @@ const translations = {
     toast_playlist_saved: 'Playlist gespeichert ✓',
     toast_copied: 'In Zwischenablage kopiert ✓',
     toast_copy_error: 'Kopieren fehlgeschlagen',
+    toast_file_removed: 'Track entfernt',
+    toast_undo_btn: 'Rückgängig',
+    toast_undo_restored: 'Track wiederhergestellt ✓',
     replace_list_option: 'Bestehende Liste ersetzen',
 
     // Shared Files (audiokonverter)
@@ -179,6 +182,7 @@ const translations = {
     shortcut_save_desc: 'Playlist speichern',
     shortcut_copy_desc: 'In Zwischenablage kopieren',
     shortcut_delete_desc: 'Ausgewählten Track löschen',
+    shortcut_undo_desc: 'Löschen rückgängig machen',
     shortcut_arrows_desc: 'Track auswählen',
     shortcut_escape_desc: 'Auswahl aufheben',
     shortcut_question_desc: 'Dieses Panel öffnen / schließen',
@@ -362,6 +366,9 @@ const translations = {
     toast_playlist_saved: 'Playlist saved ✓',
     toast_copied: 'Copied to clipboard ✓',
     toast_copy_error: 'Copy failed',
+    toast_file_removed: 'Track removed',
+    toast_undo_btn: 'Undo',
+    toast_undo_restored: 'Track restored ✓',
     replace_list_option: 'Replace existing list',
 
     // Shared Files (audiokonverter)
@@ -394,6 +401,7 @@ const translations = {
     shortcut_save_desc: 'Save playlist',
     shortcut_copy_desc: 'Copy to clipboard',
     shortcut_delete_desc: 'Delete selected track',
+    shortcut_undo_desc: 'Undo last deletion',
     shortcut_arrows_desc: 'Select track',
     shortcut_escape_desc: 'Clear selection',
     shortcut_question_desc: 'Open / close this panel',

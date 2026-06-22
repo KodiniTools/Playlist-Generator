@@ -54,7 +54,7 @@
           @update:selectedFileIndex="selectedFileIndex = $event"
           @addFiles="handleAddFiles"
           @clearFiles="clearFiles"
-          @removeFile="removeFile"
+          @removeFile="handleDeleteFile"
           @moveFile="moveFile"
           @sortFiles="sortFiles"
         />
@@ -136,6 +136,8 @@
     addFiles,
     clearFiles,
     removeFile,
+    undoRemove,
+    clearUndo,
     moveFile,
     sortFiles,
     savePlaylist,
@@ -303,14 +305,39 @@
     }
   }
 
-  const handleDeleteSelected = () => {
-    if (selectedFileIndex.value >= 0 && selectedFileIndex.value < files.value.length) {
-      removeFile(selectedFileIndex.value)
-      // Adjust selection after removal
-      if (selectedFileIndex.value >= files.value.length) {
-        selectedFileIndex.value = files.value.length - 1
-      }
+  let undoToastId = null
+
+  const showUndoToast = () => {
+    if (undoToastId !== null) toast.removeToast(undoToastId)
+    undoToastId = toast.addToast(
+      t.value('toast_file_removed'),
+      'info',
+      5000,
+      {
+        label: t.value('toast_undo_btn'),
+        callback: () => {
+          if (undoRemove()) {
+            toast.success(t.value('toast_undo_restored'), 2000)
+          }
+          undoToastId = null
+        },
+      },
+    )
+    // Clear the undo snapshot once the toast expires (5 s + small buffer)
+    setTimeout(() => { clearUndo(); undoToastId = null }, 5200)
+  }
+
+  const handleDeleteFile = (index) => {
+    if (index < 0 || index >= files.value.length) return
+    removeFile(index)
+    if (selectedFileIndex.value >= files.value.length) {
+      selectedFileIndex.value = files.value.length - 1
     }
+    showUndoToast()
+  }
+
+  const handleDeleteSelected = () => {
+    handleDeleteFile(selectedFileIndex.value)
   }
 
   const handleKeyDown = (e) => {
@@ -342,6 +369,16 @@
     if (e.key === 'Delete') {
       e.preventDefault()
       handleDeleteSelected()
+    }
+
+    // Ctrl+Z: Undo last file removal
+    if (e.ctrlKey && e.key === 'z') {
+      e.preventDefault()
+      if (undoRemove()) {
+        if (undoToastId !== null) toast.removeToast(undoToastId)
+        undoToastId = null
+        toast.success(t.value('toast_undo_restored'), 2000)
+      }
     }
 
     // Arrow keys for file selection

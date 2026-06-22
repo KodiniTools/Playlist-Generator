@@ -9,6 +9,7 @@ const outputFormat = ref('m3u')
 const playlistContent = ref('')
 const replaceMode = ref(false)
 const selectedFileIndex = ref(-1)
+const lastRemoved = ref(null) // { file, index } snapshot for undo
 
 const supportedFormats = ['.mp3', '.wav', '.flac']
 
@@ -128,9 +129,24 @@ const clearFiles = () => {
 
 const removeFile = (index) => {
   if (index >= 0 && index < files.value.length) {
+    lastRemoved.value = { file: files.value[index], index }
     files.value.splice(index, 1)
     generatePlaylist()
   }
+}
+
+const undoRemove = () => {
+  if (!lastRemoved.value) return false
+  const { file, index } = lastRemoved.value
+  const insertAt = Math.min(index, files.value.length)
+  files.value.splice(insertAt, 0, file)
+  lastRemoved.value = null
+  generatePlaylist()
+  return true
+}
+
+const clearUndo = () => {
+  lastRemoved.value = null
 }
 
 const moveFile = (fromIndex, toIndex) => {
@@ -292,6 +308,8 @@ export function usePlaylist() {
     addFiles,
     clearFiles,
     removeFile,
+    undoRemove,
+    clearUndo,
     moveFile,
     sortFiles,
     generatePlaylist,
