@@ -165,6 +165,12 @@ const translations = {
     shortcut_save: 'Speichern (Strg+S)',
     shortcut_copy: 'Kopieren (Strg+C)',
 
+    // Onboarding Banner
+    onboarding_aria: 'Kurzanleitung',
+    onboarding_step1: 'Dateien hinzufügen',
+    onboarding_step2: 'Reihenfolge festlegen',
+    onboarding_step3: 'Playlist speichern',
+
     // Keyboard Shortcuts Panel
     shortcuts_panel_title: 'Tastaturkürzel',
     shortcuts_close_btn: 'Schließen',
@@ -368,6 +374,12 @@ const translations = {
     shortcut_open: 'Open files (Ctrl+O)',
     shortcut_save: 'Save (Ctrl+S)',
     shortcut_copy: 'Copy (Ctrl+C)',
+
+    // Onboarding Banner
+    onboarding_aria: 'Quick guide',
+    onboarding_step1: 'Add files',
+    onboarding_step2: 'Set order',
+    onboarding_step3: 'Save playlist',
 
     // Keyboard Shortcuts Panel
     shortcuts_panel_title: 'Keyboard Shortcuts',

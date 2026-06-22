@@ -38,6 +38,8 @@
         <span>{{ sharedBanner.message }}</span>
       </div>
 
+      <OnboardingBanner :hasFiles="files.length > 0" />
+
       <div class="main-content">
         <PlaylistConfig
           ref="playlistConfigRef"
@@ -113,6 +115,7 @@
   import PlaylistPreview from '../components/PlaylistPreview.vue'
   import ToolsGrid from '../components/ToolsGrid.vue'
   import KeyboardShortcutsPanel from '../components/KeyboardShortcutsPanel.vue'
+  import OnboardingBanner from '../components/OnboardingBanner.vue'
   import { useTranslation } from '../composables/useTranslation'
   import { usePlaylist } from '../composables/usePlaylist'
   import { useToast } from '../composables/useToast'
