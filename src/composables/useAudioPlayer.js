@@ -1,6 +1,8 @@
 import { ref, watch, onUnmounted, computed } from 'vue'
+import { useDurations } from './useDurations'
 
 export function useAudioPlayer(filesRef) {
+  const { setDuration } = useDurations()
   const audio = new Audio()
   const objectUrls = new Map() // file name -> blob URL
 
@@ -145,6 +147,10 @@ export function useAudioPlayer(filesRef) {
 
   audio.addEventListener('loadedmetadata', () => {
     duration.value = audio.duration
+    // Persist real duration for the currently loaded file
+    if (currentTrackIndex.value >= 0 && currentTrackIndex.value < filesRef.value.length) {
+      setDuration(filesRef.value[currentTrackIndex.value].name, audio.duration)
+    }
   })
 
   audio.addEventListener('durationchange', () => {
