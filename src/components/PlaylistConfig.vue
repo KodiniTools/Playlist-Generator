@@ -26,41 +26,54 @@
 
         <div
           class="file-upload-wrapper"
-          :class="{ 'drag-over': isDragging }"
+          :class="{ 'drag-over': isDragging && !isScanning, 'is-scanning': isScanning }"
+          :aria-busy="isScanning"
           @dragenter.prevent="handleDragEnter"
           @dragover.prevent="handleDragOver"
           @dragleave.prevent="handleDragLeave"
           @drop.prevent="handleDrop"
         >
-          <div class="zone-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-          </div>
-          <p class="zone-title">{{ t('drop_hint') || 'Dateien / Ordner hier ablegen' }}</p>
-          <div class="upload-buttons">
-            <button
-              type="button"
-              class="upload-btn primary"
-              :title="t('shortcut_open')"
-              @click="fileInputRef?.click()"
-            >
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Scanning state -->
+          <template v-if="isScanning">
+            <div class="scan-spinner" aria-hidden="true"></div>
+            <p class="zone-title">
+              {{ t('scanning_folder') }}
+              <span v-if="scanCount > 0" class="scan-count">{{ scanCount }}</span>
+            </p>
+          </template>
+
+          <!-- Idle state -->
+          <template v-else>
+            <div class="zone-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
-              {{ t('button_add_files') || 'Dateien' }}
-            </button>
-            <button type="button" class="upload-btn" @click="folderInputRef?.click()">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-              </svg>
-              {{ t('button_add_folder') || 'Ordner' }}
-            </button>
-          </div>
+            </div>
+            <p class="zone-title">{{ t('drop_hint') || 'Dateien / Ordner hier ablegen' }}</p>
+            <div class="upload-buttons">
+              <button
+                type="button"
+                class="upload-btn primary"
+                :title="t('shortcut_open')"
+                @click="fileInputRef?.click()"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                {{ t('button_add_files') || 'Dateien' }}
+              </button>
+              <button type="button" class="upload-btn" @click="folderInputRef?.click()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+                {{ t('button_add_folder') || 'Ordner' }}
+              </button>
+            </div>
+          </template>
         </div>
         <div class="checkbox-option" v-if="files.length > 0">
           <label class="checkbox-label">
@@ -164,6 +177,8 @@
   const fileInputRef = ref(null)
   const folderInputRef = ref(null)
   const isDragging = ref(false)
+  const isScanning = ref(false)
+  const scanCount = ref(0)
   let dragCounter = 0
 
   const AUDIO_EXTENSIONS = /\.(mp3|wav|flac|ogg|aac|m4a|wma|opus)$/i
@@ -175,11 +190,13 @@
 
   const handleFolderChange = (e) => {
     const all = e.target.files
-    // Filter to audio files only (browser already traverses the tree via webkitdirectory)
+    isScanning.value = true
+    scanCount.value = 0
+    // browser already traversed the tree via webkitdirectory – filter is instant
     const audio = Array.from(all).filter((f) => AUDIO_EXTENSIONS.test(f.name))
-    if (audio.length > 0) {
-      emit('addFiles', audio)
-    }
+    scanCount.value = audio.length
+    isScanning.value = false
+    if (audio.length > 0) emit('addFiles', audio)
     e.target.value = ''
   }
 
@@ -199,8 +216,9 @@
     }
   }
 
-  // Recursively read a FileSystemDirectoryEntry and collect audio files
-  const readDirectoryEntry = (dirEntry) => {
+  // Recursively read a FileSystemDirectoryEntry and collect audio files.
+  // onProgress is called with the running total each time a file is found.
+  const readDirectoryEntry = (dirEntry, onProgress) => {
     return new Promise((resolve) => {
       const reader = dirEntry.createReader()
       const results = []
@@ -217,14 +235,19 @@
                 return new Promise((res) => {
                   entry.file(
                     (file) => {
-                      if (AUDIO_EXTENSIONS.test(file.name)) results.push(file)
+                      if (AUDIO_EXTENSIONS.test(file.name)) {
+                        results.push(file)
+                        onProgress?.(results.length)
+                      }
                       res()
                     },
                     () => res(),
                   )
                 })
               } else if (entry.isDirectory) {
-                return readDirectoryEntry(entry).then((files) => results.push(...files))
+                return readDirectoryEntry(entry, onProgress).then((files) =>
+                  results.push(...files),
+                )
               }
               return Promise.resolve()
             })
@@ -245,12 +268,21 @@
     const items = e.dataTransfer.items
     if (!items || items.length === 0) return
 
+    const hasDirectory = Array.from(items).some((item) => {
+      const entry = item.webkitGetAsEntry?.()
+      return entry?.isDirectory
+    })
+
+    if (hasDirectory) {
+      isScanning.value = true
+      scanCount.value = 0
+    }
+
     const collectedFiles = []
 
     const promises = Array.from(items).map((item) => {
       const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null
       if (!entry) {
-        // Fallback: plain file
         const file = item.getAsFile()
         if (file && AUDIO_EXTENSIONS.test(file.name)) collectedFiles.push(file)
         return Promise.resolve()
@@ -266,13 +298,17 @@
       }
 
       if (entry.isDirectory) {
-        return readDirectoryEntry(entry).then((files) => collectedFiles.push(...files))
+        return readDirectoryEntry(entry, (count) => {
+          scanCount.value = count
+        }).then((files) => collectedFiles.push(...files))
       }
 
       return Promise.resolve()
     })
 
     await Promise.all(promises)
+    isScanning.value = false
+    scanCount.value = 0
 
     if (collectedFiles.length > 0) {
       emit('addFiles', collectedFiles)
@@ -330,6 +366,35 @@
     transition:
       border-color 0.25s ease,
       background 0.25s ease;
+  }
+
+  /* Scanning state */
+  .file-upload-wrapper.is-scanning {
+    border-style: solid;
+    border-color: var(--accent-color);
+    cursor: wait;
+  }
+
+  .scan-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+    margin-bottom: 10px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .scan-count {
+    display: inline-block;
+    margin-left: 6px;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent-color);
+    font-weight: 600;
   }
 
   .file-upload-wrapper.drag-over {
