@@ -67,6 +67,7 @@
     { keys: ['Ctrl', 'S'], descKey: 'shortcut_save_desc' },
     { keys: ['Ctrl', 'C'], descKey: 'shortcut_copy_desc' },
     { keys: ['Delete'], descKey: 'shortcut_delete_desc' },
+    { keys: ['Ctrl', 'Z'], descKey: 'shortcut_undo_desc' },
     { keys: ['↑', '↓'], descKey: 'shortcut_arrows_desc' },
     { keys: ['Esc'], descKey: 'shortcut_escape_desc' },
     { keys: ['?'], descKey: 'shortcut_question_desc' },

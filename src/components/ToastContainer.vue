@@ -26,6 +26,11 @@
             </svg>
           </span>
           <span class="toast-message">{{ toast.message }}</span>
+          <button
+            v-if="toast.action"
+            class="toast-action"
+            @click.stop="toast.action.callback(); removeToast(toast.id)"
+          >{{ toast.action.label }}</button>
           <button class="toast-close" @click.stop="removeToast(toast.id)">
             <svg viewBox="0 0 24 24" width="16" height="16">
               <path
@@ -115,6 +120,29 @@
     color: var(--text-color, #aeafb7);
     font-size: 0.95rem;
     line-height: 1.4;
+  }
+
+  .toast-action {
+    background: none;
+    border: 1px solid currentColor;
+    border-radius: 6px;
+    color: var(--accent-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 3px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .toast-action:hover {
+    background: rgba(242, 226, 142, 0.12);
+  }
+
+  .light-theme .toast-action:hover {
+    background: rgba(162, 134, 128, 0.12);
   }
 
   .toast-close {

@@ -4,13 +4,14 @@ const toasts = ref([])
 let toastId = 0
 
 export function useToast() {
-  const addToast = (message, type = 'info', duration = 3000) => {
+  const addToast = (message, type = 'info', duration = 3000, action = null) => {
     const id = ++toastId
     toasts.value.push({
       id,
       message,
       type, // 'success', 'error', 'info'
       duration,
+      action, // optional { label: string, callback: () => void }
     })
 
     // Auto-remove after duration
