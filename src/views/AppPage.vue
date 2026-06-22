@@ -19,15 +19,6 @@
         <p class="subtitle">{{ t('subtitle') }}</p>
       </header>
 
-      <section class="description">
-        <p>{{ t('description_text') }}</p>
-      </section>
-
-      <section class="important-notice">
-        <span class="notice-icon">⚠️</span>
-        <p>{{ t('notice_m3u') }}</p>
-      </section>
-
       <div v-if="sharedBanner" class="shared-banner" :class="'shared-banner-' + sharedBanner.type">
         <span class="shared-banner-icon">
           <template v-if="sharedBanner.type === 'success'">&#10003;</template>
@@ -512,14 +503,10 @@
   }
 
   .container > header h1 {
-    font-size: 2.5rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-color);
     margin-bottom: 10px;
-    text-shadow: 0 0 30px var(--glow-color);
   }
 
   .subtitle {
@@ -528,61 +515,17 @@
     margin-bottom: 0;
   }
 
-  .description {
-    background: linear-gradient(135deg, rgba(22, 22, 28, 0.8), rgba(22, 22, 28, 0.6));
-    border: 2px solid var(--border-color);
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 25px;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 10px 40px var(--shadow-color);
-    animation: slide-in 0.8s ease-out 0.2s both;
-  }
-
-  .light-theme .description {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-  }
-
-  .description p {
-    font-size: 1rem;
-    color: var(--muted-color);
-    margin: 0;
-    text-align: center;
-  }
-
-  .important-notice {
-    background: linear-gradient(135deg, rgba(242, 226, 142, 0.15), rgba(242, 226, 142, 0.05));
-    border: 2px solid var(--warning-color);
-    border-radius: 15px;
-    padding: 18px;
-    margin-bottom: 25px;
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    animation: slide-in 0.8s ease-out 0.3s both;
-  }
-
-  .light-theme .important-notice {
-    background: linear-gradient(135deg, rgba(162, 134, 128, 0.15), rgba(162, 134, 128, 0.05));
-  }
-
-  .notice-icon {
-    font-size: 1.3rem;
-    color: var(--warning-color);
-    margin-top: 2px;
-  }
-
-  .important-notice p {
-    color: var(--text-color);
-    margin: 0;
-    font-size: 0.9rem;
-  }
-
   .main-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 3fr 2fr;
     gap: 30px;
     margin-bottom: 50px;
+    align-items: start;
+  }
+
+  .main-content :deep(.output-section) {
+    position: sticky;
+    top: 20px;
   }
 
   .site-footer {
@@ -678,7 +621,15 @@
     }
 
     .container > header h1 {
-      font-size: 1.8rem;
+      font-size: 1.4rem;
+    }
+
+    .main-content {
+      grid-template-columns: 1fr;
+    }
+
+    .main-content :deep(.output-section) {
+      position: static;
     }
   }
 
@@ -692,36 +643,11 @@
     }
 
     .container > header h1 {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
     }
 
     .subtitle {
       font-size: 0.95rem;
-    }
-
-    .description {
-      padding: 15px;
-      border-radius: 14px;
-      margin-bottom: 15px;
-    }
-
-    .description p {
-      font-size: 0.9rem;
-    }
-
-    .important-notice {
-      padding: 12px;
-      gap: 10px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-    }
-
-    .notice-icon {
-      font-size: 1.1rem;
-    }
-
-    .important-notice p {
-      font-size: 0.85rem;
     }
 
     .main-content {

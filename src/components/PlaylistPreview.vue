@@ -21,6 +21,13 @@
       </Transition>
     </div>
 
+    <Transition name="notice">
+      <div v-if="localFormat !== 'json'" class="format-notice" role="note">
+        <span aria-hidden="true">⚠️</span>
+        {{ t('notice_m3u') }}
+      </div>
+    </Transition>
+
     <div class="code-viewer" :class="{ empty: !playlistContent }">
       <div class="code-viewer-header">
         <span class="code-lang-badge">{{ localFormat.toUpperCase() }}</span>
@@ -341,6 +348,36 @@
   .button-icon {
     display: flex;
     align-items: center;
+  }
+
+  /* Contextual format warning */
+  .format-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: rgba(201, 152, 77, 0.08);
+    border: 1px solid rgba(201, 152, 77, 0.3);
+    font-size: 0.8rem;
+    color: var(--muted-color);
+    line-height: 1.4;
+  }
+
+  .light-theme .format-notice {
+    background: rgba(1, 79, 153, 0.06);
+    border-color: rgba(1, 79, 153, 0.2);
+  }
+
+  .notice-enter-active,
+  .notice-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .notice-enter-from,
+  .notice-leave-to {
+    opacity: 0;
+    transform: translateY(-4px);
   }
 
   @media (max-width: 480px) {

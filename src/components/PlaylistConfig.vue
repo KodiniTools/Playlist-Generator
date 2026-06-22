@@ -3,7 +3,7 @@
     <h2 class="section-title">{{ t('config_title') }}</h2>
     <form id="playlistForm" @submit.prevent>
       <div class="form-group">
-        <label>{{ t('label_files') }}</label>
+        <label><span class="step-num" aria-hidden="true">1</span>{{ t('label_files') }}</label>
 
         <!-- Hidden inputs — webkitdirectory must be in HTML at parse time, not set via JS -->
         <input
@@ -93,7 +93,7 @@
       />
 
       <div class="form-group">
-        <label>{{ t('label_sort') }}</label>
+        <label><span class="step-num" aria-hidden="true">2</span>{{ t('label_sort') }}</label>
         <div class="sort-buttons" role="group" :aria-label="t('label_sort')">
           <button
             type="button"
@@ -131,7 +131,7 @@
       </div>
 
       <div class="form-group">
-        <label for="playlistName">{{ t('label_name') }}</label>
+        <label for="playlistName"><span class="step-num" aria-hidden="true">3</span>{{ t('label_name') }}</label>
         <input
           type="text"
           id="playlistName"
@@ -556,5 +556,28 @@
 
   .checkbox-text {
     user-select: none;
+  }
+
+  /* Step number badges on form labels */
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    color: var(--accent-text-color);
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-right: 8px;
+    flex-shrink: 0;
+    vertical-align: middle;
+    line-height: 1;
+  }
+
+  .form-group label {
+    display: flex;
+    align-items: center;
   }
 </style>
