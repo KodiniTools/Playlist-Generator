@@ -41,6 +41,29 @@ const generateM3u = () => {
   return output
 }
 
+// M3U8 is the UTF-8 encoded variant of M3U — identical content, but the
+// .m3u8 extension signals UTF-8 so titles with umlauts / non-Latin
+// characters are interpreted correctly by players.
+const generateM3u8 = () => generateM3u()
+
+const generatePls = () => {
+  let output = '[playlist]\n'
+  files.value.forEach((file, index) => {
+    const n = index + 1
+    const title = file.name.replace(/\.[^/.]+$/, '')
+    output += `File${n}=${file.name}\n`
+    output += `Title${n}=${title}\n`
+    output += `Length${n}=-1\n`
+  })
+  output += `NumberOfEntries=${files.value.length}\n`
+  output += 'Version=2\n'
+  return output
+}
+
+const generateTxt = () => {
+  return files.value.map((file) => file.name).join('\n') + '\n'
+}
+
 const generateJson = () => {
   const playlistData = files.value.map((file) => ({
     filename: file.name,
@@ -77,6 +100,15 @@ const generatePlaylist = () => {
   switch (outputFormat.value) {
     case 'm3u':
       playlistContent.value = generateM3u()
+      break
+    case 'm3u8':
+      playlistContent.value = generateM3u8()
+      break
+    case 'pls':
+      playlistContent.value = generatePls()
+      break
+    case 'txt':
+      playlistContent.value = generateTxt()
       break
     case 'json':
       playlistContent.value = generateJson()
@@ -243,6 +275,9 @@ const savePlaylist = async () => {
 
   const formatDetails = {
     m3u: { ext: '.m3u', mime: 'audio/x-mpegurl' },
+    m3u8: { ext: '.m3u8', mime: 'application/vnd.apple.mpegurl' },
+    pls: { ext: '.pls', mime: 'audio/x-scpls' },
+    txt: { ext: '.txt', mime: 'text/plain' },
     json: { ext: '.json', mime: 'application/json' },
     xspf: { ext: '.xspf', mime: 'application/xspf+xml' },
   }

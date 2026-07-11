@@ -99,6 +99,9 @@ const translations = {
     preview_title: 'Vorschau & Speichern',
     label_format: 'Vorschau-Format',
     format_m3u: 'M3U Playlist',
+    format_m3u8: 'M3U8 Playlist',
+    format_pls: 'PLS Playlist',
+    format_txt: 'TXT Liste',
     format_xspf: 'XSPF Playlist',
     format_json: 'JSON Datei',
     placeholder_output: "Klicken Sie auf 'Playlist erstellen', um hier eine Vorschau zu sehen...",
@@ -192,6 +195,12 @@ const translations = {
 
     // Format descriptions (shown below format tabs)
     format_desc_m3u: 'Kompatibel mit VLC, Winamp, Foobar2000 und den meisten Mediaplayern.',
+    format_desc_m3u8:
+      'M3U in UTF-8 – bewahrt Umlaute und Sonderzeichen, ideal für moderne Player und Streaming.',
+    format_desc_pls:
+      'Weit verbreitetes Format – kompatibel mit VLC, Winamp, foobar2000 und Internetradio.',
+    format_desc_txt:
+      'Einfache Textliste mit einem Dateinamen pro Zeile – universell für Skripte und USB-Sticks.',
     format_desc_xspf: 'Moderner XML-Standard – ideal für VLC und Austausch zwischen Programmen.',
     format_desc_json: 'Für Entwickler und Webanwendungen – nicht für normale Mediaplayer geeignet.',
 
@@ -321,6 +330,9 @@ const translations = {
     preview_title: 'Preview & Save',
     label_format: 'Preview Format',
     format_m3u: 'M3U Playlist',
+    format_m3u8: 'M3U8 Playlist',
+    format_pls: 'PLS Playlist',
+    format_txt: 'TXT List',
     format_xspf: 'XSPF Playlist',
     format_json: 'JSON File',
     placeholder_output: "Click 'Create Playlist' to see a preview here...",
@@ -414,6 +426,12 @@ const translations = {
 
     // Format descriptions (shown below format tabs)
     format_desc_m3u: 'Compatible with VLC, Winamp, Foobar2000 and most media players.',
+    format_desc_m3u8:
+      'M3U in UTF-8 – preserves accents and special characters, ideal for modern players and streaming.',
+    format_desc_pls:
+      'Widely supported format – works with VLC, Winamp, foobar2000 and internet radio.',
+    format_desc_txt:
+      'Simple text list with one filename per line – universal for scripts and USB sticks.',
     format_desc_xspf: 'Modern XML standard – ideal for VLC and sharing between applications.',
     format_desc_json: 'For developers and web apps – not suitable for regular media players.',
 

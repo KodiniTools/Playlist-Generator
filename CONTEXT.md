@@ -166,7 +166,7 @@ interface PlaylistState {
 }
 
 type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
-type OutputFormat = 'm3u' | 'json' | 'xspf'
+type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'json' | 'xspf'
 ```
 
 ### Unterstützte Audio-Formate
@@ -186,6 +186,32 @@ dateiname.mp3
 #EXTINF:-1,Weiterer Track
 weitere.mp3
 ```
+
+#### M3U8 Format
+
+UTF-8-kodierte Variante von M3U (identischer Inhalt, `.m3u8`-Endung). Bewahrt Umlaute und Sonderzeichen für moderne Player und Streaming.
+
+#### PLS Format (INI-basiert)
+
+```
+[playlist]
+File1=dateiname.mp3
+Title1=Track Titel
+Length1=-1
+NumberOfEntries=1
+Version=2
+```
+
+Weit verbreitet – kompatibel mit VLC, Winamp, foobar2000 und Internetradio.
+
+#### TXT Format
+
+```
+dateiname.mp3
+weitere.mp3
+```
+
+Einfache Textliste mit einem Dateinamen pro Zeile.
 
 #### XSPF Format (XML Shareable Playlist Format)
 
