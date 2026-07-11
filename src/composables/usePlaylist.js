@@ -64,6 +64,47 @@ const generateTxt = () => {
   return files.value.map((file) => file.name).join('\n') + '\n'
 }
 
+// Map an audio extension to a CUE sheet FILE type. Non-standard types
+// (e.g. FLAC/OGG) fall back to WAVE, which players accept.
+const cueFileType = (name) => {
+  const ext = name.split('.').pop().toLowerCase()
+  if (ext === 'mp3') return 'MP3'
+  if (ext === 'aiff' || ext === 'aif') return 'AIFF'
+  return 'WAVE'
+}
+
+const generateCue = () => {
+  let output = `TITLE "${playlistName.value.replace(/"/g, "'")}"\n`
+  files.value.forEach((file, index) => {
+    const title = file.name.replace(/\.[^/.]+$/, '').replace(/"/g, "'")
+    const trackNum = String(index + 1).padStart(2, '0')
+    output += `FILE "${file.name.replace(/"/g, "'")}" ${cueFileType(file.name)}\n`
+    output += `  TRACK ${trackNum} AUDIO\n`
+    output += `    TITLE "${title}"\n`
+    output += `    INDEX 01 00:00:00\n`
+  })
+  return output
+}
+
+// Escape a value for CSV (RFC 4180): wrap in quotes and double any
+// embedded quotes when it contains a comma, quote or newline.
+const escapeCsv = (value) => {
+  const str = String(value)
+  if (/[",\n\r]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`
+  }
+  return str
+}
+
+const generateCsv = () => {
+  const header = 'Filename,Title,Size (Bytes)'
+  const rows = files.value.map((file) => {
+    const title = file.name.replace(/\.[^/.]+$/, '')
+    return [escapeCsv(file.name), escapeCsv(title), escapeCsv(file.size ?? '')].join(',')
+  })
+  return [header, ...rows].join('\r\n') + '\r\n'
+}
+
 const generateJson = () => {
   const playlistData = files.value.map((file) => ({
     filename: file.name,
@@ -109,6 +150,12 @@ const generatePlaylist = () => {
       break
     case 'txt':
       playlistContent.value = generateTxt()
+      break
+    case 'cue':
+      playlistContent.value = generateCue()
+      break
+    case 'csv':
+      playlistContent.value = generateCsv()
       break
     case 'json':
       playlistContent.value = generateJson()
@@ -278,6 +325,8 @@ const savePlaylist = async () => {
     m3u8: { ext: '.m3u8', mime: 'application/vnd.apple.mpegurl' },
     pls: { ext: '.pls', mime: 'audio/x-scpls' },
     txt: { ext: '.txt', mime: 'text/plain' },
+    cue: { ext: '.cue', mime: 'application/x-cue' },
+    csv: { ext: '.csv', mime: 'text/csv' },
     json: { ext: '.json', mime: 'application/json' },
     xspf: { ext: '.xspf', mime: 'application/xspf+xml' },
   }
@@ -325,8 +374,11 @@ export function usePlaylist() {
     })
 
     watch(playlistName, () => {
-      // Only XSPF uses the playlist name in the output
-      if (files.value.length > 0 && outputFormat.value === 'xspf') {
+      // Only XSPF and CUE embed the playlist name in the output
+      if (
+        files.value.length > 0 &&
+        (outputFormat.value === 'xspf' || outputFormat.value === 'cue')
+      ) {
         generatePlaylist()
       }
     })
