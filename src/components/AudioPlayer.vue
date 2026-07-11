@@ -287,6 +287,7 @@
     isMuted,
     playlist,
     play,
+    cue,
     pause,
     stop,
     next,
@@ -306,7 +307,15 @@
   watch(
     () => props.selectedIndex,
     (idx) => {
-      if (idx >= 0) selectionChanged.value = true
+      if (idx < 0 || idx >= playlist.value.length) return
+      selectionChanged.value = true
+      // Reflect the clicked track in the player right away by cueing it
+      // (loads title + duration without playing). Skip while a track is
+      // playing so an active selection for delete/reorder never interrupts
+      // playback — the bar keeps showing the track that is actually playing.
+      if (!isPlaying.value && idx !== currentTrackIndex.value) {
+        cue(idx)
+      }
     },
   )
 
@@ -335,10 +344,23 @@
     selectionChanged.value = false
   }
 
-  watch(currentTrackIndex, (idx) => {
-    if (idx >= 0 && playlist.value[idx]) {
+  // "Now playing" toast — only when a track actually starts playing or the
+  // playing track advances, never for a pure cue (selection without playback).
+  const lastAnnounced = ref(-1)
+  const announceNowPlaying = () => {
+    const idx = currentTrackIndex.value
+    if (idx >= 0 && playlist.value[idx] && idx !== lastAnnounced.value) {
       toast.info(`♪ ${playlist.value[idx].title}`)
+      lastAnnounced.value = idx
     }
+  }
+  // Playback starts (play from stopped/paused resolves)
+  watch(isPlaying, (playing) => {
+    if (playing) announceNowPlaying()
+  })
+  // Track changes while already playing (auto-advance, next/previous)
+  watch(currentTrackIndex, () => {
+    if (isPlaying.value) announceNowPlaying()
   })
 
   // Close the queue automatically once every track is gone

@@ -240,6 +240,7 @@ export function useAudioPlayer(filesRef) {
     playlist,
     // Methods
     play,
+    cue: loadTrack,
     pause,
     stop,
     togglePlay,
