@@ -102,6 +102,8 @@ const translations = {
     format_m3u8: 'M3U8 Playlist',
     format_pls: 'PLS Playlist',
     format_txt: 'TXT Liste',
+    format_cue: 'CUE Sheet',
+    format_csv: 'CSV Tabelle',
     format_xspf: 'XSPF Playlist',
     format_json: 'JSON Datei',
     placeholder_output: "Klicken Sie auf 'Playlist erstellen', um hier eine Vorschau zu sehen...",
@@ -201,6 +203,10 @@ const translations = {
       'Weit verbreitetes Format – kompatibel mit VLC, Winamp, foobar2000 und Internetradio.',
     format_desc_txt:
       'Einfache Textliste mit einem Dateinamen pro Zeile – universell für Skripte und USB-Sticks.',
+    format_desc_cue:
+      'Track-Sheet für DJ-Mixes und Alben – kompatibel mit foobar2000, VLC und CD-Brennprogrammen.',
+    format_desc_csv:
+      'Tabellen-Export (Dateiname, Titel, Größe) – öffnet sich in Excel oder Google Sheets.',
     format_desc_xspf: 'Moderner XML-Standard – ideal für VLC und Austausch zwischen Programmen.',
     format_desc_json: 'Für Entwickler und Webanwendungen – nicht für normale Mediaplayer geeignet.',
 
@@ -333,6 +339,8 @@ const translations = {
     format_m3u8: 'M3U8 Playlist',
     format_pls: 'PLS Playlist',
     format_txt: 'TXT List',
+    format_cue: 'CUE Sheet',
+    format_csv: 'CSV Table',
     format_xspf: 'XSPF Playlist',
     format_json: 'JSON File',
     placeholder_output: "Click 'Create Playlist' to see a preview here...",
@@ -432,6 +440,10 @@ const translations = {
       'Widely supported format – works with VLC, Winamp, foobar2000 and internet radio.',
     format_desc_txt:
       'Simple text list with one filename per line – universal for scripts and USB sticks.',
+    format_desc_cue:
+      'Track sheet for DJ mixes and albums – compatible with foobar2000, VLC and CD burning tools.',
+    format_desc_csv:
+      'Spreadsheet export (filename, title, size) – opens in Excel or Google Sheets.',
     format_desc_xspf: 'Modern XML standard – ideal for VLC and sharing between applications.',
     format_desc_json: 'For developers and web apps – not suitable for regular media players.',
 

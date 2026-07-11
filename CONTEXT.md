@@ -166,7 +166,7 @@ interface PlaylistState {
 }
 
 type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
-type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'json' | 'xspf'
+type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'cue' | 'csv' | 'json' | 'xspf'
 ```
 
 ### Unterstützte Audio-Formate
@@ -212,6 +212,27 @@ weitere.mp3
 ```
 
 Einfache Textliste mit einem Dateinamen pro Zeile.
+
+#### CUE Sheet
+
+```
+TITLE "Playlist Name"
+FILE "dateiname.mp3" MP3
+  TRACK 01 AUDIO
+    TITLE "Track Titel"
+    INDEX 01 00:00:00
+```
+
+Track-Sheet für DJ-Mixes und Alben – kompatibel mit foobar2000, VLC und CD-Brennprogrammen. Jede Datei wird als eigener `FILE`-Eintrag mit `INDEX 01 00:00:00` abgebildet.
+
+#### CSV Format
+
+```
+Filename,Title,Size (Bytes)
+dateiname.mp3,Track Titel,5000000
+```
+
+Tabellen-Export (RFC-4180-konform escaped) zum Öffnen in Excel oder Google Sheets. Enthält keine Pfade, daher ordnerunabhängig.
 
 #### XSPF Format (XML Shareable Playlist Format)
 

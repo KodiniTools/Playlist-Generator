@@ -24,7 +24,7 @@
     </div>
 
     <Transition name="notice">
-      <div v-if="localFormat !== 'json'" class="format-notice" role="note">
+      <div v-if="!formatsWithoutPaths.includes(localFormat)" class="format-notice" role="note">
         <span aria-hidden="true">⚠️</span>
         {{ t('notice_m3u') }}
       </div>
@@ -148,9 +148,15 @@
     { value: 'm3u8', label: 'M3U8' },
     { value: 'pls', label: 'PLS' },
     { value: 'txt', label: 'TXT' },
+    { value: 'cue', label: 'CUE' },
+    { value: 'csv', label: 'CSV' },
     { value: 'xspf', label: 'XSPF' },
     { value: 'json', label: 'JSON' },
   ]
+
+  // Formats that don't rely on the playlist file sitting next to the audio
+  // files, so the "save in same folder" notice doesn't apply to them.
+  const formatsWithoutPaths = ['json', 'csv']
 
   watch(
     () => props.outputFormat,
