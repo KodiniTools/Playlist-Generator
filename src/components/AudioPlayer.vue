@@ -41,7 +41,7 @@
 
         <button
           class="pb-btn pb-btn-play"
-          @click="togglePlay"
+          @click="handlePlay"
           :title="isPlaying ? t('player_pause') : t('player_play')"
         >
           <svg v-if="!isPlaying" viewBox="0 0 24 24" width="22" height="22">
@@ -263,6 +263,12 @@
       type: Array,
       required: true,
     },
+    // Index of the track currently selected in the interactive track list.
+    // The play button starts this track when pressed.
+    selectedIndex: {
+      type: Number,
+      default: -1,
+    },
   })
 
   const { t } = useTranslation()
@@ -281,8 +287,8 @@
     isMuted,
     playlist,
     play,
+    pause,
     stop,
-    togglePlay,
     next,
     previous,
     seek,
@@ -290,6 +296,44 @@
     toggleMute,
     formatTime,
   } = useAudioPlayer(filesRef)
+
+  // Track whether the user actively picked a different track in the
+  // interactive list since the last time playback started. This lets the
+  // play button start a freshly selected track, while still resuming the
+  // current track after a pause (instead of jumping back to a stale
+  // selection when playback has since advanced).
+  const selectionChanged = ref(false)
+  watch(
+    () => props.selectedIndex,
+    (idx) => {
+      if (idx >= 0) selectionChanged.value = true
+    },
+  )
+
+  // Play button: honour the track selected in the interactive track list.
+  // - playing                         → pause
+  // - selection changed to another track → start that selected track
+  // - a track is loaded (paused/stopped) → resume/restart it
+  // - nothing loaded yet              → start the selection, or the first track
+  const handlePlay = () => {
+    if (isPlaying.value) {
+      pause()
+      return
+    }
+
+    const sel = props.selectedIndex
+    const hasSelection = typeof sel === 'number' && sel >= 0 && sel < playlist.value.length
+
+    if (selectionChanged.value && hasSelection && sel !== currentTrackIndex.value) {
+      play(sel)
+    } else if (currentTrackIndex.value >= 0) {
+      play()
+    } else {
+      play(hasSelection ? sel : 0)
+    }
+
+    selectionChanged.value = false
+  }
 
   watch(currentTrackIndex, (idx) => {
     if (idx >= 0 && playlist.value[idx]) {

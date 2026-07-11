@@ -97,7 +97,7 @@
     </main>
 
     <!-- Persistent sticky player bar, fixed to the bottom of the viewport -->
-    <AudioPlayer :files="files" />
+    <AudioPlayer :files="files" :selectedIndex="selectedFileIndex" />
   </div>
 </template>
 
