@@ -12,7 +12,9 @@
           class="format-tab"
           :class="{ active: localFormat === fmt.value }"
           @click="setFormat(fmt.value)"
-        >{{ fmt.label }}</button>
+        >
+          {{ fmt.label }}
+        </button>
       </div>
       <Transition name="desc">
         <p class="format-desc" :key="localFormat" aria-live="polite">
@@ -31,16 +33,27 @@
     <div class="code-viewer" :class="{ empty: !playlistContent }">
       <div class="code-viewer-header">
         <span class="code-lang-badge">{{ localFormat.toUpperCase() }}</span>
-        <span v-if="playlistContent" class="code-stats">{{ lineCount }} {{ t('lines') || 'Zeilen' }}</span>
+        <span v-if="playlistContent" class="code-stats"
+          >{{ lineCount }} {{ t('lines') || 'Zeilen' }}</span
+        >
       </div>
       <div class="code-viewer-body">
         <pre v-if="playlistContent" class="code-content"><code>{{ playlistContent }}</code></pre>
         <div v-else class="code-placeholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/>
-            <line x1="16" y1="17" x2="8" y2="17"/>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            width="36"
+            height="36"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
           <span>{{ t('placeholder_output') }}</span>
         </div>
@@ -132,6 +145,9 @@
 
   const formats = [
     { value: 'm3u', label: 'M3U' },
+    { value: 'm3u8', label: 'M3U8' },
+    { value: 'pls', label: 'PLS' },
+    { value: 'txt', label: 'TXT' },
     { value: 'xspf', label: 'XSPF' },
     { value: 'json', label: 'JSON' },
   ]
@@ -175,11 +191,13 @@
   /* Format Tabs (Segmented Control) */
   .format-tabs {
     display: flex;
+    flex-wrap: wrap;
     background: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 3px;
     width: fit-content;
+    max-width: 100%;
     gap: 2px;
   }
 
@@ -222,7 +240,9 @@
 
   .desc-enter-active,
   .desc-leave-active {
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
   }
   .desc-enter-from {
     opacity: 0;
@@ -372,7 +392,9 @@
 
   .notice-enter-active,
   .notice-leave-active {
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
   }
   .notice-enter-from,
   .notice-leave-to {
