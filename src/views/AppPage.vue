@@ -1,5 +1,5 @@
 <template>
-  <div class="app-page">
+  <div class="app-page" :class="{ 'has-player': files.length > 0 }">
     <!-- Page Header Navigation -->
     <header class="page-header">
       <div class="header-container">
@@ -53,7 +53,6 @@
         <PlaylistPreview
           :outputFormat="outputFormat"
           :playlistContent="playlistContent"
-          :files="files"
           @update:outputFormat="handleFormatChange"
           @save="handleSave"
         />
@@ -96,6 +95,9 @@
         </div>
       </footer>
     </main>
+
+    <!-- Persistent sticky player bar, fixed to the bottom of the viewport -->
+    <AudioPlayer :files="files" />
   </div>
 </template>
 
@@ -107,6 +109,7 @@
   import ToolsGrid from '../components/ToolsGrid.vue'
   import KeyboardShortcutsPanel from '../components/KeyboardShortcutsPanel.vue'
   import OnboardingBanner from '../components/OnboardingBanner.vue'
+  import AudioPlayer from '../components/AudioPlayer.vue'
   import { useTranslation } from '../composables/useTranslation'
   import { usePlaylist } from '../composables/usePlaylist'
   import { useToast } from '../composables/useToast'
@@ -415,6 +418,17 @@
 <style scoped>
   .app-page {
     padding-top: 0;
+  }
+
+  /* Reserve space for the fixed player bar so the footer stays reachable */
+  .app-page.has-player {
+    padding-bottom: 72px;
+  }
+
+  @media (max-width: 480px) {
+    .app-page.has-player {
+      padding-bottom: 64px;
+    }
   }
 
   /* Page Header Navigation */
