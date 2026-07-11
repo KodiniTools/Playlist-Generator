@@ -117,8 +117,6 @@
         {{ t('button_save') }}
       </button>
     </div>
-
-    <AudioPlayer :files="files" />
   </section>
 </template>
 
@@ -126,15 +124,10 @@
   import { ref, watch, computed } from 'vue'
   import { useTranslation } from '../composables/useTranslation'
   import { useToast } from '../composables/useToast'
-  import AudioPlayer from './AudioPlayer.vue'
 
   const props = defineProps({
     outputFormat: String,
     playlistContent: String,
-    files: {
-      type: Array,
-      default: () => [],
-    },
   })
 
   const emit = defineEmits(['update:outputFormat', 'save'])

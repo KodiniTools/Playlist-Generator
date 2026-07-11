@@ -220,6 +220,7 @@ const translations = {
     player_next: 'Nächster Track',
     player_mute: 'Stummschalten',
     player_unmute: 'Ton einschalten',
+    player_queue: 'Warteschlange',
 
     // Tools Section
     more_tools_title: 'Entdecken Sie weitere Audio-Tools',
@@ -457,6 +458,7 @@ const translations = {
     player_next: 'Next track',
     player_mute: 'Mute',
     player_unmute: 'Unmute',
+    player_queue: 'Queue',
 
     // Tools Section
     more_tools_title: 'Discover More Audio Tools',
