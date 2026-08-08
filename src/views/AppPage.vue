@@ -48,6 +48,7 @@
           @removeFile="handleDeleteFile"
           @moveFile="moveFile"
           @sortFiles="sortFiles"
+          @playFile="handlePlayFile"
         />
 
         <PlaylistPreview
@@ -97,7 +98,12 @@
     </main>
 
     <!-- Persistent sticky player bar, fixed to the bottom of the viewport -->
-    <AudioPlayer :files="files" :selectedIndex="selectedFileIndex" />
+    <AudioPlayer
+      ref="audioPlayerRef"
+      :files="files"
+      :selectedIndex="selectedFileIndex"
+      @update:selectedIndex="selectedFileIndex = $event"
+    />
   </div>
 </template>
 
@@ -247,6 +253,15 @@
 
   // Template refs for child components
   const playlistConfigRef = ref(null)
+  const audioPlayerRef = ref(null)
+
+  // A track was clicked in the interactive track list → select it and start
+  // playing it in the player right away.
+  const handlePlayFile = (index) => {
+    if (index < 0 || index >= files.value.length) return
+    selectedFileIndex.value = index
+    audioPlayerRef.value?.playTrack(index)
+  }
 
   const shareOnFacebook = () => {
     const url = encodeURIComponent(window.location.origin + window.location.pathname)

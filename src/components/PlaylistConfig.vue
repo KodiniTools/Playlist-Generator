@@ -90,6 +90,7 @@
         @removeFile="handleRemoveFile"
         @moveFile="handleMoveFile"
         @selectFile="handleSelectFile"
+        @playFile="handlePlayFile"
       />
 
       <div class="form-group">
@@ -167,6 +168,7 @@
     'removeFile',
     'moveFile',
     'sortFiles',
+    'playFile',
   ])
 
   const handleReplaceModeChange = (e) => {
@@ -340,6 +342,10 @@
 
   const handleSelectFile = (index) => {
     emit('update:selectedFileIndex', index)
+  }
+
+  const handlePlayFile = (index) => {
+    emit('playFile', index)
   }
 
   // Expose method for keyboard shortcut (Ctrl+O opens files)
