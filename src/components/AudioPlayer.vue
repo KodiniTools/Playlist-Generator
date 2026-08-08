@@ -271,6 +271,10 @@
     },
   })
 
+  // Emitted whenever the player's current track changes, so the interactive
+  // track list can keep its highlight in sync with what is actually playing.
+  const emit = defineEmits(['update:selectedIndex'])
+
   const { t } = useTranslation()
   const toast = useToast()
   const filesRef = toRef(props, 'files')
@@ -359,9 +363,26 @@
     if (playing) announceNowPlaying()
   })
   // Track changes while already playing (auto-advance, next/previous)
-  watch(currentTrackIndex, () => {
+  watch(currentTrackIndex, (idx) => {
     if (isPlaying.value) announceNowPlaying()
+    // Keep the interactive track list highlight synced to the player's
+    // current track (e.g. when playing through the entire playlist).
+    if (idx >= 0) emit('update:selectedIndex', idx)
   })
+
+  // Play a specific track from the interactive track list. Clicking the
+  // track that is already playing is a no-op; clicking a paused/other track
+  // starts it immediately.
+  const playTrack = (index) => {
+    if (typeof index !== 'number' || index < 0 || index >= playlist.value.length) return
+    if (index === currentTrackIndex.value) {
+      if (!isPlaying.value) play()
+    } else {
+      play(index)
+    }
+  }
+
+  defineExpose({ playTrack })
 
   // Close the queue automatically once every track is gone
   watch(

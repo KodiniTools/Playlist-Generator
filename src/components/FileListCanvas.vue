@@ -122,7 +122,7 @@
   const estimatedDuration = computed(() => durationInfo.value.label)
   const durationIsApproximate = computed(() => durationInfo.value.approximate)
 
-  const emit = defineEmits(['clear', 'removeFile', 'moveFile', 'selectFile'])
+  const emit = defineEmits(['clear', 'removeFile', 'moveFile', 'selectFile', 'playFile'])
 
   const { t } = useTranslation()
   const { currentTheme } = useTheme()
@@ -644,8 +644,9 @@
         return
       }
 
-      // Click on file row - select it
+      // Click on file row - select it and start playback in the player
       emit('selectFile', fileIndex)
+      emit('playFile', fileIndex)
     } else {
       // Click outside files - deselect
       emit('selectFile', -1)
@@ -830,9 +831,31 @@
     drawFilesOnCanvas()
   })
 
+  // Ensure a given row is within the visible viewport, scrolling the canvas
+  // if needed. Used to keep the currently playing/selected track in view.
+  const scrollToIndex = (index) => {
+    if (index < 0 || !canvasRef.value) return
+    const visibleHeight = canvasRef.value.getBoundingClientRect().height
+    const geo = getScrollbarGeometry()
+    const maxScroll = geo ? geo.maxScroll : 0
+
+    const rowTop = index * lineHeight + padding
+    const rowBottom = rowTop + lineHeight
+
+    let newScroll = scrollY.value
+    if (rowTop < scrollY.value) {
+      newScroll = rowTop
+    } else if (rowBottom > scrollY.value + visibleHeight) {
+      newScroll = rowBottom - visibleHeight
+    }
+
+    scrollY.value = Math.max(0, Math.min(newScroll, maxScroll))
+  }
+
   watch(
     () => props.selectedIndex,
-    () => {
+    (index) => {
+      scrollToIndex(index)
       drawFilesOnCanvas()
     },
   )
