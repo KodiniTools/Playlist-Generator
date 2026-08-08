@@ -41,7 +41,7 @@
             d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
           />
         </svg>
-        {{ files.length }} {{ t('stats_tracks') }}
+        {{ selectedCount }} {{ t('stats_tracks') }}
       </span>
       <span class="stat-item">
         <svg viewBox="0 0 24 24" width="16" height="16">
@@ -85,7 +85,10 @@
 
   // Computed properties for stats
   const totalSize = computed(() => {
-    return props.files.reduce((sum, file) => sum + (file.size || 0), 0)
+    return props.files.reduce(
+      (sum, file) => (isFileSelected(file) ? sum + (file.size || 0) : sum),
+      0,
+    )
   })
 
   const formattedSize = computed(() => {
@@ -129,6 +132,8 @@
     let hasEstimates = false
 
     for (const file of props.files) {
+      // Only count checked tracks — the stats mirror the generated playlist.
+      if (!isFileSelected(file)) continue
       const real = knownDurations.get(file.name)
       if (real != null) {
         totalSeconds += real
