@@ -59,6 +59,32 @@
             <line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="2" />
           </svg>
         </button>
+
+        <button
+          class="pb-btn pb-btn-sm pb-repeat"
+          :class="{ active: repeatMode !== 'off' }"
+          @click="cycleRepeatMode"
+          :title="repeatTitle"
+          :aria-label="repeatTitle"
+          :aria-pressed="repeatMode !== 'off'"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="17 1 21 5 17 9" />
+            <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+            <polyline points="7 23 3 19 7 15" />
+            <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+          </svg>
+          <span v-if="repeatMode === 'one'" class="pb-repeat-badge">1</span>
+        </button>
       </div>
 
       <!-- Right: volume + queue toggle -->
@@ -289,6 +315,7 @@
     duration,
     volume,
     isMuted,
+    repeatMode,
     playlist,
     play,
     cue,
@@ -299,8 +326,15 @@
     seek,
     setVolume,
     toggleMute,
+    cycleRepeatMode,
     formatTime,
   } = useAudioPlayer(filesRef)
+
+  const repeatTitle = computed(() => {
+    if (repeatMode.value === 'all') return t.value('player_repeat_all')
+    if (repeatMode.value === 'one') return t.value('player_repeat_one')
+    return t.value('player_repeat_off')
+  })
 
   // Track whether the user actively picked a different track in the
   // interactive list since the last time playback started. This lets the
@@ -603,6 +637,31 @@
     box-shadow: 0 4px 15px var(--shadow-color);
     color: var(--accent-text-color);
     background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+  }
+
+  /* Repeat button */
+  .pb-repeat {
+    position: relative;
+  }
+
+  .pb-repeat.active {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+  }
+
+  .pb-repeat.active:hover {
+    color: var(--accent-color);
+  }
+
+  .pb-repeat-badge {
+    position: absolute;
+    right: 3px;
+    bottom: 2px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
   }
 
   /* Queue toggle */
