@@ -86,6 +86,30 @@
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
   })
 
+  // Rough bytes-per-second per container format. Used only as a transient
+  // fallback until the real duration has been read from the file's metadata.
+  // Uncompressed formats (WAV/AIFF) hold far more bytes per second than
+  // compressed ones, so a single ratio would be wildly wrong for them.
+  const BYTES_PER_SEC = {
+    wav: 176400, // 44.1 kHz · 16-bit · stereo PCM
+    aiff: 176400,
+    aif: 176400,
+    flac: 110000, // lossless, ~60% of PCM
+    alac: 110000,
+    mp3: 20000, // ~160 kbps
+    m4a: 20000,
+    aac: 20000,
+    wma: 20000,
+    ogg: 16000, // ~128 kbps
+    opus: 16000,
+  }
+
+  const estimateSeconds = (file) => {
+    const ext = file.name.split('.').pop()?.toLowerCase()
+    const bytesPerSec = BYTES_PER_SEC[ext] || 20000
+    return file.size / bytesPerSec
+  }
+
   const durationInfo = computed(() => {
     // Trigger reactivity on the known-durations Map
     knownDurations.size
@@ -98,8 +122,8 @@
       if (real != null) {
         totalSeconds += real
       } else {
-        // Fallback: ~2 MB per minute for 256–320 kbps MP3
-        totalSeconds += (file.size / (1024 * 1024)) / 2 * 60
+        // Format-aware fallback until real metadata duration is available
+        totalSeconds += estimateSeconds(file)
         hasEstimates = true
       }
     }
@@ -126,7 +150,7 @@
 
   const { t } = useTranslation()
   const { currentTheme } = useTheme()
-  const { known: knownDurations } = useDurations()
+  const { known: knownDurations, measureDurations } = useDurations()
 
   const canvasRef = ref(null)
   const scrollY = ref(0)
@@ -820,11 +844,14 @@
   // Watch for changes
   watch(
     () => props.files,
-    () => {
+    (files) => {
       scrollY.value = 0
       resizeCanvas()
+      // Read real durations from metadata so the total time is accurate and
+      // stable (already-measured files are skipped).
+      measureDurations(files)
     },
-    { deep: true },
+    { deep: true, immediate: true },
   )
 
   watch(currentTheme, () => {
