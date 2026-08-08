@@ -1,4 +1,5 @@
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
+import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPersistence'
 
 // Module-level singleton state — survives component destroy/recreate
 // (same pattern as useTranslation.js)
@@ -402,6 +403,73 @@ const savePlaylist = async () => {
   }
 }
 
+// --- Persistence: keep files + settings across reloads (all local) ---------
+let restoring = false
+let restored = false
+
+const excludedNamesOf = () =>
+  files.value.filter((f) => excludedFiles.value.has(f)).map((f) => f.name)
+
+// Cheap, frequent write (settings + checkbox selection).
+let metaTimer = null
+const scheduleMetaSave = () => {
+  if (restoring) return
+  clearTimeout(metaTimer)
+  metaTimer = setTimeout(() => {
+    saveMeta({
+      sortOption: sortOption.value,
+      playlistName: playlistName.value,
+      outputFormat: outputFormat.value,
+      replaceMode: replaceMode.value,
+      excludedNames: excludedNamesOf(),
+    }).catch((e) => console.warn('Could not persist playlist settings:', e))
+  }, 400)
+}
+
+// Heavier write — only when the set/order of files actually changes.
+let filesTimer = null
+const scheduleFilesSave = () => {
+  if (restoring) return
+  clearTimeout(filesTimer)
+  filesTimer = setTimeout(() => {
+    if (files.value.length === 0) {
+      clearState().catch((e) => console.warn('Could not clear persisted playlist:', e))
+      return
+    }
+    saveFiles(files.value).catch((e) => console.warn('Could not persist playlist files:', e))
+    // File set changed → selection names may have changed too.
+    scheduleMetaSave()
+  }, 800)
+}
+
+async function restorePersistedState() {
+  if (restored) return
+  restored = true
+  restoring = true
+  try {
+    const { meta, files: savedFiles } = await loadState()
+    if (meta) {
+      if (meta.sortOption) sortOption.value = meta.sortOption
+      if (typeof meta.playlistName === 'string') playlistName.value = meta.playlistName
+      if (meta.outputFormat) outputFormat.value = meta.outputFormat
+      if (typeof meta.replaceMode === 'boolean') replaceMode.value = meta.replaceMode
+    }
+    if (savedFiles && savedFiles.length) {
+      files.value = savedFiles
+      const excludedNames = new Set((meta && meta.excludedNames) || [])
+      excludedFiles.value = new Set(savedFiles.filter((f) => excludedNames.has(f.name)))
+      generatePlaylist()
+    }
+    // Let the restore-triggered watchers flush while `restoring` is still true
+    // so they don't immediately re-persist what we just loaded.
+    await nextTick()
+  } catch (e) {
+    console.warn('Could not restore playlist state:', e)
+  } finally {
+    restoring = false
+  }
+}
+
 // Auto-regenerate playlist when format or name changes (module-level watchers)
 let watchersInitialized = false
 
@@ -409,6 +477,9 @@ export function usePlaylist() {
   // Set up watchers only once (from the first component setup context)
   if (!watchersInitialized) {
     watchersInitialized = true
+
+    // Restore any previously persisted playlist as soon as the app uses it.
+    restorePersistedState()
 
     watch(outputFormat, () => {
       if (files.value.length > 0) {
@@ -425,6 +496,14 @@ export function usePlaylist() {
         generatePlaylist()
       }
     })
+
+    // Persist on change. Files (heavy) only when the list itself changes;
+    // settings + selection (cheap) on their own.
+    watch(files, scheduleFilesSave, { deep: true })
+    watch(
+      [sortOption, playlistName, outputFormat, replaceMode, excludedFiles],
+      scheduleMetaSave,
+    )
   }
 
   return {
