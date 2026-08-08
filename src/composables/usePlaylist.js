@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 // Module-level singleton state — survives component destroy/recreate
 // (same pattern as useTranslation.js)
@@ -10,6 +10,39 @@ const playlistContent = ref('')
 const replaceMode = ref(false)
 const selectedFileIndex = ref(-1)
 const lastRemoved = ref(null) // { file, index } snapshot for undo
+// Files that are UNCHECKED (excluded from the generated playlist). Tracked by
+// File reference. Default = empty → every file is checked/included.
+const excludedFiles = ref(new Set())
+
+// The ordered subset of files that are checked and thus included in the output.
+const includedFiles = () => files.value.filter((f) => !excludedFiles.value.has(f))
+
+const isFileSelected = (file) => !excludedFiles.value.has(file)
+
+const selectedCount = computed(() =>
+  files.value.reduce((n, f) => n + (excludedFiles.value.has(f) ? 0 : 1), 0),
+)
+const allSelected = computed(
+  () => files.value.length > 0 && selectedCount.value === files.value.length,
+)
+const someSelected = computed(
+  () => selectedCount.value > 0 && selectedCount.value < files.value.length,
+)
+
+const toggleFileSelected = (index) => {
+  const file = files.value[index]
+  if (!file) return
+  const next = new Set(excludedFiles.value)
+  if (next.has(file)) next.delete(file)
+  else next.add(file)
+  excludedFiles.value = next
+  generatePlaylist()
+}
+
+const setAllSelected = (selected) => {
+  excludedFiles.value = selected ? new Set() : new Set(files.value)
+  generatePlaylist()
+}
 
 const supportedFormats = ['.mp3', '.wav', '.flac']
 
@@ -32,9 +65,9 @@ const escapeXml = (str) => {
   })
 }
 
-const generateM3u = () => {
+const generateM3u = (list) => {
   let output = '#EXTM3U\n'
-  files.value.forEach((file) => {
+  list.forEach((file) => {
     const title = file.name.replace(/\.[^/.]+$/, '')
     output += `#EXTINF:-1,${title}\n${file.name}\n`
   })
@@ -44,24 +77,24 @@ const generateM3u = () => {
 // M3U8 is the UTF-8 encoded variant of M3U — identical content, but the
 // .m3u8 extension signals UTF-8 so titles with umlauts / non-Latin
 // characters are interpreted correctly by players.
-const generateM3u8 = () => generateM3u()
+const generateM3u8 = (list) => generateM3u(list)
 
-const generatePls = () => {
+const generatePls = (list) => {
   let output = '[playlist]\n'
-  files.value.forEach((file, index) => {
+  list.forEach((file, index) => {
     const n = index + 1
     const title = file.name.replace(/\.[^/.]+$/, '')
     output += `File${n}=${file.name}\n`
     output += `Title${n}=${title}\n`
     output += `Length${n}=-1\n`
   })
-  output += `NumberOfEntries=${files.value.length}\n`
+  output += `NumberOfEntries=${list.length}\n`
   output += 'Version=2\n'
   return output
 }
 
-const generateTxt = () => {
-  return files.value.map((file) => file.name).join('\n') + '\n'
+const generateTxt = (list) => {
+  return list.map((file) => file.name).join('\n') + '\n'
 }
 
 // Map an audio extension to a CUE sheet FILE type. Non-standard types
@@ -73,9 +106,9 @@ const cueFileType = (name) => {
   return 'WAVE'
 }
 
-const generateCue = () => {
+const generateCue = (list) => {
   let output = `TITLE "${playlistName.value.replace(/"/g, "'")}"\n`
-  files.value.forEach((file, index) => {
+  list.forEach((file, index) => {
     const title = file.name.replace(/\.[^/.]+$/, '').replace(/"/g, "'")
     const trackNum = String(index + 1).padStart(2, '0')
     output += `FILE "${file.name.replace(/"/g, "'")}" ${cueFileType(file.name)}\n`
@@ -96,17 +129,17 @@ const escapeCsv = (value) => {
   return str
 }
 
-const generateCsv = () => {
+const generateCsv = (list) => {
   const header = 'Filename,Title,Size (Bytes)'
-  const rows = files.value.map((file) => {
+  const rows = list.map((file) => {
     const title = file.name.replace(/\.[^/.]+$/, '')
     return [escapeCsv(file.name), escapeCsv(title), escapeCsv(file.size ?? '')].join(',')
   })
   return [header, ...rows].join('\r\n') + '\r\n'
 }
 
-const generateJson = () => {
-  const playlistData = files.value.map((file) => ({
+const generateJson = (list) => {
+  const playlistData = list.map((file) => ({
     filename: file.name,
     title: file.name.replace(/\.[^/.]+$/, ''),
     size: file.size,
@@ -114,8 +147,8 @@ const generateJson = () => {
   return JSON.stringify(playlistData, null, 4)
 }
 
-const generateXspf = () => {
-  const tracks = files.value
+const generateXspf = (list) => {
+  const tracks = list
     .map((file) => {
       const title = escapeXml(file.name.replace(/\.[^/.]+$/, ''))
       const location = escapeXml(file.name)
@@ -133,35 +166,37 @@ ${tracks}
 }
 
 const generatePlaylist = () => {
-  if (files.value.length === 0) {
+  // Only checked tracks are written to the playlist.
+  const list = includedFiles()
+  if (list.length === 0) {
     playlistContent.value = ''
     return
   }
 
   switch (outputFormat.value) {
     case 'm3u':
-      playlistContent.value = generateM3u()
+      playlistContent.value = generateM3u(list)
       break
     case 'm3u8':
-      playlistContent.value = generateM3u8()
+      playlistContent.value = generateM3u8(list)
       break
     case 'pls':
-      playlistContent.value = generatePls()
+      playlistContent.value = generatePls(list)
       break
     case 'txt':
-      playlistContent.value = generateTxt()
+      playlistContent.value = generateTxt(list)
       break
     case 'cue':
-      playlistContent.value = generateCue()
+      playlistContent.value = generateCue(list)
       break
     case 'csv':
-      playlistContent.value = generateCsv()
+      playlistContent.value = generateCsv(list)
       break
     case 'json':
-      playlistContent.value = generateJson()
+      playlistContent.value = generateJson(list)
       break
     case 'xspf':
-      playlistContent.value = generateXspf()
+      playlistContent.value = generateXspf(list)
       break
     default:
       playlistContent.value = 'Unsupported format.'
@@ -174,7 +209,8 @@ const addFiles = (fileList) => {
   )
 
   if (replaceMode.value) {
-    // Replace mode: clear and add all new files
+    // Replace mode: clear and add all new files (all checked by default)
+    excludedFiles.value = new Set()
     files.value = validFiles
     sortFiles()
     generatePlaylist()
@@ -203,13 +239,20 @@ const addFiles = (fileList) => {
 
 const clearFiles = () => {
   files.value = []
+  excludedFiles.value = new Set()
   playlistContent.value = ''
 }
 
 const removeFile = (index) => {
   if (index >= 0 && index < files.value.length) {
-    lastRemoved.value = { file: files.value[index], index }
+    const file = files.value[index]
+    lastRemoved.value = { file, index }
     files.value.splice(index, 1)
+    if (excludedFiles.value.has(file)) {
+      const next = new Set(excludedFiles.value)
+      next.delete(file)
+      excludedFiles.value = next
+    }
     generatePlaylist()
   }
 }
@@ -392,6 +435,12 @@ export function usePlaylist() {
     playlistContent,
     replaceMode,
     selectedFileIndex,
+    isFileSelected,
+    selectedCount,
+    allSelected,
+    someSelected,
+    toggleFileSelected,
+    setAllSelected,
     addFiles,
     clearFiles,
     removeFile,

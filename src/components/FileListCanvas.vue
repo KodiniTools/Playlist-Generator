@@ -2,6 +2,16 @@
   <div class="file-info" v-show="files.length > 0">
     <div class="canvas-header">
       <h3>{{ t('canvas_title') }}</h3>
+      <label class="select-all" :title="t('select_all')">
+        <input
+          type="checkbox"
+          ref="selectAllRef"
+          :checked="allSelected"
+          @change="onSelectAll"
+        />
+        <span class="select-all-text">{{ t('select_all') }}</span>
+        <span class="select-all-count">{{ selectedCount }}/{{ files.length }}</span>
+      </label>
       <button
         type="button"
         class="clear-button"
@@ -60,6 +70,7 @@
   import { useTranslation } from '../composables/useTranslation'
   import { useTheme } from '../composables/useTheme'
   import { useDurations } from '../composables/useDurations'
+  import { usePlaylist } from '../composables/usePlaylist'
 
   const props = defineProps({
     files: {
@@ -151,6 +162,21 @@
   const { t } = useTranslation()
   const { currentTheme } = useTheme()
   const { known: knownDurations, measureDurations } = useDurations()
+  const {
+    isFileSelected,
+    selectedCount,
+    allSelected,
+    someSelected,
+    toggleFileSelected,
+    setAllSelected,
+  } = usePlaylist()
+
+  const selectAllRef = ref(null)
+
+  const onSelectAll = (e) => {
+    setAllSelected(e.target.checked)
+    drawFilesOnCanvas()
+  }
 
   const canvasRef = ref(null)
   const scrollY = ref(0)
@@ -170,6 +196,20 @@
   const padding = 10
   const deleteButtonSize = 16
   const dragHandleWidth = 24
+  const checkboxSize = 15
+  const checkboxGap = 9 // space between the checkbox and the track name
+
+  // Trace a rounded-rectangle path (checkbox outline / fill).
+  const roundedRectPath = (ctx, x, y, w, h, r) => {
+    const radius = Math.min(r, w / 2, h / 2)
+    ctx.beginPath()
+    ctx.moveTo(x + radius, y)
+    ctx.arcTo(x + w, y, x + w, y + h, radius)
+    ctx.arcTo(x + w, y + h, x, y + h, radius)
+    ctx.arcTo(x, y + h, x, y, radius)
+    ctx.arcTo(x, y, x + w, y, radius)
+    ctx.closePath()
+  }
   const autoScrollZone = 40 // pixels from edge to trigger auto-scroll
   const autoScrollSpeed = 5 // pixels per frame
 
@@ -189,6 +229,9 @@
       draggedBg: 'rgba(242, 226, 142, 0.15)',
       selectedBg: 'rgba(242, 226, 142, 0.2)',
       selectedBorder: 'rgba(242, 226, 142, 0.5)',
+      checkboxBorder: 'rgba(174, 175, 183, 0.6)',
+      checkboxFill: '#F2E28E',
+      checkboxMark: '#0C0C10',
     },
     light: {
       background: '#f5f5f5',
@@ -204,6 +247,9 @@
       draggedBg: 'rgba(162, 134, 128, 0.15)',
       selectedBg: 'rgba(162, 134, 128, 0.2)',
       selectedBorder: 'rgba(162, 134, 128, 0.6)',
+      checkboxBorder: 'rgba(94, 95, 105, 0.55)',
+      checkboxFill: '#A28680',
+      checkboxMark: '#ffffff',
     },
   }
 
@@ -238,6 +284,12 @@
     const x = padding
     const y = index * lineHeight + padding - scrollY.value + (lineHeight - 16) / 2
     return { x, y, width: dragHandleWidth - 8, height: 16 }
+  }
+
+  const getCheckboxBounds = (index) => {
+    const x = padding + dragHandleWidth
+    const y = index * lineHeight + padding - scrollY.value + (lineHeight - checkboxSize) / 2
+    return { x, y, width: checkboxSize, height: checkboxSize }
   }
 
   const getFileIndexAtPosition = (mY) => {
@@ -314,9 +366,32 @@
           ctx.stroke()
         }
 
-        // Draw file name (offset for drag handle)
+        // Draw checkbox (checked = included in playlist)
+        const cb = getCheckboxBounds(index)
+        if (isFileSelected(file)) {
+          roundedRectPath(ctx, cb.x, cb.y, cb.width, cb.height, 3)
+          ctx.fillStyle = theme.checkboxFill
+          ctx.fill()
+          // Check mark
+          ctx.strokeStyle = theme.checkboxMark
+          ctx.lineWidth = 2
+          ctx.lineCap = 'round'
+          ctx.lineJoin = 'round'
+          ctx.beginPath()
+          ctx.moveTo(cb.x + 3.5, cb.y + cb.height * 0.52)
+          ctx.lineTo(cb.x + cb.width * 0.42, cb.y + cb.height - 3.5)
+          ctx.lineTo(cb.x + cb.width - 3, cb.y + 4)
+          ctx.stroke()
+        } else {
+          roundedRectPath(ctx, cb.x + 0.5, cb.y + 0.5, cb.width - 1, cb.height - 1, 3)
+          ctx.strokeStyle = theme.checkboxBorder
+          ctx.lineWidth = 1.5
+          ctx.stroke()
+        }
+
+        // Draw file name (offset for drag handle + checkbox)
         let text = `${index + 1}. ${file.name}`
-        const textX = padding + dragHandleWidth
+        const textX = padding + dragHandleWidth + checkboxSize + checkboxGap
         const maxWidth = canvasWidth - textX - padding - deleteButtonSize - scrollbarSpace - 10
 
         if (ctx.measureText(text).width > maxWidth) {
@@ -413,7 +488,7 @@
 
       // Draw file name
       let text = `${draggedFileIndex.value + 1}. ${file.name}`
-      const textX = padding + dragHandleWidth
+      const textX = padding + dragHandleWidth + checkboxSize + checkboxGap
       const maxWidth = canvasWidth - textX - padding - deleteButtonSize - scrollbarSpace - 10
 
       if (ctx.measureText(text).width > maxWidth) {
@@ -671,6 +746,14 @@
         return
       }
 
+      // Check checkbox — toggle inclusion in the playlist (no selection/playback)
+      const cb = getCheckboxBounds(fileIndex)
+      if (mX >= cb.x - 3 && mX <= cb.x + cb.width + 3 && mY >= cb.y - 3 && mY <= cb.y + cb.height + 3) {
+        toggleFileSelected(fileIndex)
+        drawFilesOnCanvas()
+        return
+      }
+
       // Click on file row - select it and start playback in the player
       emit('selectFile', fileIndex)
       emit('playFile', fileIndex)
@@ -756,6 +839,13 @@
         canvasRef.value.style.cursor = 'pointer'
         return
       }
+
+      // Check checkbox hover
+      const cb = getCheckboxBounds(fileIndex)
+      if (mX >= cb.x - 3 && mX <= cb.x + cb.width + 3 && mY >= cb.y - 3 && mY <= cb.y + cb.height + 3) {
+        canvasRef.value.style.cursor = 'pointer'
+        return
+      }
     }
 
     // Check scrollbar hover
@@ -834,6 +924,7 @@
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('touchend', handleMouseUp)
     resizeCanvas()
+    if (selectAllRef.value) selectAllRef.value.indeterminate = someSelected.value
   })
 
   onUnmounted(() => {
@@ -860,6 +951,21 @@
   watch(currentTheme, () => {
     drawFilesOnCanvas()
   })
+
+  // Redraw checkboxes when the selection changes (e.g. via "select all").
+  watch(selectedCount, () => {
+    drawFilesOnCanvas()
+  })
+
+  // The native "select all" checkbox shows an indeterminate state when only
+  // some tracks are checked. That can't be set via a template binding.
+  watch(
+    someSelected,
+    (indeterminate) => {
+      if (selectAllRef.value) selectAllRef.value.indeterminate = indeterminate
+    },
+    { immediate: true },
+  )
 
   // Ensure a given row is within the visible viewport, scrolling the canvas
   // if needed. Used to keep the currently playing/selected track in view.
@@ -908,6 +1014,43 @@
     margin: 0;
     font-size: 1rem;
     color: var(--accent-color);
+  }
+
+  .select-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    margin-right: 10px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--muted-color);
+    user-select: none;
+  }
+
+  .select-all input[type='checkbox'] {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    accent-color: var(--accent-color);
+    margin: 0;
+  }
+
+  .select-all-text {
+    white-space: nowrap;
+  }
+
+  .select-all-count {
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-color);
+    opacity: 0.75;
+    font-size: 0.78rem;
+  }
+
+  @media (max-width: 480px) {
+    .select-all-text {
+      display: none;
+    }
   }
 
   .clear-button {
