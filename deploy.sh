@@ -18,6 +18,10 @@ set -euo pipefail
 TARGET="${1:-${DEPLOY_TARGET:-/var/www/kodinitools.com/playlist_generator}}"
 BRANCH="${DEPLOY_BRANCH:-main}"
 
+# Files that live in the web root but are NOT produced by the build. They are
+# preserved across deploys (never overwritten or removed by the sync below).
+KEEP=(favicon.ico README.md)
+
 # Always operate from the repository this script lives in.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
@@ -55,14 +59,18 @@ fi
 echo "[4/4] Syncing dist/ -> $TARGET ..."
 mkdir -p "$TARGET"
 
-# --delete removes stale files (old hashed assets) from the target so it
-# mirrors the fresh build exactly. The target folder must be dedicated to
-# this app (nothing else lives there).
+# --delete removes stale files (e.g. old hashed assets) so the target mirrors
+# the fresh build — except for the KEEP files, which are protected from both
+# transfer and deletion.
 if command -v rsync >/dev/null 2>&1; then
-  rsync -a --delete dist/ "$TARGET/"
+  EXCLUDES=()
+  for f in "${KEEP[@]}"; do EXCLUDES+=(--exclude "$f"); done
+  rsync -a --delete "${EXCLUDES[@]}" dist/ "$TARGET/"
 else
   echo "rsync not found, falling back to rm + cp..."
-  rm -rf "${TARGET:?}/"*
+  # Refresh the build-managed assets folder, then copy the new build on top.
+  # KEEP files are left untouched because the build never emits them.
+  rm -rf "${TARGET:?}/assets"
   cp -r dist/. "$TARGET/"
 fi
 
