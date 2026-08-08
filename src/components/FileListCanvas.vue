@@ -168,7 +168,7 @@
 
   const lineHeight = 28
   const padding = 10
-  const deleteButtonSize = 18
+  const deleteButtonSize = 16
   const dragHandleWidth = 24
   const autoScrollZone = 40 // pixels from edge to trigger auto-scroll
   const autoScrollSpeed = 5 // pixels per frame
@@ -180,9 +180,9 @@
       text: '#F2E28E',
       scrollbarTrack: 'rgba(174, 175, 183, 0.1)',
       scrollbarHandle: 'rgba(242, 226, 142, 0.4)',
-      deleteButton: 'rgba(229, 115, 115, 0.6)',
-      deleteButtonHover: '#e57373',
-      deleteX: '#0C0C10',
+      deleteIcon: 'rgba(174, 175, 183, 0.5)',
+      deleteIconHover: '#e57373',
+      deleteHoverBg: 'rgba(229, 115, 115, 0.16)',
       dragHandle: 'rgba(174, 175, 183, 0.4)',
       dragHandleHover: 'rgba(242, 226, 142, 0.7)',
       dropIndicator: '#F2E28E',
@@ -195,9 +195,9 @@
       text: '#A28680',
       scrollbarTrack: 'rgba(94, 95, 105, 0.1)',
       scrollbarHandle: 'rgba(162, 134, 128, 0.5)',
-      deleteButton: 'rgba(211, 47, 47, 0.5)',
-      deleteButtonHover: '#d32f2f',
-      deleteX: '#ffffff',
+      deleteIcon: 'rgba(94, 95, 105, 0.5)',
+      deleteIconHover: '#d32f2f',
+      deleteHoverBg: 'rgba(211, 47, 47, 0.12)',
       dragHandle: 'rgba(94, 95, 105, 0.4)',
       dragHandleHover: 'rgba(162, 134, 128, 0.8)',
       dropIndicator: '#A28680',
@@ -328,19 +328,22 @@
         ctx.fillStyle = theme.text
         ctx.fillText(text, textX, y)
 
-        // Draw delete button
+        // Draw delete button — a subtle "×" that only reveals a faint circle
+        // and turns red on hover, so it stays quiet within the design.
         const btn = getDeleteButtonBounds(index, canvasWidth)
         const isHovered = hoveredIndex.value === index
 
-        // Button background (circle)
-        ctx.beginPath()
-        ctx.arc(btn.x + btn.width / 2, btn.y + btn.height / 2, btn.width / 2, 0, Math.PI * 2)
-        ctx.fillStyle = isHovered ? theme.deleteButtonHover : theme.deleteButton
-        ctx.fill()
+        // Faint circular background — hover only
+        if (isHovered) {
+          ctx.beginPath()
+          ctx.arc(btn.x + btn.width / 2, btn.y + btn.height / 2, btn.width / 2, 0, Math.PI * 2)
+          ctx.fillStyle = theme.deleteHoverBg
+          ctx.fill()
+        }
 
-        // X symbol
-        ctx.strokeStyle = theme.deleteX
-        ctx.lineWidth = 2
+        // X symbol (thin, light by default; red on hover)
+        ctx.strokeStyle = isHovered ? theme.deleteIconHover : theme.deleteIcon
+        ctx.lineWidth = 1.5
         ctx.lineCap = 'round'
         const xPadding = 5
         ctx.beginPath()
