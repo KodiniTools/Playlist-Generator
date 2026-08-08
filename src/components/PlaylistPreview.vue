@@ -69,7 +69,7 @@
         :title="t('shortcut_copy')"
       >
         <span class="button-icon">
-          <svg viewBox="0 0 24 24" width="18" height="18">
+          <svg viewBox="0 0 24 24" width="16" height="16">
             <rect
               x="9"
               y="9"
@@ -93,7 +93,7 @@
       </button>
       <button type="button" class="save-button" @click="handleSave" :title="t('shortcut_save')">
         <span class="button-icon">
-          <svg viewBox="0 0 24 24" width="18" height="18">
+          <svg viewBox="0 0 24 24" width="16" height="16">
             <path
               d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
               fill="none"
@@ -357,6 +357,26 @@
     justify-content: center;
     gap: 8px;
     flex: 1;
+    padding: 11px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    border-radius: 10px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  /* Copy = secondary/outline button */
+  .copy-button {
+    background: var(--btn-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+  }
+
+  .copy-button:hover:not(:disabled) {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
   }
 
   .copy-button:disabled {
