@@ -532,14 +532,15 @@
   }
 
   .container > header h1 {
-    font-size: 1.6rem;
-    font-weight: 700;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
     color: var(--text-color);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .subtitle {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: var(--muted-color);
     margin-bottom: 0;
   }
@@ -650,7 +651,7 @@
     }
 
     .container > header h1 {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
     }
 
     .main-content {
@@ -672,11 +673,11 @@
     }
 
     .container > header h1 {
-      font-size: 1.25rem;
+      font-size: 1.12rem;
     }
 
     .subtitle {
-      font-size: 0.95rem;
+      font-size: 0.88rem;
     }
 
     .main-content {

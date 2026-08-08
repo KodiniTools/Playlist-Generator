@@ -1,3 +1,13 @@
+/* === Custom Font (Supreme) === */
+/* Served from the site root: /var/www/kodinitools.com/fonts/ */
+@font-face {
+  font-family: 'Supreme';
+  src: url('/fonts/Supreme-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* === CSS Variables for Theme System === */
 /* Farbschema: #c9984d, #014f99, #091428, #f8e1a9, #f9f2d5 */
 :root {
@@ -349,7 +359,8 @@ header h1 {
   font-weight: 600;
   color: var(--text-color);
   margin-bottom: 8px;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
 }
 
 /* === Input Styles === */

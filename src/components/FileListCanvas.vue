@@ -925,6 +925,11 @@
     window.addEventListener('touchend', handleMouseUp)
     resizeCanvas()
     if (selectAllRef.value) selectAllRef.value.indeterminate = someSelected.value
+    // Redraw once the custom font has loaded so the list renders in Supreme
+    // rather than the fallback that may be used on first paint.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => drawFilesOnCanvas())
+    }
   })
 
   onUnmounted(() => {
@@ -1012,7 +1017,9 @@
 
   .canvas-header h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     color: var(--accent-color);
   }
 

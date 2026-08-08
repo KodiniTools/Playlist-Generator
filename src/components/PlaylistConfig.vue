@@ -569,12 +569,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
     color: var(--accent-text-color);
-    font-size: 0.7rem;
+    font-size: 0.64rem;
     font-weight: 700;
     margin-right: 8px;
     flex-shrink: 0;
