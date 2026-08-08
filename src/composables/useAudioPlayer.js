@@ -14,6 +14,8 @@ export function useAudioPlayer(filesRef) {
   const duration = ref(0)
   const volume = ref(0.7)
   const isMuted = ref(false)
+  // Repeat mode: 'off' (stop at end) | 'all' (loop playlist) | 'one' (loop track)
+  const repeatMode = ref('off')
 
   // Ordered playlist derived from files
   const playlist = computed(() =>
@@ -120,6 +122,12 @@ export function useAudioPlayer(filesRef) {
     play(prevIndex)
   }
 
+  // Cycle the repeat mode: off → all → one → off
+  const cycleRepeatMode = () => {
+    repeatMode.value =
+      repeatMode.value === 'off' ? 'all' : repeatMode.value === 'all' ? 'one' : 'off'
+  }
+
   const seek = (time) => {
     if (duration.value > 0) {
       audio.currentTime = time
@@ -160,6 +168,18 @@ export function useAudioPlayer(filesRef) {
   })
 
   audio.addEventListener('ended', () => {
+    // Repeat current track: replay it from the start.
+    if (repeatMode.value === 'one') {
+      play(currentTrackIndex.value)
+      return
+    }
+    // No repeat: stop when the last track finishes instead of wrapping around.
+    const isLastTrack = currentTrackIndex.value >= filesRef.value.length - 1
+    if (isLastTrack && repeatMode.value === 'off') {
+      stop()
+      return
+    }
+    // 'all', or any non-final track: advance (next() wraps past the end).
     next()
   })
 
@@ -237,10 +257,12 @@ export function useAudioPlayer(filesRef) {
     duration,
     volume,
     isMuted,
+    repeatMode,
     playlist,
     // Methods
     play,
     cue: loadTrack,
+    cycleRepeatMode,
     pause,
     stop,
     togglePlay,

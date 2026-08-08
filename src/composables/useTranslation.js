@@ -221,6 +221,9 @@ const translations = {
     player_mute: 'Stummschalten',
     player_unmute: 'Ton einschalten',
     player_queue: 'Warteschlange',
+    player_repeat_off: 'Wiederholen: Aus',
+    player_repeat_all: 'Wiederholen: Ganze Playlist',
+    player_repeat_one: 'Wiederholen: Aktueller Track',
 
     // Tools Section
     more_tools_title: 'Entdecken Sie weitere Audio-Tools',
@@ -459,6 +462,9 @@ const translations = {
     player_mute: 'Mute',
     player_unmute: 'Unmute',
     player_queue: 'Queue',
+    player_repeat_off: 'Repeat: Off',
+    player_repeat_all: 'Repeat: Entire playlist',
+    player_repeat_one: 'Repeat: Current track',
 
     // Tools Section
     more_tools_title: 'Discover More Audio Tools',
