@@ -5,7 +5,7 @@ import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPer
 // (same pattern as useTranslation.js)
 const files = ref([])
 const sortOption = ref('alphabetical')
-const playlistName = ref('meine_playliste')
+const playlistName = ref('meine_wiedergabeliste')
 const outputFormat = ref('m3u')
 const playlistContent = ref('')
 const replaceMode = ref(false)
