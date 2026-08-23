@@ -3,9 +3,9 @@ import { ref, computed } from 'vue'
 const translations = {
   de: {
     // Meta tags
-    meta_title: 'Audio Playlist Generator - M3U, XSPF & JSON Playlists Erstellen',
+    meta_title: 'Audio Wiedergabeliste Generator - M3U, XSPF & JSON Wiedergabelisten Erstellen',
     meta_description:
-      'Erstellen Sie einfach und schnell benutzerdefinierte Audio-Playlists (.m3u, .xspf, .json) aus Ihren MP3-, WAV- oder FLAC-Dateien. Sortieren, benennen und laden Sie Ihre Playlist herunter.',
+      'Erstellen Sie einfach und schnell benutzerdefinierte Audio-Wiedergabelisten (.m3u, .xspf, .json) aus Ihren MP3-, WAV- oder FLAC-Dateien. Sortieren, benennen und laden Sie Ihre Wiedergabeliste herunter.',
 
     // Navigation
     nav_home: 'Start',
@@ -14,17 +14,17 @@ const translations = {
     nav_blog: 'Blog',
 
     // Landing Page - Hero
-    hero_title: 'Audio Playlist Generator',
-    hero_subtitle: 'Erstellen Sie professionelle Playlists in Sekunden',
+    hero_title: 'Audio Wiedergabeliste Generator',
+    hero_subtitle: 'Erstellen Sie professionelle Wiedergabelisten in Sekunden',
     hero_description:
-      'Verwandeln Sie Ihre lokalen Audiodateien in perfekt organisierte Playlists. Unterstützt M3U, XSPF und JSON – kostenlos und 100% lokal in Ihrem Browser.',
+      'Verwandeln Sie Ihre lokalen Audiodateien in perfekt organisierte Wiedergabelisten. Unterstützt M3U, XSPF und JSON – kostenlos und 100% lokal in Ihrem Browser.',
     hero_cta: 'Jetzt starten',
     hero_learn_more: 'Mehr erfahren',
 
     // Feature Cards
     feature1_title: 'Mehrere Formate',
     feature1_desc:
-      'Exportieren Sie Ihre Playlists in M3U, XSPF oder JSON – kompatibel mit VLC, Winamp, iTunes und mehr.',
+      'Exportieren Sie Ihre Wiedergabelisten in M3U, XSPF oder JSON – kompatibel mit VLC, Winamp, iTunes und mehr.',
     feature2_title: '100% Privat',
     feature2_desc:
       'Alle Dateien werden lokal verarbeitet. Keine Uploads, keine Server – Ihre Musik bleibt auf Ihrem Gerät.',
@@ -34,14 +34,14 @@ const translations = {
 
     // Details Section
     details_title: 'Leistungsstarke Funktionen',
-    details_subtitle: 'Alles, was Sie für perfekte Playlists brauchen',
+    details_subtitle: 'Alles, was Sie für perfekte Wiedergabelisten brauchen',
 
     detail1_title: 'Drag & Drop Upload',
     detail1_desc:
       'Ziehen Sie einfach Ihre MP3-, WAV- oder FLAC-Dateien in den Browser – keine komplizierte Auswahl nötig.',
     detail2_title: 'Interaktive Trackliste',
     detail2_desc:
-      'Visualisieren und bearbeiten Sie Ihre Playlist in Echtzeit mit unserer Canvas-basierten Oberfläche.',
+      'Visualisieren und bearbeiten Sie Ihre Wiedergabeliste in Echtzeit mit unserer Canvas-basierten Oberfläche.',
     detail3_title: 'Schnelle Tastenkombinationen',
     detail3_desc:
       'Strg+O zum Öffnen, Strg+S zum Speichern, Strg+C zum Kopieren – arbeiten Sie wie ein Profi.',
@@ -60,21 +60,21 @@ const translations = {
 
     // App Preview Labels
     preview_files_label: 'Audiodateien',
-    preview_output_label: 'Playlist-Vorschau',
+    preview_output_label: 'Wiedergabeliste-Vorschau',
 
     // CTA Section
     cta_title: 'Bereit, loszulegen?',
-    cta_desc: 'Erstellen Sie jetzt Ihre erste Playlist – kostenlos und ohne Registrierung.',
-    cta_button: 'Kostenlos Playlist erstellen',
+    cta_desc: 'Erstellen Sie jetzt Ihre erste Wiedergabeliste – kostenlos und ohne Registrierung.',
+    cta_button: 'Kostenlos Wiedergabeliste erstellen',
 
     // App Page
     notice_m3u:
-      'Wichtiger Hinweis für M3U/XSPF-Playlists: Damit Mediaplayer (VLC, Winamp etc.) die Tracks finden, muss die Playlist-Datei im selben Ordner wie Ihre Audio-Dateien gespeichert werden.',
-    main_title: 'Audio Playlist Generator',
-    subtitle: 'Erstellen Sie professionelle Playlists mit modernem Design',
+      'Wichtiger Hinweis für M3U/XSPF-Wiedergabelisten: Damit Mediaplayer (VLC, Winamp etc.) die Tracks finden, muss die Wiedergabeliste-Datei im selben Ordner wie Ihre Audio-Dateien gespeichert werden.',
+    main_title: 'Audio Wiedergabeliste Generator',
+    subtitle: 'Erstellen Sie professionelle Wiedergabelisten mit modernem Design',
     description_text:
-      'Wählen Sie Ihre lokalen Audio-Dateien (MP3, WAV, FLAC) aus, legen Sie die Sortierreihenfolge fest und exportieren Sie Ihre persönliche Playlist im M3U-, XSPF- oder JSON-Format. Ideal, um Ihre Musiksammlung für Mediaplayer wie VLC, Winamp oder Foobar2000 zu organisieren.',
-    config_title: 'Playlist Konfiguration',
+      'Wählen Sie Ihre lokalen Audio-Dateien (MP3, WAV, FLAC) aus, legen Sie die Sortierreihenfolge fest und exportieren Sie Ihre persönliche Wiedergabeliste im M3U-, XSPF- oder JSON-Format. Ideal, um Ihre Musiksammlung für Mediaplayer wie VLC, Winamp oder Foobar2000 zu organisieren.',
+    config_title: 'Wiedergabeliste Konfiguration',
     label_files: 'Audio Dateien hinzufügen',
     button_add_files: 'Dateien hinzufügen',
     button_add_folder: 'Ordner hinzufügen',
@@ -94,66 +94,66 @@ const translations = {
     sort_date: 'Nach Datum',
     sort_random: 'Zufällig',
     sort_manual: 'Manuell',
-    label_name: 'Playlist benennen',
+    label_name: 'Wiedergabeliste benennen',
     placeholder_name: 'Geben Sie einen Namen ein...',
-    button_create: '4. Playlist erstellen',
+    button_create: '4. Wiedergabeliste erstellen',
     preview_title: 'Vorschau & Speichern',
     label_format: 'Vorschau-Format',
-    format_m3u: 'M3U Playlist',
-    format_m3u8: 'M3U8 Playlist',
-    format_pls: 'PLS Playlist',
+    format_m3u: 'M3U Wiedergabeliste',
+    format_m3u8: 'M3U8 Wiedergabeliste',
+    format_pls: 'PLS Wiedergabeliste',
     format_txt: 'TXT Liste',
     format_cue: 'CUE Sheet',
     format_csv: 'CSV Tabelle',
-    format_xspf: 'XSPF Playlist',
+    format_xspf: 'XSPF Wiedergabeliste',
     format_json: 'JSON Datei',
-    placeholder_output: "Klicken Sie auf 'Playlist erstellen', um hier eine Vorschau zu sehen...",
+    placeholder_output: "Klicken Sie auf 'Wiedergabeliste erstellen', um hier eine Vorschau zu sehen...",
     button_save: 'Speichern unter...',
     button_copy: 'Kopieren',
 
     // FAQ Page
     faq_page_title: 'Häufig gestellte Fragen',
-    faq_page_subtitle: 'Alles, was Sie über den Audio Playlist Generator wissen müssen',
+    faq_page_subtitle: 'Alles, was Sie über den Audio Wiedergabeliste Generator wissen müssen',
     faq_title: 'Häufig gestellte Fragen (FAQ)',
     faq_q1_title: 'Was ist eine M3U-Datei?',
     faq_q1_text:
-      'Eine M3U-Datei ist eine einfache Textdatei, die die Pfade zu Audio- oder Videodateien auflistet. Sie wird von vielen Mediaplayern (z.B. VLC, Winamp, iTunes) verwendet, um Playlists zu organisieren und abzuspielen.',
+      'Eine M3U-Datei ist eine einfache Textdatei, die die Pfade zu Audio- oder Videodateien auflistet. Sie wird von vielen Mediaplayern (z.B. VLC, Winamp, iTunes) verwendet, um Wiedergabelisten zu organisieren und abzuspielen.',
     faq_q9_title: 'Was ist eine XSPF-Datei?',
     faq_q9_text:
-      'XSPF (XML Shareable Playlist Format) ist ein moderner, offener Standard für Playlists. Im Gegensatz zu M3U ist sie im XML-Format strukturiert, was sie flexibler macht. Sie wird von vielen Playern wie VLC unterstützt und ist ideal, um Playlists zwischen verschiedenen Programmen und Systemen auszutauschen.',
+      'XSPF (XML Shareable Wiedergabeliste Format) ist ein moderner, offener Standard für Wiedergabelisten. Im Gegensatz zu M3U ist sie im XML-Format strukturiert, was sie flexibler macht. Sie wird von vielen Playern wie VLC unterstützt und ist ideal, um Wiedergabelisten zwischen verschiedenen Programmen und Systemen auszutauschen.',
     faq_q2_title: 'Welche Audioformate werden unterstützt?',
     faq_q2_text:
       'Der Generator unterstützt die gängigsten Audioformate: <strong>.mp3</strong>, <strong>.wav</strong> und <strong>.flac</strong>. Andere Dateitypen werden ignoriert.',
     faq_q3_title: 'Werden meine Dateien irgendwo hochgeladen?',
     faq_q3_text:
       'Nein, absolut nicht. Die gesamte Verarbeitung geschieht ausschliesslich lokal in Ihrem Browser. Ihre Audio-Dateien verlassen zu keinem Zeitpunkt Ihren Computer.',
-    faq_q4_title: 'Warum sind die Pfade in der Playlist nur die Dateinamen?',
+    faq_q4_title: 'Warum sind die Pfade in der Wiedergabeliste nur die Dateinamen?',
     faq_q4_text:
-      'Das Tool verwendet bewusst relative Pfade (nur den Dateinamen). Darum müssen Sie die Playlist-Datei im selben Ordner wie Ihre Musik speichern. Dadurch funktioniert die Playlist auch dann noch, wenn Sie den gesamten Ordner auf einen anderen Computer verschieben.',
+      'Das Tool verwendet bewusst relative Pfade (nur den Dateinamen). Darum müssen Sie die Wiedergabeliste-Datei im selben Ordner wie Ihre Musik speichern. Dadurch funktioniert die Wiedergabeliste auch dann noch, wenn Sie den gesamten Ordner auf einen anderen Computer verschieben.',
     faq_q5_title: 'Wofür ist das JSON-Format gut?',
     faq_q5_text:
-      'JSON ist ein Datenformat, das oft von Entwicklern oder in Webanwendungen verwendet wird. Sie könnten eine JSON-Playlist z.B. nutzen, um die Trackliste auf einer Webseite dynamisch anzuzeigen oder in einem eigenen Softwareprojekt zu verarbeiten. Für normale Mediaplayer sind M3U oder XSPF die bessere Wahl.',
+      'JSON ist ein Datenformat, das oft von Entwicklern oder in Webanwendungen verwendet wird. Sie könnten eine JSON-Wiedergabeliste z.B. nutzen, um die Trackliste auf einer Webseite dynamisch anzuzeigen oder in einem eigenen Softwareprojekt zu verarbeiten. Für normale Mediaplayer sind M3U oder XSPF die bessere Wahl.',
     faq_q6_title: 'Welche Browser werden unterstützt?',
     faq_q6_text:
-      'Der Audio Playlist Generator funktioniert in allen modernen Browsern (Chrome, Firefox, Safari, Edge). Die Speicherfunktion nutzt die File System Access API und ist am besten in Chrome und Edge verfügbar.',
+      'Der Audio Wiedergabeliste Generator funktioniert in allen modernen Browsern (Chrome, Firefox, Safari, Edge). Die Speicherfunktion nutzt die File System Access API und ist am besten in Chrome und Edge verfügbar.',
     faq_q7_title: 'Ist der Generator kostenlos?',
     faq_q7_text:
-      'Ja, der Audio Playlist Generator ist vollständig kostenlos und erfordert keine Registrierung. Wenn Ihnen das Tool gefällt, können Sie uns gerne mit einer kleinen Spende unterstützen.',
+      'Ja, der Audio Wiedergabeliste Generator ist vollständig kostenlos und erfordert keine Registrierung. Wenn Ihnen das Tool gefällt, können Sie uns gerne mit einer kleinen Spende unterstützen.',
     faq_q8_title: 'Kann ich den Generator offline nutzen?',
     faq_q8_text:
-      'Da die gesamte Verarbeitung lokal in Ihrem Browser stattfindet, benötigen Sie nur für den ersten Zugriff eine Internetverbindung. Sobald die Seite geladen ist, können Sie auch ohne Internet Playlists erstellen.',
+      'Da die gesamte Verarbeitung lokal in Ihrem Browser stattfindet, benötigen Sie nur für den ersten Zugriff eine Internetverbindung. Sobald die Seite geladen ist, können Sie auch ohne Internet Wiedergabelisten erstellen.',
 
     // Privacy Notice
     privacy_title: 'Datenschutz-Hinweis',
     privacy_text:
-      'Der Audio Playlist Generator verarbeitet alle Daten lokal in Ihrem Browser. Es werden keine Dateien auf Server hochgeladen und keine persönlichen Daten gespeichert. Die einzigen gespeicherten Daten sind Ihre Theme- und Sprachpräferenzen im lokalen Speicher Ihres Browsers.',
+      'Der Audio Wiedergabeliste Generator verarbeitet alle Daten lokal in Ihrem Browser. Es werden keine Dateien auf Server hochgeladen und keine persönlichen Daten gespeichert. Die einzigen gespeicherten Daten sind Ihre Theme- und Sprachpräferenzen im lokalen Speicher Ihres Browsers.',
 
     // Toast Messages
     alert_save_error: 'Fehler: Die Datei konnte nicht gespeichert werden.',
-    alert_create_first: 'Bitte erstellen Sie zuerst eine Playlist.',
+    alert_create_first: 'Bitte erstellen Sie zuerst eine Wiedergabeliste.',
     toast_files_added: '{count} Dateien hinzugefügt',
     toast_duplicates_skipped: '{count} Duplikate übersprungen',
-    toast_playlist_saved: 'Playlist gespeichert ✓',
+    toast_playlist_saved: 'Wiedergabeliste gespeichert ✓',
     toast_copied: 'In Zwischenablage kopiert ✓',
     toast_copy_error: 'Kopieren fehlgeschlagen',
     toast_file_removed: 'Track entfernt',
@@ -181,14 +181,14 @@ const translations = {
     onboarding_aria: 'Kurzanleitung',
     onboarding_step1: 'Dateien hinzufügen',
     onboarding_step2: 'Reihenfolge festlegen',
-    onboarding_step3: 'Playlist speichern',
+    onboarding_step3: 'Wiedergabeliste speichern',
 
     // Keyboard Shortcuts Panel
     shortcuts_panel_title: 'Tastaturkürzel',
     shortcuts_close_btn: 'Schließen',
     shortcuts_hint_btn: 'Tastaturkürzel anzeigen',
     shortcut_open_desc: 'Dateien öffnen',
-    shortcut_save_desc: 'Playlist speichern',
+    shortcut_save_desc: 'Wiedergabeliste speichern',
     shortcut_copy_desc: 'In Zwischenablage kopieren',
     shortcut_delete_desc: 'Ausgewählten Track löschen',
     shortcut_undo_desc: 'Löschen rückgängig machen',
@@ -223,14 +223,14 @@ const translations = {
     player_unmute: 'Ton einschalten',
     player_queue: 'Warteschlange',
     player_repeat_off: 'Wiederholen: Aus',
-    player_repeat_all: 'Wiederholen: Ganze Playlist',
+    player_repeat_all: 'Wiederholen: Ganze Wiedergabeliste',
     player_repeat_one: 'Wiederholen: Aktueller Track',
 
     // Tools Section
     more_tools_title: 'Entdecken Sie weitere Audio-Tools',
     tool1_title: 'Moderner Musikplayer',
     tool1_desc:
-      'Ein stilvoller, moderner Musikplayer mit beeindruckenden Visualisierungen, Playlist-Verwaltung und Unterstützung für lokale Audiodateien.',
+      'Ein stilvoller, moderner Musikplayer mit beeindruckenden Visualisierungen, Wiedergabeliste-Verwaltung und Unterstützung für lokale Audiodateien.',
     tool2_title: 'Grafischer Equalizer',
     tool2_desc:
       'Passen Sie den Klang Ihrer Musik präzise an. Dieser 10-Band-Grafik-Equalizer ermöglicht es Ihnen, Frequenzen für das perfekte Hörerlebnis zu formen.',
@@ -244,7 +244,7 @@ const translations = {
     donate_title: 'Mit PayPal spenden',
     facebook_share: 'Teilen',
     facebook_share_title: 'Auf Facebook teilen',
-    footer_copyright: 'Audio Playlist Generator',
+    footer_copyright: 'Audio Wiedergabeliste Generator',
   },
   en: {
     // Meta tags
@@ -500,8 +500,8 @@ const navTranslations = {
     'nav.audioequalizer': 'Interactive Audio Equalizer',
     'nav.modernplayer': 'Moderner Musikplayer',
     'nav.ultimateplayer': 'Ultimativer Musikplayer',
-    'nav.playlistgen': 'Audio Playlist Generator',
-    'nav.playlistconv': 'Audio Playlist Konverter',
+    'nav.playlistgen': 'Audio Wiedergabeliste Generator',
+    'nav.playlistconv': 'Audio Wiedergabeliste Konverter',
     'nav.alarmtool': 'Modernes Alarmtool',
     'nav.normalizer': 'Audio Normalizer',
     'nav.visualizer': 'Audio Visualizer',

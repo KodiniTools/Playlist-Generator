@@ -16,9 +16,9 @@
       <!-- German Content -->
       <div v-if="currentLanguage === 'de'" class="blog-content">
         <header class="blog-header">
-          <h1>Der ultimative Audio Playlist Generator: Alle Funktionen im Detail</h1>
+          <h1>Der ultimative Audio Wiedergabeliste Generator: Alle Funktionen im Detail</h1>
           <p class="blog-subtitle">
-            Erstelle professionelle Playlists in Sekundenschnelle - direkt im Browser
+            Erstelle professionelle Wiedergabelisten in Sekundenschnelle - direkt im Browser
           </p>
         </header>
 
@@ -27,12 +27,12 @@
           <p>
             Musik begleitet uns durch den Alltag - beim Sport, bei der Arbeit oder zum Entspannen.
             Doch wer kennt es nicht: Die eigene Musiksammlung wächst, aber das Erstellen von
-            Playlists für verschiedene Media Player ist oft umständlich und zeitaufwändig. Genau
-            hier setzt der <strong>Audio Playlist Generator</strong> an.
+            Wiedergabelisten für verschiedene Media Player ist oft umständlich und zeitaufwändig. Genau
+            hier setzt der <strong>Audio Wiedergabeliste Generator</strong> an.
           </p>
           <p>
             Dieses moderne Web-Tool ermöglicht es dir, aus deinen lokalen Audiodateien
-            professionelle Playlists zu erstellen - und das komplett im Browser, ohne Installation
+            professionelle Wiedergabelisten zu erstellen - und das komplett im Browser, ohne Installation
             und ohne dass deine Dateien jemals hochgeladen werden. In diesem umfangreichen Artikel
             stellen wir dir alle Funktionen im Detail vor.
           </p>
@@ -41,12 +41,12 @@
         <nav class="table-of-contents">
           <h2>Inhaltsverzeichnis</h2>
           <ol>
-            <li><a href="#playlist-formate">Unterstützte Playlist-Formate</a></li>
+            <li><a href="#playlist-formate">Unterstützte Wiedergabeliste-Formate</a></li>
             <li><a href="#audio-formate">Unterstützte Audioformate</a></li>
             <li><a href="#dateiverwaltung">Dateiverwaltung und Upload</a></li>
             <li><a href="#sortierung">Sortier- und Ordnungsoptionen</a></li>
             <li><a href="#dateiliste">Die interaktive Dateiliste</a></li>
-            <li><a href="#export">Playlist-Vorschau und Export</a></li>
+            <li><a href="#export">Wiedergabeliste-Vorschau und Export</a></li>
             <li><a href="#themes">Dark Mode und Light Mode</a></li>
             <li><a href="#sprachen">Mehrsprachige Unterstützung</a></li>
             <li><a href="#shortcuts">Tastaturkürzel für Power-User</a></li>
@@ -57,15 +57,15 @@
         </nav>
 
         <section id="playlist-formate" class="blog-section">
-          <h2>Unterstützte Playlist-Formate</h2>
+          <h2>Unterstützte Wiedergabeliste-Formate</h2>
           <p>
-            Der Audio Playlist Generator unterstützt drei verschiedene Playlist-Formate, die jeweils
+            Der Audio Wiedergabeliste Generator unterstützt drei verschiedene Wiedergabeliste-Formate, die jeweils
             für unterschiedliche Anwendungsfälle optimiert sind:
           </p>
 
           <h3>M3U-Format</h3>
           <p>
-            Das <strong>M3U-Format</strong> (MP3 URL) ist der Klassiker unter den Playlist-Formaten.
+            Das <strong>M3U-Format</strong> (MP3 URL) ist der Klassiker unter den Wiedergabeliste-Formaten.
             Es wird von nahezu allen Media Playern unterstützt, darunter:
           </p>
           <ul>
@@ -83,13 +83,13 @@
 
           <h3>XSPF-Format</h3>
           <p>
-            Das <strong>XSPF-Format</strong> (XML Shareable Playlist Format) ist das moderne,
-            XML-basierte Playlist-Format. Es bietet gegenüber M3U einige Vorteile:
+            Das <strong>XSPF-Format</strong> (XML Shareable Wiedergabeliste Format) ist das moderne,
+            XML-basierte Wiedergabeliste-Format. Es bietet gegenüber M3U einige Vorteile:
           </p>
           <ul>
             <li>
               <strong>Strukturierte Daten:</strong> Durch die XML-Struktur können zusätzliche
-              Metadaten wie Playlist-Name und Titel sauber gespeichert werden
+              Metadaten wie Wiedergabeliste-Name und Titel sauber gespeichert werden
             </li>
             <li>
               <strong>Plattformübergreifend:</strong> XSPF wurde speziell für den Austausch zwischen
@@ -124,7 +124,7 @@
 
         <section id="audio-formate" class="blog-section">
           <h2>Unterstützte Audioformate</h2>
-          <p>Der Playlist Generator arbeitet mit den drei wichtigsten Audioformaten:</p>
+          <p>Der Wiedergabeliste Generator arbeitet mit den drei wichtigsten Audioformaten:</p>
 
           <div class="format-cards">
             <div class="format-card">
@@ -167,7 +167,7 @@
 
           <h3>Intelligente Duplikaterkennung</h3>
           <p>
-            Keine Sorge vor doppelten Einträgen! Der Playlist Generator erkennt automatisch, wenn du
+            Keine Sorge vor doppelten Einträgen! Der Wiedergabeliste Generator erkennt automatisch, wenn du
             eine Datei hinzufügst, die bereits in deiner Liste vorhanden ist. Duplikate werden
             übersprungen und du erhältst eine entsprechende Benachrichtigung.
           </p>
@@ -183,7 +183,7 @@
         <section id="sortierung" class="blog-section">
           <h2>Sortier- und Ordnungsoptionen</h2>
           <p>
-            Eine gute Playlist lebt von der richtigen Reihenfolge. Der Generator bietet dir vier
+            Eine gute Wiedergabeliste lebt von der richtigen Reihenfolge. Der Generator bietet dir vier
             verschiedene Sortieroptionen:
           </p>
 
@@ -238,23 +238,23 @@
         </section>
 
         <section id="export" class="blog-section">
-          <h2>Playlist-Vorschau und Export</h2>
-          <p>Bevor du deine Playlist speicherst, siehst du genau, was du bekommst.</p>
+          <h2>Wiedergabeliste-Vorschau und Export</h2>
+          <p>Bevor du deine Wiedergabeliste speicherst, siehst du genau, was du bekommst.</p>
           <ul>
             <li>
-              <strong>Live-Vorschau:</strong> In Echtzeit wird angezeigt, wie deine fertige Playlist
+              <strong>Live-Vorschau:</strong> In Echtzeit wird angezeigt, wie deine fertige Wiedergabeliste
               aussehen wird
             </li>
             <li>
               <strong>In die Zwischenablage kopieren:</strong> Mit einem Klick wird der gesamte
-              Playlist-Inhalt kopiert
+              Wiedergabeliste-Inhalt kopiert
             </li>
             <li>
               <strong>Als Datei speichern:</strong> Der native Speichern-Dialog öffnet sich mit
               vorgeschlagenem Dateinamen
             </li>
             <li>
-              <strong>Playlist benennen:</strong> Gib deiner Playlist einen aussagekräftigen Namen
+              <strong>Wiedergabeliste benennen:</strong> Gib deiner Wiedergabeliste einen aussagekräftigen Namen
             </li>
           </ul>
         </section>
@@ -262,7 +262,7 @@
         <section id="themes" class="blog-section">
           <h2>Dark Mode und Light Mode</h2>
           <p>
-            Moderne Software sollte sich deinen Vorlieben anpassen - der Playlist Generator tut
+            Moderne Software sollte sich deinen Vorlieben anpassen - der Wiedergabeliste Generator tut
             genau das.
           </p>
 
@@ -286,7 +286,7 @@
 
         <section id="sprachen" class="blog-section">
           <h2>Mehrsprachige Unterstützung</h2>
-          <p>Der Playlist Generator spricht deine Sprache - im wahrsten Sinne des Wortes.</p>
+          <p>Der Wiedergabeliste Generator spricht deine Sprache - im wahrsten Sinne des Wortes.</p>
           <ul>
             <li><strong>Deutsch</strong> - Vollständige deutsche Benutzeroberfläche</li>
             <li><strong>English</strong> - Complete English interface</li>
@@ -314,11 +314,11 @@
               </tr>
               <tr>
                 <td><kbd>Strg + S</kbd></td>
-                <td>Playlist speichern</td>
+                <td>Wiedergabeliste speichern</td>
               </tr>
               <tr>
                 <td><kbd>Strg + C</kbd></td>
-                <td>Playlist in Zwischenablage kopieren</td>
+                <td>Wiedergabeliste in Zwischenablage kopieren</td>
               </tr>
               <tr>
                 <td><kbd>Strg + V</kbd></td>
@@ -345,11 +345,11 @@
           <p>Die Statistikleiste gibt dir jederzeit einen Überblick:</p>
           <ul>
             <li>
-              <strong>Anzahl der Tracks:</strong> Wie viele Titel sich in deiner Playlist befinden
+              <strong>Anzahl der Tracks:</strong> Wie viele Titel sich in deiner Wiedergabeliste befinden
             </li>
             <li><strong>Gesamtgröße:</strong> Die kombinierte Dateigröße aller Tracks</li>
             <li>
-              <strong>Geschätzte Spielzeit:</strong> Eine ungefähre Gesamtspielzeit deiner Playlist
+              <strong>Geschätzte Spielzeit:</strong> Eine ungefähre Gesamtspielzeit deiner Wiedergabeliste
             </li>
           </ul>
         </section>
@@ -375,7 +375,7 @@
 
         <section id="responsive" class="blog-section">
           <h2>Responsives Design</h2>
-          <p>Ob am Desktop, Tablet oder Smartphone - der Playlist Generator passt sich an.</p>
+          <p>Ob am Desktop, Tablet oder Smartphone - der Wiedergabeliste Generator passt sich an.</p>
           <ul>
             <li>
               <strong>Desktop-Optimiert:</strong> Zwei-Spalten-Layout für effizientes Arbeiten
@@ -390,8 +390,8 @@
         <section class="blog-section conclusion">
           <h2>Fazit</h2>
           <p>
-            Der <strong>Audio Playlist Generator</strong> vereint Benutzerfreundlichkeit mit
-            umfangreichen Funktionen. Die Kombination aus drei Playlist-Formaten, flexiblen
+            Der <strong>Audio Wiedergabeliste Generator</strong> vereint Benutzerfreundlichkeit mit
+            umfangreichen Funktionen. Die Kombination aus drei Wiedergabeliste-Formaten, flexiblen
             Sortieroptionen, intuitivem Drag & Drop, Dark und Light Mode, mehrsprachiger Oberfläche
             und absolutem Datenschutz macht ihn zu einem unverzichtbaren Werkzeug für alle
             Musikliebhaber.
