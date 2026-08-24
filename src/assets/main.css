@@ -121,34 +121,12 @@ body {
 }
 
 /* === External Navigation (SSI Include) === */
-nav,
-.nav,
-.navbar,
-.navigation {
-  background: transparent !important;
-  background-color: transparent !important;
-}
-
-nav *,
-.nav *,
-.navbar *,
-.navigation * {
-  color: var(--text-color) !important;
-}
-
-nav a,
-.nav a,
-.navbar a,
-.navigation a {
-  color: var(--accent-color) !important;
-}
-
-nav a:hover,
-.nav a:hover,
-.navbar a:hover,
-.navigation a:hover {
-  color: var(--accent-secondary) !important;
-}
+/*
+ * Die SSI-Navigation (nav.html aus /var/www/kodinitools.com/partials) wird
+ * im ORIGINALZUSTAND uebernommen. Die App ueberschreibt bewusst KEINE
+ * Farben der Navigation zur Laufzeit – sie behaelt ihre eigenen Farben
+ * aus dem Partial (kein Theme-/Farb-Override von hier).
+ */
 
 /* === External Footer (SSI Include) === */
 footer,
@@ -205,30 +183,12 @@ footer a:hover,
   }
 }
 
-/* Light-Mode: hellerer Hintergrund für besseren Kontrast der SSI Navigation */
-.light-theme .global-nav {
-  background: rgba(255, 255, 255, 0.85) !important;
-}
-
-/* Light-Mode: Sprach-Switcher Buttons in der SSI Navigation */
-.light-theme .global-nav-lang-btn {
-  color: var(--text-color) !important;
-}
-
-.light-theme .global-nav-lang-btn.active {
-  color: #ffffff !important;
-  background: var(--accent-color) !important;
-}
-
-.light-theme .global-nav-lang-btn:hover:not(.active) {
-  background: rgba(1, 79, 153, 0.1) !important;
-}
-
-/* Dark-Mode: aktiver Sprach-Button mit hellem Text */
-.global-nav-lang-btn.active {
-  color: #ffffff !important;
-  background: var(--accent-color) !important;
-}
+/*
+ * Kein Farb-Override fuer die SSI-Navigation (.global-nav / .global-nav-lang-btn).
+ * Die Navigation behaelt ihre Original-Farben aus dem Partial. Die Sprach-Button
+ * Active-Zustaende werden weiterhin per .active-Klasse gesetzt (JS), gestylt
+ * aber ausschliesslich durch das Partial selbst.
+ */
 
 /* === Container & Layout === */
 .container {
