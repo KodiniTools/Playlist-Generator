@@ -63,23 +63,43 @@
             <div class="preview-sidebar">
               <div class="preview-section-label">{{ t('preview_files_label') }}</div>
               <div class="preview-track-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
+                </svg>
                 Summer_Mix.mp3
               </div>
               <div class="preview-track-item active">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
+                </svg>
                 Chill_Vibes.mp3
               </div>
               <div class="preview-track-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
+                </svg>
                 Road_Trip.flac
               </div>
               <div class="preview-track-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
+                </svg>
                 Evening_Jazz.wav
               </div>
               <div class="preview-track-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
+                </svg>
                 Workout_Beats.mp3
               </div>
             </div>
@@ -252,6 +272,82 @@
       </div>
     </section>
 
+    <!-- KodiniTools Section -->
+    <section id="kodinitools" class="tools-section" aria-labelledby="tools-heading">
+      <div class="section-header">
+        <h2 id="tools-heading">{{ t('landing_tools_title') }}</h2>
+        <p>{{ t('landing_tools_subtitle') }}</p>
+      </div>
+
+      <div class="tools-cards">
+        <a
+          v-for="tool in kodiniTools"
+          :key="tool.id"
+          :href="tool.url"
+          class="tool-link-card"
+          :data-tool="tool.id"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div class="tool-link-icon">
+            <svg
+              v-if="tool.id === 'playlist-converter'"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="4" y1="6" x2="14" y2="6" />
+              <line x1="4" y1="12" x2="14" y2="12" />
+              <line x1="4" y1="18" x2="10" y2="18" />
+              <polyline points="17 9 21 13 17 17" />
+              <line x1="21" y1="13" x2="14" y2="13" />
+            </svg>
+            <svg
+              v-else-if="tool.id === 'audio-converter'"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="17 1 21 5 17 9" />
+              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+              <polyline points="7 23 3 19 7 15" />
+              <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+            </svg>
+            <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="21" x2="4" y2="14" />
+              <line x1="4" y1="10" x2="4" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12" y2="3" />
+              <line x1="20" y1="21" x2="20" y2="16" />
+              <line x1="20" y1="12" x2="20" y2="3" />
+              <line x1="1" y1="14" x2="7" y2="14" />
+              <line x1="9" y1="8" x2="15" y2="8" />
+              <line x1="17" y1="16" x2="23" y2="16" />
+            </svg>
+          </div>
+          <h3>{{ t(tool.titleKey) }}</h3>
+          <p>{{ t(tool.descKey) }}</p>
+          <span class="tool-link-cta">
+            {{ t('landing_tool_link') }}
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+            <span class="sr-only">({{ t('landing_tool_link_aria') }})</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
     <!-- Final CTA Section -->
     <section class="cta-section">
       <div class="cta-content">
@@ -269,6 +365,35 @@
   import { useTranslation } from '../composables/useTranslation'
 
   const { t } = useTranslation()
+
+  /** Externe KodiniTools, die auf der Landingpage beworben werden. */
+  interface KodiniTool {
+    id: 'playlist-converter' | 'audio-converter' | 'audio-normalizer'
+    url: string
+    titleKey: string
+    descKey: string
+  }
+
+  const kodiniTools: readonly KodiniTool[] = [
+    {
+      id: 'playlist-converter',
+      url: 'https://kodinitools.com/playlistkonverter/',
+      titleKey: 'landing_tool_playlist_converter_title',
+      descKey: 'landing_tool_playlist_converter_desc',
+    },
+    {
+      id: 'audio-converter',
+      url: 'https://kodinitools.com/audiokonverter/',
+      titleKey: 'landing_tool_audio_converter_title',
+      descKey: 'landing_tool_audio_converter_desc',
+    },
+    {
+      id: 'audio-normalizer',
+      url: 'https://kodinitools.com/audionormalisierer/',
+      titleKey: 'landing_tool_normalizer_title',
+      descKey: 'landing_tool_normalizer_desc',
+    },
+  ]
 </script>
 
 <style scoped>
@@ -482,9 +607,15 @@
     flex-shrink: 0;
   }
 
-  .dot-red { background: #ff5f57; }
-  .dot-yellow { background: #ffbd2e; }
-  .dot-green { background: #28ca42; }
+  .dot-red {
+    background: #ff5f57;
+  }
+  .dot-yellow {
+    background: #ffbd2e;
+  }
+  .dot-green {
+    background: #28ca42;
+  }
 
   .preview-title-text {
     font-size: 0.8rem;
@@ -610,7 +741,9 @@
     justify-content: center;
     color: var(--muted-color);
     text-decoration: none;
-    transition: color 0.3s ease, transform 0.3s ease;
+    transition:
+      color 0.3s ease,
+      transform 0.3s ease;
     animation: scroll-bounce 2s ease-in-out infinite;
     margin-bottom: 10px;
   }
@@ -626,8 +759,15 @@
   }
 
   @keyframes scroll-bounce {
-    0%, 100% { transform: translateY(0); opacity: 0.6; }
-    50% { transform: translateY(6px); opacity: 1; }
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.6;
+    }
+    50% {
+      transform: translateY(6px);
+      opacity: 1;
+    }
   }
 
   /* Feature Cards */
@@ -776,6 +916,105 @@
     line-height: 1.6;
   }
 
+  /* KodiniTools Section */
+  .tools-section {
+    padding: 0 20px 100px;
+  }
+
+  .tools-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .tool-link-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 36px 28px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(22, 22, 28, 0.9), rgba(12, 12, 16, 0.9));
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .light-theme .tool-link-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(245, 245, 245, 0.9));
+  }
+
+  .tool-link-card:hover,
+  .tool-link-card:focus-visible {
+    transform: translateY(-6px);
+    border-color: var(--accent-color);
+    box-shadow:
+      0 12px 40px var(--shadow-color),
+      0 0 20px var(--glow-color);
+    outline: none;
+  }
+
+  .tool-link-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    color: var(--accent-text-color);
+  }
+
+  .tool-link-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .tool-link-card h3 {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .tool-link-card p {
+    font-size: 0.9rem;
+    color: var(--muted-color);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex-grow: 1;
+  }
+
+  .tool-link-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent-color);
+  }
+
+  .tool-link-cta svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   /* CTA Section */
   .cta-section {
     padding: 80px 20px 100px;
@@ -872,6 +1111,11 @@
       gap: 30px;
     }
 
+    .tools-cards {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 700px;
+    }
+
     .hero-title {
       font-size: 2.5rem;
     }
@@ -912,6 +1156,16 @@
     .details-grid {
       grid-template-columns: 1fr;
       gap: 20px;
+    }
+
+    .tools-cards {
+      grid-template-columns: 1fr;
+      max-width: 400px;
+      gap: 20px;
+    }
+
+    .tools-section {
+      padding: 0 15px 60px;
     }
 
     .hero-title {
@@ -1055,6 +1309,28 @@
     }
 
     .detail-item p {
+      font-size: 0.85rem;
+    }
+
+    .tools-section {
+      padding: 0 12px 40px;
+    }
+
+    .tool-link-card {
+      padding: 24px 18px;
+    }
+
+    .tool-link-icon {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 14px;
+    }
+
+    .tool-link-card h3 {
+      font-size: 1.05rem;
+    }
+
+    .tool-link-card p {
       font-size: 0.85rem;
     }
 

@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test:unit": "vitest",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "format": "prettier --write .",

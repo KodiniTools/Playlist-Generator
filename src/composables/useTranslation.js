@@ -107,7 +107,8 @@ const translations = {
     format_csv: 'CSV Tabelle',
     format_xspf: 'XSPF Wiedergabeliste',
     format_json: 'JSON Datei',
-    placeholder_output: "Klicken Sie auf 'Wiedergabeliste erstellen', um hier eine Vorschau zu sehen...",
+    placeholder_output:
+      "Klicken Sie auf 'Wiedergabeliste erstellen', um hier eine Vorschau zu sehen...",
     button_save: 'Speichern unter...',
     button_copy: 'Kopieren',
 
@@ -238,6 +239,22 @@ const translations = {
     tool3_desc:
       'Konvertieren Sie Ihre Audiodateien schnell und einfach zwischen Formaten wie MP3, WAV und FLAC direkt in Ihrem Browser – ohne Uploads.',
     tool_button: 'Ausprobieren',
+
+    // Landing Page – KodiniTools Section
+    landing_tools_title: 'Weitere KodiniTools für Ihre Musik',
+    landing_tools_subtitle:
+      'Kostenlose Browser-Tools, die den Wiedergabeliste Generator perfekt ergänzen – ohne Upload, ohne Registrierung.',
+    landing_tool_playlist_converter_title: 'Audio Wiedergabeliste Konverter',
+    landing_tool_playlist_converter_desc:
+      'Konvertieren Sie bestehende Wiedergabelisten zwischen M3U, XSPF und JSON – ideal, um erstellte Wiedergabelisten für andere Player anzupassen.',
+    landing_tool_audio_converter_title: 'Audio Konverter',
+    landing_tool_audio_converter_desc:
+      'Wandeln Sie Audiodateien zwischen MP3, WAV, FLAC und weiteren Formaten um – direkt im Browser, bevor Sie sie in Ihre Wiedergabeliste aufnehmen.',
+    landing_tool_normalizer_title: 'Audio Normalizer',
+    landing_tool_normalizer_desc:
+      'Gleichen Sie die Lautstärke Ihrer Titel an, damit Ihre Wiedergabeliste ohne störende Pegelsprünge läuft.',
+    landing_tool_link: 'Tool öffnen',
+    landing_tool_link_aria: 'öffnet in einem neuen Tab',
 
     // Footer
     donate_button: 'spenden',
@@ -480,6 +497,22 @@ const translations = {
     tool3_desc:
       'Quickly and easily convert your audio files between formats like MP3, WAV, and FLAC directly in your browser—no uploads required.',
     tool_button: 'Try It Out',
+
+    // Landing Page – KodiniTools Section
+    landing_tools_title: 'More KodiniTools for Your Music',
+    landing_tools_subtitle:
+      'Free browser tools that perfectly complement the Playlist Generator – no upload, no registration.',
+    landing_tool_playlist_converter_title: 'Audio Playlist Converter',
+    landing_tool_playlist_converter_desc:
+      'Convert existing playlists between M3U, XSPF and JSON – ideal for adapting your generated playlists to other players.',
+    landing_tool_audio_converter_title: 'Audio Converter',
+    landing_tool_audio_converter_desc:
+      'Convert audio files between MP3, WAV, FLAC and more – right in your browser, before adding them to your playlist.',
+    landing_tool_normalizer_title: 'Audio Normalizer',
+    landing_tool_normalizer_desc:
+      'Level out the volume of your tracks so your playlist plays without jarring loudness jumps.',
+    landing_tool_link: 'Open tool',
+    landing_tool_link_aria: 'opens in a new tab',
 
     // Footer
     donate_button: 'donate',
