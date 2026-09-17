@@ -39,15 +39,14 @@
           :playlistName="playlistName"
           :replaceMode="replaceMode"
           :selectedFileIndex="selectedFileIndex"
-          @update:sortOption="sortOption = $event"
-          @update:playlistName="playlistName = $event"
-          @update:replaceMode="replaceMode = $event"
+          @update:sortOption="applySortOption"
+          @update:playlistName="setPlaylistName"
+          @update:replaceMode="setReplaceMode"
           @update:selectedFileIndex="selectedFileIndex = $event"
           @addFiles="handleAddFiles"
-          @clearFiles="clearFiles"
+          @clearFiles="handleClearFiles"
           @removeFile="handleDeleteFile"
           @moveFile="moveFile"
-          @sortFiles="sortFiles"
           @playFile="handlePlayFile"
         />
 
@@ -118,6 +117,7 @@
   import AudioPlayer from '../components/AudioPlayer.vue'
   import { useTranslation } from '../composables/useTranslation'
   import { usePlaylist } from '../composables/usePlaylist'
+  import { useUndoRedo } from '../composables/useUndoRedo'
   import { useToast } from '../composables/useToast'
   import { getSharedFiles, clearSharedFiles } from '../utils/sharedFileRepository'
 
@@ -136,13 +136,15 @@
     addFiles,
     clearFiles,
     removeFile,
-    undoRemove,
-    clearUndo,
     moveFile,
-    sortFiles,
+    applySortOption,
+    setPlaylistName,
+    setOutputFormat,
+    setReplaceMode,
     savePlaylist,
     handleSharedFiles,
   } = usePlaylist()
+  const { performUndo, performRedo } = useUndoRedo()
 
   // --- Shared files receiver ---
   const sharedBanner = ref(null)
@@ -283,7 +285,7 @@
   }
 
   const handleFormatChange = (format) => {
-    outputFormat.value = format
+    setOutputFormat(format)
   }
 
   const handleSave = async () => {
@@ -314,26 +316,34 @@
     }
   }
 
+  // Toast with an inline "Undo" button for destructive actions. Only one such
+  // toast is shown at a time so the button always refers to the latest step.
   let undoToastId = null
 
-  const showUndoToast = () => {
+  const dismissUndoToast = () => {
     if (undoToastId !== null) toast.removeToast(undoToastId)
-    undoToastId = toast.addToast(
-      t.value('toast_file_removed'),
-      'info',
-      5000,
-      {
-        label: t.value('toast_undo_btn'),
-        callback: () => {
-          if (undoRemove()) {
-            toast.success(t.value('toast_undo_restored'), 2000)
-          }
-          undoToastId = null
-        },
+    undoToastId = null
+  }
+
+  const showUndoToast = (messageKey) => {
+    dismissUndoToast()
+    undoToastId = toast.addToast(t.value(messageKey), 'info', 5000, {
+      label: t.value('toast_undo_btn'),
+      callback: () => {
+        undoToastId = null
+        performUndo()
       },
-    )
-    // Clear the undo snapshot once the toast expires (5 s + small buffer)
-    setTimeout(() => { clearUndo(); undoToastId = null }, 5200)
+    })
+  }
+
+  const handleUndo = () => {
+    dismissUndoToast()
+    performUndo()
+  }
+
+  const handleRedo = () => {
+    dismissUndoToast()
+    performRedo()
   }
 
   const handleDeleteFile = (index) => {
@@ -342,7 +352,14 @@
     if (selectedFileIndex.value >= files.value.length) {
       selectedFileIndex.value = files.value.length - 1
     }
-    showUndoToast()
+    showUndoToast('toast_file_removed')
+  }
+
+  const handleClearFiles = () => {
+    if (files.value.length === 0) return
+    clearFiles()
+    selectedFileIndex.value = -1
+    showUndoToast('toast_files_cleared')
   }
 
   const handleDeleteSelected = () => {
@@ -380,14 +397,15 @@
       handleDeleteSelected()
     }
 
-    // Ctrl+Z: Undo last file removal
-    if (e.ctrlKey && e.key === 'z') {
+    // Ctrl+Z: Undo last action · Ctrl+Y / Ctrl+Shift+Z: Redo
+    const key = e.key.toLowerCase()
+    if (e.ctrlKey && key === 'z') {
       e.preventDefault()
-      if (undoRemove()) {
-        if (undoToastId !== null) toast.removeToast(undoToastId)
-        undoToastId = null
-        toast.success(t.value('toast_undo_restored'), 2000)
-      }
+      if (e.shiftKey) handleRedo()
+      else handleUndo()
+    } else if (e.ctrlKey && key === 'y') {
+      e.preventDefault()
+      handleRedo()
     }
 
     // Arrow keys for file selection
