@@ -168,6 +168,7 @@
   const { currentTheme } = useTheme()
   const { known: knownDurations, measureDurations } = useDurations()
   const {
+    excludedFiles,
     isFileSelected,
     selectedCount,
     allSelected,
@@ -962,8 +963,9 @@
     drawFilesOnCanvas()
   })
 
-  // Redraw checkboxes when the selection changes (e.g. via "select all").
-  watch(selectedCount, () => {
+  // Redraw checkboxes when the selection changes (e.g. via "select all" or
+  // undo/redo, which may swap the excluded set without changing the count).
+  watch([selectedCount, excludedFiles], () => {
     drawFilesOnCanvas()
   })
 

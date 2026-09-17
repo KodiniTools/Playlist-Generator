@@ -1,5 +1,6 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPersistence'
+import { createHistory } from './useHistory'
 
 // Module-level singleton state — survives component destroy/recreate
 // (same pattern as useTranslation.js)
@@ -10,10 +11,38 @@ const outputFormat = ref('m3u')
 const playlistContent = ref('')
 const replaceMode = ref(false)
 const selectedFileIndex = ref(-1)
-const lastRemoved = ref(null) // { file, index } snapshot for undo
 // Files that are UNCHECKED (excluded from the generated playlist). Tracked by
 // File reference. Default = empty → every file is checked/included.
 const excludedFiles = ref(new Set())
+
+// --- Undo / Redo ------------------------------------------------------------
+// Snapshot-based history over everything the user can change: file list and
+// order, checkbox selection, sort option, name, output format, replace mode.
+// Snapshots only hold references to the File objects (no blob copies).
+const captureSnapshot = () => ({
+  files: files.value.slice(),
+  excluded: new Set(excludedFiles.value),
+  sortOption: sortOption.value,
+  playlistName: playlistName.value,
+  outputFormat: outputFormat.value,
+  replaceMode: replaceMode.value,
+})
+
+const restoreSnapshot = (snapshot) => {
+  files.value = snapshot.files.slice()
+  excludedFiles.value = new Set(snapshot.excluded)
+  sortOption.value = snapshot.sortOption
+  playlistName.value = snapshot.playlistName
+  outputFormat.value = snapshot.outputFormat
+  replaceMode.value = snapshot.replaceMode
+  // Keep the UI selection inside the (possibly shorter) list.
+  if (selectedFileIndex.value >= files.value.length) {
+    selectedFileIndex.value = files.value.length - 1
+  }
+  generatePlaylist()
+}
+
+const history = createHistory({ capture: captureSnapshot, restore: restoreSnapshot, limit: 50 })
 
 // The ordered subset of files that are checked and thus included in the output.
 const includedFiles = () => files.value.filter((f) => !excludedFiles.value.has(f))
@@ -33,6 +62,7 @@ const someSelected = computed(
 const toggleFileSelected = (index) => {
   const file = files.value[index]
   if (!file) return
+  history.record('selection_changed')
   const next = new Set(excludedFiles.value)
   if (next.has(file)) next.delete(file)
   else next.add(file)
@@ -41,6 +71,8 @@ const toggleFileSelected = (index) => {
 }
 
 const setAllSelected = (selected) => {
+  if (files.value.length === 0) return
+  history.record('selection_changed')
   excludedFiles.value = selected ? new Set() : new Set(files.value)
   generatePlaylist()
 }
@@ -211,6 +243,8 @@ const addFiles = (fileList) => {
 
   if (replaceMode.value) {
     // Replace mode: clear and add all new files (all checked by default)
+    if (validFiles.length === 0 && files.value.length === 0) return { added: 0, skipped: 0 }
+    history.record('files_added')
     excludedFiles.value = new Set()
     files.value = validFiles
     sortFiles()
@@ -232,6 +266,9 @@ const addFiles = (fileList) => {
     }
   }
 
+  if (newFiles.length === 0) return { added: 0, skipped }
+
+  history.record('files_added')
   files.value = [...files.value, ...newFiles]
   sortFiles()
   generatePlaylist()
@@ -239,6 +276,8 @@ const addFiles = (fileList) => {
 }
 
 const clearFiles = () => {
+  if (files.value.length === 0) return
+  history.record('files_cleared')
   files.value = []
   excludedFiles.value = new Set()
   playlistContent.value = ''
@@ -247,7 +286,7 @@ const clearFiles = () => {
 const removeFile = (index) => {
   if (index >= 0 && index < files.value.length) {
     const file = files.value[index]
-    lastRemoved.value = { file, index }
+    history.record('file_removed')
     files.value.splice(index, 1)
     if (excludedFiles.value.has(file)) {
       const next = new Set(excludedFiles.value)
@@ -258,25 +297,12 @@ const removeFile = (index) => {
   }
 }
 
-const undoRemove = () => {
-  if (!lastRemoved.value) return false
-  const { file, index } = lastRemoved.value
-  const insertAt = Math.min(index, files.value.length)
-  files.value.splice(insertAt, 0, file)
-  lastRemoved.value = null
-  generatePlaylist()
-  return true
-}
-
-const clearUndo = () => {
-  lastRemoved.value = null
-}
-
 const moveFile = (fromIndex, toIndex) => {
   if (fromIndex < 0 || fromIndex >= files.value.length) return
   if (toIndex < 0 || toIndex >= files.value.length) return
   if (fromIndex === toIndex) return
 
+  history.record('file_moved')
   const [movedFile] = files.value.splice(fromIndex, 1)
   files.value.splice(toIndex, 0, movedFile)
 
@@ -304,6 +330,32 @@ const sortFiles = () => {
     }
   }
   generatePlaylist()
+}
+
+/** User picked a sort option: one undoable step for option + resulting order. */
+const applySortOption = (option) => {
+  history.record('sorted')
+  sortOption.value = option
+  sortFiles()
+}
+
+/** Consecutive keystrokes within 1 s are merged into a single undo step. */
+const setPlaylistName = (name) => {
+  if (name === playlistName.value) return
+  history.record('name_changed', { coalesceKey: 'playlistName' })
+  playlistName.value = name
+}
+
+const setOutputFormat = (format) => {
+  if (format === outputFormat.value) return
+  history.record('format_changed')
+  outputFormat.value = format
+}
+
+const setReplaceMode = (enabled) => {
+  if (enabled === replaceMode.value) return
+  history.record('replace_mode_changed')
+  replaceMode.value = enabled
 }
 
 const analyzeBlob = async (blob, name) => {
@@ -343,6 +395,8 @@ const handleSharedFiles = async (sharedRecords) => {
       // Check for duplicates
       const existingNames = new Set(files.value.map((f) => f.name.toLowerCase()))
       if (!existingNames.has(result.file.name.toLowerCase())) {
+        // All shared files of one import form a single undo step.
+        if (processed === 0) history.record('files_added')
         files.value = [...files.value, result.file]
         processed++
       }
@@ -467,6 +521,9 @@ async function restorePersistedState() {
     console.warn('Could not restore playlist state:', e)
   } finally {
     restoring = false
+    // Note: restoring writes the refs directly (no history.record), so the
+    // history is untouched — actions the user performed while the restore was
+    // in flight stay undoable.
   }
 }
 
@@ -500,10 +557,7 @@ export function usePlaylist() {
     // Persist on change. Files (heavy) only when the list itself changes;
     // settings + selection (cheap) on their own.
     watch(files, scheduleFilesSave, { deep: true })
-    watch(
-      [sortOption, playlistName, outputFormat, replaceMode, excludedFiles],
-      scheduleMetaSave,
-    )
+    watch([sortOption, playlistName, outputFormat, replaceMode, excludedFiles], scheduleMetaSave)
   }
 
   return {
@@ -514,6 +568,7 @@ export function usePlaylist() {
     playlistContent,
     replaceMode,
     selectedFileIndex,
+    excludedFiles,
     isFileSelected,
     selectedCount,
     allSelected,
@@ -523,11 +578,21 @@ export function usePlaylist() {
     addFiles,
     clearFiles,
     removeFile,
-    undoRemove,
-    clearUndo,
     moveFile,
     sortFiles,
+    applySortOption,
+    setPlaylistName,
+    setOutputFormat,
+    setReplaceMode,
     generatePlaylist,
+    // Undo / Redo
+    undo: history.undo,
+    redo: history.redo,
+    canUndo: history.canUndo,
+    canRedo: history.canRedo,
+    undoLabel: history.undoLabel,
+    redoLabel: history.redoLabel,
+    clearHistory: history.clear,
     savePlaylist,
     analyzeBlob,
     handleSharedFiles,

@@ -1,6 +1,9 @@
 <template>
   <section class="form-section">
-    <h2 class="section-title">{{ t('config_title') }}</h2>
+    <div class="section-head">
+      <h2 class="section-title">{{ t('config_title') }}</h2>
+      <UndoRedoControls />
+    </div>
     <form id="playlistForm" @submit.prevent>
       <div class="form-group">
         <label><span class="step-num" aria-hidden="true">1</span>{{ t('label_files') }}</label>
@@ -148,6 +151,7 @@
 <script setup lang="ts">
   import { ref } from 'vue'
   import FileListCanvas from './FileListCanvas.vue'
+  import UndoRedoControls from './UndoRedoControls.vue'
   import { useTranslation } from '../composables/useTranslation'
 
   defineProps({
@@ -167,7 +171,6 @@
     'clearFiles',
     'removeFile',
     'moveFile',
-    'sortFiles',
     'playFile',
   ])
 
@@ -331,9 +334,9 @@
     emit('moveFile', fromIndex, toIndex)
   }
 
+  // The parent applies the option and re-sorts in one (undoable) step.
   const handleSortClick = (value) => {
     emit('update:sortOption', value)
-    emit('sortFiles')
   }
 
   const handleNameChange = (e) => {
@@ -359,6 +362,18 @@
 </script>
 
 <style scoped>
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-head .section-title {
+    margin-bottom: 0;
+  }
+
   .file-upload-input {
     display: none;
   }
