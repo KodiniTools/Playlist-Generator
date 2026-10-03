@@ -152,7 +152,7 @@
   import type { FileListItem, FileListLabels } from './types'
 
   /**
-   * Dateiliste als echte DOM-Liste, Ersatz für FileListCanvas.vue.
+   * Dateiliste als echte DOM-Liste (ersetzt die frühere Canvas-Dateiliste).
    *
    * - `v-model:selectedIndex` ist die markierte Zeile (-1 = keine), Pfeiltasten,
    *   Pos1/Ende, Enter (abspielen), Leertaste (Häkchen), Entf (entfernen),

@@ -12,20 +12,20 @@ Bausteine des Zielbilds aus dem Design-Canvas (Reihe „Nachher“). Alle Kompon
 import { UiButton, UiPanel, UiTextField } from '@/components/ui'
 ```
 
-| Komponente           | Zweck                                               | Wichtige Props / Events                                                                                                               |
-| -------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `UiButton`           | Textbutton, mit `href` als Link                     | `variant` primary · secondary · ghost · danger, `size` sm · md · lg, `block`, `href`, Slot `icon`                                     |
-| `UiCallout`          | Ruhiger Hinweis im Textfluss                        | `type` info · success · warning · danger, `title`, Slot default                                                                       |
-| `UiIconButton`       | Quadratischer Icon-Button                           | `label` (Pflicht, wird aria-label), `variant`, `size` sm · md, `round`, `pressed` (aria-pressed)                                      |
-| `UiSegmentedControl` | Eine Option aus wenigen, Radiogroup-Muster          | `v-model`, `options` `{ value, label, disabled? }`, `label`, `size`; Pfeiltasten wechseln                                             |
-| `UiSelect`           | Natives Select im System-Look                       | `v-model`, `options`, `label` (Pflicht), `inline`, `labelHidden`, `size`; Attrs → select                                              |
-| `UiTextField`        | Einzeiliges Textfeld mit Label                      | `v-model`, `label`, `hint`, `error` (aria-invalid, role=alert), `required`, `disabled`, Attrs → input                                 |
-| `UiPanel`            | Flache Fläche mit Kopfzeile                         | `title`, `headingLevel` 2 · 3, `count`, `padded`, Slot `actions`                                                                      |
-| `UiToast`            | Benachrichtigung                                    | `message`, `type` success · error · info, `actionLabel`, `dismissLabel`, `dismissOnClick`; Events `action`, `dismiss`                 |
-| `UiDialog`           | Modaler Dialog, teleportiert nach body              | `open`, `title`, `description`, `id` (für aria-controls), Slots default · `footer`; Event `close` (Escape, Hintergrund, Button)       |
-| `UiKbd`              | Tastenkombination                                   | `keys: string[]`                                                                                                                      |
-| `UiEmptyState`       | Leerzustand                                         | `title`, `text`, Slots `icon` · `action`                                                                                              |
-| `UiFileList`         | Dateiliste als DOM-Liste, Ersatz für FileListCanvas | `items`, `v-model:selectedIndex`, `v-model:checked`, `playingIndex`, `isPlaying`, `labels`; Events `play`, `remove`, `move(from, to)` |
+| Komponente           | Zweck                                                       | Wichtige Props / Events                                                                                                               |
+| -------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `UiButton`           | Textbutton, mit `href` als Link                             | `variant` primary · secondary · ghost · danger, `size` sm · md · lg, `block`, `href`, Slot `icon`                                     |
+| `UiCallout`          | Ruhiger Hinweis im Textfluss                                | `type` info · success · warning · danger, `title`, Slot default                                                                       |
+| `UiIconButton`       | Quadratischer Icon-Button                                   | `label` (Pflicht, wird aria-label), `variant`, `size` sm · md, `round`, `pressed` (aria-pressed)                                      |
+| `UiSegmentedControl` | Eine Option aus wenigen, Radiogroup-Muster                  | `v-model`, `options` `{ value, label, disabled? }`, `label`, `size`; Pfeiltasten wechseln                                             |
+| `UiSelect`           | Natives Select im System-Look                               | `v-model`, `options`, `label` (Pflicht), `inline`, `labelHidden`, `size`; Attrs → select                                              |
+| `UiTextField`        | Einzeiliges Textfeld mit Label                              | `v-model`, `label`, `hint`, `error` (aria-invalid, role=alert), `required`, `disabled`, Attrs → input                                 |
+| `UiPanel`            | Flache Fläche mit Kopfzeile                                 | `title`, `headingLevel` 2 · 3, `count`, `padded`, Slot `actions`                                                                      |
+| `UiToast`            | Benachrichtigung                                            | `message`, `type` success · error · info, `actionLabel`, `dismissLabel`, `dismissOnClick`; Events `action`, `dismiss`                 |
+| `UiDialog`           | Modaler Dialog, teleportiert nach body                      | `open`, `title`, `description`, `id` (für aria-controls), Slots default · `footer`; Event `close` (Escape, Hintergrund, Button)       |
+| `UiKbd`              | Tastenkombination                                           | `keys: string[]`                                                                                                                      |
+| `UiEmptyState`       | Leerzustand                                                 | `title`, `text`, Slots `icon` · `action`                                                                                              |
+| `UiFileList`         | Dateiliste als DOM-Liste (ersetzt die frühere Canvas-Liste) | `items`, `v-model:selectedIndex`, `v-model:checked`, `playingIndex`, `isPlaying`, `labels`; Events `play`, `remove`, `move(from, to)` |
 
 ## Beispiel
 
@@ -63,8 +63,8 @@ import { UiButton, UiPanel, UiTextField } from '@/components/ui'
 ## UiFileList
 
 Ersetzt die gezeichnete Canvas-Liste durch echte Zeilen: Griff, Häkchen, Name, Format-Chip, Dauer,
-Größe und Aktionen. Die Schnittstelle spiegelt `FileListCanvas.vue`, nur mit generischen Einträgen
-statt `File`-Objekten:
+Größe und Aktionen. Die Schnittstelle entspricht der früheren Canvas-Liste, nur mit generischen
+Einträgen statt `File`-Objekten:
 
 ```ts
 interface FileListItem {
@@ -96,4 +96,4 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
 - Die App-Seite ist komplett umgestellt: `AppPage`, `AppHeader`, `OnboardingBanner`, `ToolsGrid`,
   `PlaylistConfig`, `PlaylistPreview`, `UndoRedoControls`, `ToastContainer`, `AudioPlayer` und
   `KeyboardShortcutsPanel`. Landing-, FAQ- und Blog-Seite nutzen denselben `AppHeader`; ihr
-  restlicher Inhalt läuft noch auf den v1-Variablen. Offen ist das ungenutzte `FileListCanvas.vue`.
+  restlicher Inhalt läuft noch auf den v1-Variablen. Die alte Canvas-Dateiliste ist entfernt.

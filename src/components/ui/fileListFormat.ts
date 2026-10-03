@@ -1,6 +1,6 @@
 /**
  * Reine Formatierungs- und Schätzfunktionen für UiFileList.
- * Die Schätzung der Dauer spiegelt das Verhalten von FileListCanvas.vue wider:
+ * Die Schätzung der Dauer übernimmt das Verhalten der früheren Canvas-Dateiliste:
  * Bytes pro Sekunde je Container, bis die echte Dauer aus den Metadaten vorliegt.
  */
 

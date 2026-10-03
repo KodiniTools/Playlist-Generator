@@ -117,8 +117,6 @@ controlSizesV2.row // 44
 
 ## Bekannte Abweichungen im Code (nicht Teil der Tokens)
 
-- `FileListCanvas.vue` zeichnet mit einer eigenen, älteren Palette (`#F2E28E`, `#A28680`, `#0C0C10`).
-  Zielbild: DOM-Liste mit `--ds-*`; bis dahin `themeColorsV2()` als Farbquelle.
 - Legacy-Hover-Tints `rgba(242, 226, 142, …)` / `rgba(162, 134, 128, …)` sowie schwarze Gradients
   `rgba(12, 12, 16, …)` / `rgba(22, 22, 28, …)` in Page-Header, Player-Bar, Feature-Cards, Onboarding.
 - `--text-secondary` (PlaylistConfig) und `--card-bg` (AudioPlayer) sind nirgends definiert und laufen

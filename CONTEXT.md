@@ -56,7 +56,6 @@ Playlist-Generator/
 │   ├── components/               # Wiederverwendbare Vue-Komponenten
 │   │   ├── AppNavigation.vue     # Top-Navigation mit Mobile-Menü
 │   │   ├── FAQ.vue               # FAQ-Anzeige-Komponente
-│   │   ├── FileListCanvas.vue    # Canvas-basierte interaktive Dateiliste
 │   │   ├── HelloWorld.vue        # Beispiel-Komponente
 │   │   ├── LanguageSwitcher.vue  # Sprachauswahl (DE/EN)
 │   │   ├── PlaylistConfig.vue    # Haupt-Konfigurationsformular
