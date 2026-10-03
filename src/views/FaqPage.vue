@@ -112,7 +112,7 @@
     gap: var(--ds-space-3);
   }
 
-  /* Die scoped Regeln überschreiben bewusst die globalen details/summary-Regeln aus main.css. */
+  /* Akkordeon vollständig scoped; main.css stylt details/summary nicht mehr global. */
   details {
     margin: 0;
     overflow: visible;

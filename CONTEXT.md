@@ -86,7 +86,7 @@ Playlist-Generator/
 │   │
 │   ├── assets/                   # Statische Assets
 │   │   ├── base.css              # CSS Reset und Basis-Styles
-│   │   ├── main.css              # Globales CSS mit Theme-Variablen
+│   │   ├── main.css              # Globale Basis-Styles (Reset, Body, SSI-Footer) auf Tokens v2
 │   │   └── logo.svg              # Anwendungs-Logo
 │   │
 │   ├── App.vue                   # Root-Komponente

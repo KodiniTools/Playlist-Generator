@@ -98,6 +98,9 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
   `KeyboardShortcutsPanel`. Landing-, FAQ- und Blog-Seite laufen ebenfalls komplett auf `--ds-*`
   (AppHeader, UiButton mit `to`, UiCallout). Der Test `views/__tests__/tokensV2.spec.ts` hält diese
   Dateien frei von v1-Variablen, Gradients, rgba() und `.light-theme`-Regeln.
-- Noch auf v1: die globalen Regeln in `src/assets/main.css` (Buttons, Karten, FAQ, Footer) und die
-  SSI-Partials. Die Seiten umgehen kollidierende globale Klassen (`.container`, `.card-icon`,
-  `.faq-section`, `.section-title`, `.subtitle`) durch eigene Klassennamen.
+- `src/assets/main.css` enthält nur noch Token-Imports, Schrift, Reset, Body, die Angleichung des
+  SSI-Footers (auf Elemente außerhalb von `#app` begrenzt), reduzierte Bewegung und Druck, alles auf
+  `--ds-*`. Globale Element-Regeln (`header`, `details`, `input`, …) gibt es nicht mehr; der Test
+  `tokensV2.spec.ts` verhindert ihre Rückkehr.
+- Noch auf v1: nur die SSI-Partials außerhalb des Repos (deshalb bleibt `tokens.css` eingebunden)
+  sowie nicht eingebundene Alt-Komponenten (`AppNavigation.vue`, `FAQ.vue`, Vue-Starter-Reste).

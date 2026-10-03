@@ -5,10 +5,10 @@ Design Tokens des Playlist Generators. Visuelle Referenz: Design-Canvas
 
 Es gibt zwei Sets, die parallel geladen werden:
 
-| Set    | Namespace          | Status                                                                         |
-| ------ | ------------------ | ------------------------------------------------------------------------------ |
-| **v1** | `--accent-color` … | Ist-Zustand, aus `main.css` und den Komponenten extrahiert. Von allen genutzt. |
-| **v2** | `--ds-*`           | Zielbild der Modernisierung. Komponenten migrieren einzeln; v1 fällt am Ende.  |
+| Set    | Namespace          | Status                                                                                                                                 |
+| ------ | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **v1** | `--accent-color` … | Ursprünglicher Ist-Zustand. Im Repo nur noch von nicht eingebundenen Alt-Komponenten genutzt; bleibt für die SSI-Partials eingebunden. |
+| **v2** | `--ds-*`           | Zielbild der Modernisierung. App, Seiten und `main.css` laufen darauf; v1 fällt, sobald die Partials umgestellt sind.                  |
 
 ## Dateien
 
@@ -21,7 +21,8 @@ Es gibt zwei Sets, die parallel geladen werden:
 | `__tests__/tokens-v2.spec.ts`    | Konsistenz v2 plus Namespace-Schutz und Kontrast-Audit (WCAG AA).                        |
 | `__tests__/tokenTestUtils.ts`    | Gemeinsame Helfer: CSS-Block-Parser, Token-Walker, Kontrastberechnung.                   |
 
-`main.css` bindet beide CSS-Dateien per `@import` ein und definiert selbst keine Variablen.
+`main.css` bindet beide CSS-Dateien per `@import` ein, definiert selbst keine Variablen und enthält
+nur noch globale Basis-Regeln (Reset, Body, SSI-Footer, Bewegung, Druck) auf `--ds-*`.
 
 ## Theme-Mechanik
 
