@@ -85,8 +85,7 @@ Playlist-Generator/
 │   │   └── logo.svg              # Anwendungs-Logo
 │   │
 │   ├── App.vue                   # Root-Komponente
-│   ├── main.js                   # JavaScript Entry Point
-│   ├── main.ts                   # TypeScript Entry Point
+│   ├── main.js                   # Entry Point (von index.html geladen)
 │   └── env.d.ts                  # TypeScript Umgebungsdefinitionen
 │
 ├── e2e/                          # End-to-End Tests
