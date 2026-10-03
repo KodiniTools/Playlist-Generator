@@ -6,6 +6,13 @@ const mk = (name: string, lastModified = 1) => new File(['x'], name, { lastModif
 
 const names = (files: File[]) => files.map((f) => f.name)
 
+/** Zugriff per Index unter noUncheckedIndexedAccess; schlägt laut fehl statt undefined durchzureichen. */
+const fileAt = (files: File[], index: number): File => {
+  const file = files[index]
+  if (!file) throw new Error(`Keine Datei an Index ${index}`)
+  return file
+}
+
 describe('usePlaylist – undo/redo', () => {
   const p = usePlaylist()
 
@@ -83,12 +90,12 @@ describe('usePlaylist – undo/redo', () => {
 
     p.undo() // clear
     expect(names(p.files.value)).toEqual(['a.mp3', 'b.mp3'])
-    expect(p.isFileSelected(p.files.value[0])).toBe(true)
-    expect(p.isFileSelected(p.files.value[1])).toBe(false)
+    expect(p.isFileSelected(fileAt(p.files.value, 0))).toBe(true)
+    expect(p.isFileSelected(fileAt(p.files.value, 1))).toBe(false)
     expect(p.playlistContent.value).not.toContain('b.mp3')
 
     p.undo() // toggle
-    expect(p.isFileSelected(p.files.value[1])).toBe(true)
+    expect(p.isFileSelected(fileAt(p.files.value, 1))).toBe(true)
     expect(p.playlistContent.value).toContain('b.mp3')
   })
 

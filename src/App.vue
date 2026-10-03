@@ -26,8 +26,8 @@
   //   1. Translates the nav itself (via its own translateNav())
   //   2. Dispatches 'language-changed' CustomEvent
   // We listen for that event and update the Vue app + footer/cookie-banner.
-  function handleGlobalLanguageChange(e) {
-    const newLang = e.detail?.lang
+  function handleGlobalLanguageChange(e: Event) {
+    const newLang = (e as CustomEvent<{ lang?: string }>).detail?.lang
     if (newLang && newLang !== currentLanguage.value) {
       setLanguage(newLang)
     }
@@ -51,7 +51,7 @@
   })
 
   // --- External Nav Height Measurement (ResizeObserver) ---
-  let externalNavResizeObserver = null
+  let externalNavResizeObserver: ResizeObserver | null = null
 
   function updateExternalNavHeight() {
     const wrapper = document.querySelector('.external-nav-wrapper')
@@ -64,17 +64,21 @@
     // Observe size changes dynamically
     if (externalNavResizeObserver) externalNavResizeObserver.disconnect()
     externalNavResizeObserver = new ResizeObserver((entries) => {
-      const h = entries[0].contentRect.height
-      document.documentElement.style.setProperty('--external-nav-height', `${h}px`)
+      const entry = entries[0]
+      if (!entry) return
+      document.documentElement.style.setProperty(
+        '--external-nav-height',
+        `${entry.contentRect.height}px`,
+      )
     })
     externalNavResizeObserver.observe(navEl)
   }
 
   // --- MutationObserver for dynamically loaded SSI partials ---
-  let domMutationObserver = null
+  let domMutationObserver: MutationObserver | null = null
 
   function initMutationObserver() {
-    domMutationObserver = new MutationObserver((mutations) => {
+    const observer = new MutationObserver((mutations) => {
       const hasNewElements = mutations.some(
         (m) =>
           m.type === 'childList' &&
@@ -84,19 +88,20 @@
       if (!hasNewElements) return
 
       // Pause observer to prevent infinite loop (translateExternalNav mutates DOM)
-      domMutationObserver.disconnect()
+      observer.disconnect()
 
       updateExternalNavHeight()
       syncAllExternalElements(currentLanguage.value)
 
-      // Re-enable observer after DOM settles
+      // Re-enable observer after DOM settles, unless the component was unmounted meanwhile
       requestAnimationFrame(() => {
-        if (domMutationObserver) {
-          domMutationObserver.observe(document.body, { childList: true, subtree: true })
+        if (domMutationObserver === observer) {
+          observer.observe(document.body, { childList: true, subtree: true })
         }
       })
     })
-    domMutationObserver.observe(document.body, { childList: true, subtree: true })
+    domMutationObserver = observer
+    observer.observe(document.body, { childList: true, subtree: true })
   }
 
   // --- Lifecycle ---
