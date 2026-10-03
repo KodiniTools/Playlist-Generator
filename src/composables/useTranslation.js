@@ -111,6 +111,8 @@ const translations = {
       "Klicken Sie auf 'Wiedergabeliste erstellen', um hier eine Vorschau zu sehen...",
     button_save: 'Speichern unter...',
     button_copy: 'Kopieren',
+    lines: 'Zeilen',
+    preview_empty_title: 'Noch keine Vorschau',
 
     // FAQ Page
     faq_page_title: 'Häufig gestellte Fragen',
@@ -400,6 +402,8 @@ const translations = {
     placeholder_output: "Click 'Create Playlist' to see a preview here...",
     button_save: 'Save As...',
     button_copy: 'Copy',
+    lines: 'lines',
+    preview_empty_title: 'No preview yet',
 
     // FAQ Page
     faq_page_title: 'Frequently Asked Questions',

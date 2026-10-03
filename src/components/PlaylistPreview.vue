@@ -1,142 +1,160 @@
 <template>
-  <section class="output-section">
-    <h2 class="section-title">{{ t('preview_title') }}</h2>
+  <UiPanel class="playlist-preview" :title="t('preview_title')">
+    <template #actions>
+      <UiSelect
+        id="outputFormat"
+        :model-value="localFormat"
+        :options="formats"
+        :label="t('label_format')"
+        inline
+        @update:model-value="setFormat"
+      />
+    </template>
 
-    <div class="form-group">
-      <label>{{ t('label_format') }}</label>
-      <div class="format-tabs" role="group" :aria-label="t('label_format')">
-        <button
-          v-for="fmt in formats"
-          :key="fmt.value"
-          type="button"
-          class="format-tab"
-          :class="{ active: localFormat === fmt.value }"
-          @click="setFormat(fmt.value)"
-        >
-          {{ fmt.label }}
-        </button>
-      </div>
-      <Transition name="desc">
-        <p class="format-desc" :key="localFormat" aria-live="polite">
-          {{ t('format_desc_' + localFormat) }}
-        </p>
-      </Transition>
-    </div>
+    <div class="playlist-preview__body">
+      <p class="playlist-preview__format-desc" aria-live="polite">
+        {{ t(`format_desc_${localFormat}`) }}
+      </p>
 
-    <Transition name="notice">
-      <div v-if="!formatsWithoutPaths.includes(localFormat)" class="format-notice" role="note">
-        <span aria-hidden="true">⚠️</span>
-        {{ t('notice_m3u') }}
-      </div>
-    </Transition>
+      <UiCallout v-if="showPathNotice" type="info">{{ t('notice_m3u') }}</UiCallout>
 
-    <div class="code-viewer" :class="{ empty: !playlistContent }">
-      <div class="code-viewer-header">
-        <span class="code-lang-badge">{{ localFormat.toUpperCase() }}</span>
-        <span v-if="playlistContent" class="code-stats"
-          >{{ lineCount }} {{ t('lines') || 'Zeilen' }}</span
-        >
-      </div>
-      <div class="code-viewer-body">
-        <pre v-if="playlistContent" class="code-content"><code>{{ playlistContent }}</code></pre>
-        <div v-else class="code-placeholder">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            width="36"
-            height="36"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+      <div class="playlist-preview__code">
+        <div class="playlist-preview__code-header">
+          <span class="playlist-preview__file-name">{{ fileName }}</span>
+          <span v-if="hasContent" class="playlist-preview__line-count">
+            {{ lineCount }} {{ t('lines') }}
+          </span>
+          <UiIconButton
+            size="sm"
+            :label="t('button_copy')"
+            :disabled="!hasContent"
+            @click="handleCopy"
           >
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" y1="13" x2="8" y2="13" />
-            <line x1="16" y1="17" x2="8" y2="17" />
-          </svg>
-          <span>{{ t('placeholder_output') }}</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+          </UiIconButton>
         </div>
+
+        <ol v-if="hasContent" class="playlist-preview__lines">
+          <li v-for="(line, index) in lines" :key="index" class="playlist-preview__line">
+            <span class="playlist-preview__line-number" aria-hidden="true">{{ index + 1 }}</span>
+            <span
+              :class="[
+                'playlist-preview__line-text',
+                { 'playlist-preview__line-text--directive': isDirective(line) },
+              ]"
+              >{{ line }}</span
+            >
+          </li>
+        </ol>
+        <UiEmptyState
+          v-else
+          class="playlist-preview__empty"
+          :title="t('preview_empty_title')"
+          :text="t('placeholder_output')"
+        >
+          <template #icon>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+          </template>
+        </UiEmptyState>
+      </div>
+
+      <div class="playlist-preview__actions">
+        <UiButton
+          variant="secondary"
+          :disabled="!hasContent"
+          :title="t('shortcut_copy')"
+          @click="handleCopy"
+        >
+          <template #icon>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+          </template>
+          {{ t('button_copy') }}
+        </UiButton>
+        <UiButton variant="primary" :title="t('shortcut_save')" @click="handleSave">
+          <template #icon>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </template>
+          {{ t('button_save') }}
+        </UiButton>
       </div>
     </div>
-
-    <div class="button-row">
-      <button
-        type="button"
-        class="copy-button"
-        @click="handleCopy"
-        :disabled="!playlistContent"
-        :title="t('shortcut_copy')"
-      >
-        <span class="button-icon">
-          <svg viewBox="0 0 24 24" width="16" height="16">
-            <rect
-              x="9"
-              y="9"
-              width="13"
-              height="13"
-              rx="2"
-              ry="2"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            ></rect>
-            <path
-              d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            ></path>
-          </svg>
-        </span>
-        {{ t('button_copy') }}
-      </button>
-      <button type="button" class="save-button" @click="handleSave" :title="t('shortcut_save')">
-        <span class="button-icon">
-          <svg viewBox="0 0 24 24" width="16" height="16">
-            <path
-              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            ></path>
-            <polyline
-              points="17 21 17 13 7 13 7 21"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            ></polyline>
-            <polyline
-              points="7 3 7 8 15 8"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            ></polyline>
-          </svg>
-        </span>
-        {{ t('button_save') }}
-      </button>
-    </div>
-  </section>
+  </UiPanel>
 </template>
 
 <script setup lang="ts">
-  import { ref, watch, computed } from 'vue'
-  import { useTranslation } from '../composables/useTranslation'
+  import { computed, ref, watch } from 'vue'
+  import { UiButton, UiCallout, UiEmptyState, UiIconButton, UiPanel, UiSelect } from './ui'
+  import type { SelectOption } from './ui'
+  import type { OutputFormat } from '../composables/usePlaylist'
   import { useToast } from '../composables/useToast'
+  import { useTranslation } from '../composables/useTranslation'
 
-  const props = defineProps({
-    outputFormat: String,
-    playlistContent: String,
-  })
+  /**
+   * Rechtes Panel der App-Seite: Format wählen, Vorschau mit Zeilennummern,
+   * Kopieren und Speichern. Die Schnittstelle zur AppPage ist unverändert;
+   * `playlistName` ist optional und bestimmt nur den angezeigten Dateinamen.
+   */
+  const props = withDefaults(
+    defineProps<{
+      outputFormat?: OutputFormat
+      playlistContent?: string
+      playlistName?: string
+    }>(),
+    { outputFormat: 'm3u', playlistContent: '', playlistName: '' },
+  )
 
-  const emit = defineEmits(['update:outputFormat', 'save'])
+  const emit = defineEmits<{
+    'update:outputFormat': [format: OutputFormat]
+    save: []
+  }>()
 
   const { t } = useTranslation()
   const toast = useToast()
-  const localFormat = ref(props.outputFormat)
 
-  const formats = [
+  const formats: SelectOption[] = [
     { value: 'm3u', label: 'M3U' },
     { value: 'm3u8', label: 'M3U8' },
     { value: 'pls', label: 'PLS' },
@@ -147,32 +165,36 @@
     { value: 'json', label: 'JSON' },
   ]
 
-  // Formats that don't rely on the playlist file sitting next to the audio
-  // files, so the "save in same folder" notice doesn't apply to them.
-  const formatsWithoutPaths = ['json', 'csv']
+  // Formate ohne Pfadbezug brauchen den Hinweis "im selben Ordner speichern" nicht.
+  const formatsWithoutPaths: OutputFormat[] = ['json', 'csv']
+
+  const localFormat = ref<OutputFormat>(props.outputFormat)
 
   watch(
     () => props.outputFormat,
-    (newVal) => {
-      localFormat.value = newVal
+    (value) => {
+      localFormat.value = value
     },
   )
 
-  const setFormat = (format) => {
-    localFormat.value = format
-    emit('update:outputFormat', format)
+  const setFormat = (format: string) => {
+    localFormat.value = format as OutputFormat
+    emit('update:outputFormat', format as OutputFormat)
   }
 
-  const lineCount = computed(() =>
-    props.playlistContent ? props.playlistContent.split('\n').length : 0,
-  )
+  const hasContent = computed(() => props.playlistContent.length > 0)
+  const lines = computed(() => (hasContent.value ? props.playlistContent.split('\n') : []))
+  const lineCount = computed(() => lines.value.length)
+  const showPathNotice = computed(() => !formatsWithoutPaths.includes(localFormat.value))
+  const fileName = computed(() => `${props.playlistName.trim() || 'playlist'}.${localFormat.value}`)
+
+  const isDirective = (line: string) => line.startsWith('#')
 
   const handleCopy = async () => {
-    if (!props.playlistContent) {
+    if (!hasContent.value) {
       toast.error(t.value('alert_create_first'))
       return
     }
-
     try {
       await navigator.clipboard.writeText(props.playlistContent)
       toast.success(t.value('toast_copied'))
@@ -187,244 +209,114 @@
 </script>
 
 <style scoped>
-  /* Format Tabs (Segmented Control) */
-  .format-tabs {
+  /* Bleibt beim Scrollen sichtbar, solange die App-Seite zweispaltig ist. */
+  .playlist-preview {
+    position: sticky;
+    top: var(--ds-space-5);
+  }
+
+  @media (max-width: 768px) {
+    .playlist-preview {
+      position: static;
+    }
+  }
+
+  .playlist-preview__body {
     display: flex;
-    flex-wrap: wrap;
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 3px;
-    width: fit-content;
-    max-width: 100%;
-    gap: 2px;
+    flex-direction: column;
+    gap: var(--ds-space-3);
   }
 
-  .format-tab {
-    padding: 6px 20px;
-    border: none;
-    border-radius: 7px;
-    background: transparent;
-    color: var(--muted-color);
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    letter-spacing: 0.04em;
-    font-family: inherit;
+  .playlist-preview__format-desc {
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading);
+    color: var(--ds-text-2);
   }
 
-  .format-tab:hover {
-    color: var(--text-color);
-  }
-
-  .format-tab.active {
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    color: var(--accent-text-color);
-    box-shadow: 0 2px 8px var(--shadow-color);
-  }
-
-  .form-group {
-    position: relative;
-  }
-
-  /* Format description */
-  .format-desc {
-    margin: 8px 0 0;
-    font-size: 0.8rem;
-    color: var(--muted-color);
-    opacity: 0.8;
-    line-height: 1.5;
-  }
-
-  .desc-enter-active,
-  .desc-leave-active {
-    transition:
-      opacity 0.2s ease,
-      transform 0.2s ease;
-  }
-  .desc-enter-from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  .desc-leave-to {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  .desc-leave-active {
-    position: absolute;
-  }
-
-  /* Code Viewer */
-  .code-viewer {
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+  .playlist-preview__code {
+    border: var(--ds-border-width) solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface-0);
     overflow: hidden;
-    background: var(--input-bg);
-    transition: border-color 0.2s ease;
-    margin-top: 4px;
   }
 
-  .code-viewer:not(.empty):hover {
-    border-color: var(--accent-color);
-  }
-
-  .code-viewer-header {
+  .playlist-preview__code-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 7px 14px;
-    background: rgba(0, 0, 0, 0.15);
-    border-bottom: 1px solid var(--border-color);
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-2) var(--ds-space-2) var(--ds-space-2) var(--ds-space-3);
+    border-bottom: var(--ds-border-width) solid var(--ds-border);
   }
 
-  .light-theme .code-viewer-header {
-    background: rgba(0, 0, 0, 0.04);
+  .playlist-preview__file-name {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .code-lang-badge {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: var(--accent-color);
-    font-family: 'Courier New', monospace;
+  .playlist-preview__line-count {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-3);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
-  .code-stats {
-    font-size: 0.7rem;
-    color: var(--muted-color);
-    font-family: 'Courier New', monospace;
-    opacity: 0.7;
-  }
-
-  .code-viewer-body {
+  .playlist-preview__lines {
+    list-style: none;
+    margin: 0;
+    padding: var(--ds-space-3) var(--ds-space-3);
     min-height: 200px;
     max-height: 340px;
-    overflow-y: auto;
+    overflow: auto;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: 1.6;
     scrollbar-width: thin;
-    scrollbar-color: var(--border-color) transparent;
   }
 
-  .code-viewer-body::-webkit-scrollbar {
-    width: 5px;
+  .playlist-preview__line {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    column-gap: var(--ds-space-3);
   }
 
-  .code-viewer-body::-webkit-scrollbar-track {
-    background: transparent;
+  .playlist-preview__line-number {
+    text-align: right;
+    color: var(--ds-text-3);
+    user-select: none;
   }
 
-  .code-viewer-body::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 3px;
-  }
-
-  .code-content {
-    margin: 0;
-    padding: 14px 16px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.82rem;
-    line-height: 1.65;
-    color: var(--text-color);
+  .playlist-preview__line-text {
+    color: var(--ds-text);
     white-space: pre-wrap;
     word-break: break-all;
   }
 
-  .code-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+  .playlist-preview__line-text--directive {
+    color: var(--ds-text-2);
+  }
+
+  .playlist-preview__empty {
     min-height: 200px;
-    color: var(--muted-color);
-    opacity: 0.45;
-    font-size: 0.88rem;
-    text-align: center;
-    padding: 20px;
-  }
-
-  /* Button Row */
-  .button-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
-  }
-
-  .copy-button,
-  .save-button {
-    display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 8px;
-    flex: 1;
-    padding: 11px 16px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    border-radius: 10px;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.25s ease;
   }
 
-  /* Copy = secondary/outline button */
-  .copy-button {
-    background: var(--btn-color);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-  }
-
-  .copy-button:hover:not(:disabled) {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-  }
-
-  .copy-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .button-icon {
+  .playlist-preview__actions {
     display: flex;
-    align-items: center;
-  }
-
-  /* Contextual format warning */
-  .format-notice {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-top: 12px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    background: rgba(201, 152, 77, 0.08);
-    border: 1px solid rgba(201, 152, 77, 0.3);
-    font-size: 0.8rem;
-    color: var(--muted-color);
-    line-height: 1.4;
-  }
-
-  .light-theme .format-notice {
-    background: rgba(1, 79, 153, 0.06);
-    border-color: rgba(1, 79, 153, 0.2);
-  }
-
-  .notice-enter-active,
-  .notice-leave-active {
-    transition:
-      opacity 0.2s ease,
-      transform 0.2s ease;
-  }
-  .notice-enter-from,
-  .notice-leave-to {
-    opacity: 0;
-    transform: translateY(-4px);
+    justify-content: flex-end;
+    gap: var(--ds-space-2);
+    flex-wrap: wrap;
   }
 
   @media (max-width: 480px) {
-    .button-row {
-      flex-direction: column;
-      gap: 8px;
+    .playlist-preview__actions > * {
+      flex: 1 1 100%;
     }
   }
 </style>

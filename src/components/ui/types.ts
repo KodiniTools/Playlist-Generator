@@ -8,6 +8,7 @@ export type IconButtonVariant = 'ghost' | 'secondary' | 'primary'
 export type ControlSize = 'sm' | 'md'
 
 export type ToastType = 'success' | 'error' | 'info'
+export type CalloutType = 'info' | 'success' | 'warning' | 'danger'
 
 export type TextFieldType = 'text' | 'search' | 'email' | 'url' | 'password'
 
@@ -16,6 +17,8 @@ export interface SegmentedOption {
   label: string
   disabled?: boolean
 }
+
+export type SelectOption = SegmentedOption
 
 /** Ein Eintrag der Dateiliste. `duration` in Sekunden; null oder undefined = noch unbekannt. */
 export interface FileListItem {

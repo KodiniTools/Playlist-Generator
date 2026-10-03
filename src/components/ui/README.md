@@ -15,8 +15,10 @@ import { UiButton, UiPanel, UiTextField } from '@/components/ui'
 | Komponente           | Zweck                                               | Wichtige Props / Events                                                                                                               |
 | -------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `UiButton`           | Textbutton                                          | `variant` primary · secondary · ghost · danger, `size` sm · md · lg, `block`, Slot `icon`                                             |
+| `UiCallout`          | Ruhiger Hinweis im Textfluss                        | `type` info · success · warning · danger, `title`, Slot default                                                                       |
 | `UiIconButton`       | Quadratischer Icon-Button                           | `label` (Pflicht, wird aria-label), `variant`, `size` sm · md, `round`, `pressed` (aria-pressed)                                      |
 | `UiSegmentedControl` | Eine Option aus wenigen, Radiogroup-Muster          | `v-model`, `options` `{ value, label, disabled? }`, `label`, `size`; Pfeiltasten wechseln                                             |
+| `UiSelect`           | Natives Select im System-Look                       | `v-model`, `options`, `label` (Pflicht), `inline`, `labelHidden`, `size`; Attrs → select                                              |
 | `UiTextField`        | Einzeiliges Textfeld mit Label                      | `v-model`, `label`, `hint`, `error` (aria-invalid, role=alert), `required`, `disabled`, Attrs → input                                 |
 | `UiPanel`            | Flache Fläche mit Kopfzeile                         | `title`, `headingLevel` 2 · 3, `count`, `padded`, Slot `actions`                                                                      |
 | `UiToast`            | Benachrichtigung                                    | `message`, `type` success · error · info, `actionLabel`; Events `action`, `dismiss`                                                   |
@@ -90,7 +92,6 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
 
 ## Noch nicht enthalten
 
-- Dropzone, Select und Switch folgen mit der weiteren App-Seite.
-- `PlaylistConfig.vue` nutzt die Bausteine bereits (Panel, Buttons, Dateiliste, Segmented Control,
-  Textfeld). `PlaylistPreview`, `AudioPlayer`, `ToastContainer`, `KeyboardShortcutsPanel` und
-  `UndoRedoControls` folgen.
+- Dropzone und Switch folgen mit der weiteren App-Seite.
+- `PlaylistConfig.vue` und `PlaylistPreview.vue` nutzen die Bausteine bereits. `AudioPlayer`,
+  `ToastContainer`, `KeyboardShortcutsPanel` und `UndoRedoControls` folgen.
