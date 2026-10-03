@@ -60,7 +60,6 @@ describe('PlaylistPreview', () => {
     const wrapper = mountPreview({ playlistContent: '' })
     expect(wrapper.find('.playlist-preview__lines').exists()).toBe(false)
     expect(wrapper.get('.ui-empty__title').text()).toBe('Noch keine Vorschau')
-    expect(wrapper.get('.ui-icon-button').attributes('disabled')).toBeDefined()
     expect(wrapper.get('.ui-button--secondary').attributes('disabled')).toBeDefined()
     expect(wrapper.get('.ui-button--primary').attributes('disabled')).toBeUndefined()
   })
@@ -76,9 +75,17 @@ describe('PlaylistPreview', () => {
     expect(toasts.value.map((toast) => toast.type)).toEqual(['success'])
 
     writeText.mockRejectedValueOnce(new Error('denied'))
-    await wrapper.get('.ui-icon-button').trigger('click')
+    await wrapper.get('.ui-button--secondary').trigger('click')
     await flushPromises()
     expect(toasts.value.map((toast) => toast.type)).toEqual(['success', 'error'])
+  })
+
+  it('bietet Kopieren nur einmal an, in der Aktionsleiste', () => {
+    const wrapper = mountPreview()
+    expect(wrapper.find('.playlist-preview__code-header .ui-icon-button').exists()).toBe(false)
+    const copyButtons = wrapper.findAll('button').filter((button) => button.text() === 'Kopieren')
+    expect(copyButtons).toHaveLength(1)
+    expect(copyButtons[0]?.classes()).toContain('ui-button--secondary')
   })
 
   it('meldet Speichern an die AppPage', async () => {
