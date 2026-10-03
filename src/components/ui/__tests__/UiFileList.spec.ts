@@ -1,4 +1,4 @@
-import { mount, type DOMWrapper } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import UiFileList from '../UiFileList.vue'
@@ -22,7 +22,7 @@ function row(wrapper: ReturnType<typeof mountList>, index: number) {
 }
 
 /** Native PointerEvents: jsdom kennt sie, Vue Test Utils kann ihre Getter aber nicht setzen. */
-async function pointer(target: DOMWrapper<Element>, type: string, init: PointerEventInit = {}) {
+async function pointer(target: { element: Element }, type: string, init: PointerEventInit = {}) {
   target.element.dispatchEvent(
     new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 1, ...init }),
   )
