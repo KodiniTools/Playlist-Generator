@@ -1,0 +1,210 @@
+/* ==========================================================================
+   Playlist Generator · Design Tokens
+   --------------------------------------------------------------------------
+   Einzige Quelle für Theme-Variablen zur Laufzeit. Eingebunden über
+   src/assets/main.css (@import). Maschinenlesbar: tokens.json,
+   typisiert für JS/TS: tokens.ts, Dokumentation: README.md (gleicher Ordner).
+
+   Theme-Mechanik (src/composables/useTheme.js):
+     Dark  = Standard, Variablen auf :root
+     Light = body.light-theme (App-CSS) und html[data-theme='light'] (SSI-Partials)
+
+   Hinweis: Tokens, die andere Variablen referenzieren (z. B. --shadow-panel
+   über --shadow-color), werden in .light-theme erneut deklariert, weil var()
+   in Custom Properties auf dem deklarierenden Element aufgelöst wird.
+   ========================================================================== */
+
+/* === Dark Theme (Standard) === */
+/* Farbschema: #c9984d, #014f99, #091428, #f8e1a9, #f9f2d5 */
+:root {
+  --bg-color: #091428;
+  --bg-secondary: #0e1c32;
+  --text-color: #f9f2d5;
+  --accent-color: #c9984d;
+  --accent-secondary: #014f99;
+  --accent-text-color: #091428;
+  --panel-color: #142640;
+  --btn-color: #0e1c32;
+  --border-color: #2a4a6a;
+  --input-bg: #0e1c32;
+  --muted-color: #7a8da0;
+  --shadow-color: rgba(201, 152, 77, 0.15);
+  --glow-color: rgba(201, 152, 77, 0.3);
+  --success-color: #7dd87d;
+  --warning-color: #c9984d;
+  --error-color: #e57373;
+
+  /* SSI-Partials Synchronisations-Variablen (--color-* Namespace) */
+  --color-primary: #014f99;
+  --color-bg: #091428;
+  --color-bg-secondary: #0e1c32;
+  --color-bg-gradient: #091428;
+  --color-text: #f9f2d5;
+  --color-text-light: #f8e1a9;
+  --color-text-muted: #7a8da0;
+  --color-border: #1c3a5e;
+  --color-accent: #c9984d;
+  --color-accent-light: #f8e1a9;
+  --color-white: #142640;
+  --color-success: #50e3c2;
+  --color-warning: #f8e71c;
+  --color-error: #f44336;
+  --color-info: #2196f3;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --transition-base: 0.2s ease;
+  --external-nav-height: 50px;
+
+  /* === Typografie === */
+  --font-family-base: 'Supreme', sans-serif;
+  --font-family-mono: 'Courier New', monospace;
+  --font-size-base: 15px;
+  --font-size-hero: 3.5rem;
+  --font-size-page-title: 3rem;
+  --font-size-section-headline: 2.5rem;
+  --font-size-hero-subtitle: 1.5rem;
+  --font-size-app-title: 1.35rem;
+  --font-size-card-title: 1.25rem;
+  --font-size-lead: 1.1rem;
+  --font-size-body: 1rem;
+  --font-size-label: 0.9rem;
+  --font-size-code: 0.82rem;
+  --font-size-caption: 0.8rem;
+  --font-size-section-title: 0.72rem;
+  --font-size-badge: 0.68rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --line-height-base: 1.6;
+  --line-height-tight: 1.25;
+  --line-height-code: 1.65;
+  --line-height-lead: 1.8;
+  --letter-spacing-section-title: 0.1em;
+  --letter-spacing-tab: 0.04em;
+  --letter-spacing-label: 0.01em;
+  --letter-spacing-tight: -0.01em;
+
+  /* === Abstände === */
+  --space-3: 3px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-15: 15px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-30: 30px;
+  --space-40: 40px;
+  --space-50: 50px;
+
+  /* === Radien === */
+  --radius-badge: 5px;
+  --radius-chip: 6px;
+  --radius-segment: 7px;
+  --radius-control: 8px;
+  --radius-segmented: 10px;
+  --radius-input: 12px;
+  --radius-dropzone: 14px;
+  --radius-button-lg: 15px;
+  --radius-panel: 16px;
+  --radius-dialog: 18px;
+  --radius-card: 20px;
+  --radius-cta: 24px;
+  --radius-section: 25px;
+  --radius-full: 50%;
+
+  /* === Schatten === */
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.2);
+  --shadow-dialog: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --shadow-panel: 0 10px 40px var(--shadow-color);
+  --shadow-button-hover: 0 12px 25px var(--shadow-color), 0 0 20px var(--glow-color);
+  --shadow-glow: 0 0 20px var(--glow-color);
+  --shadow-focus-ring: 0 0 0 3px var(--glow-color);
+
+  /* === Motion === */
+  --duration-fast: 0.15s;
+  --duration-base: 0.2s;
+  --duration-medium: 0.25s;
+  --duration-slow: 0.3s;
+  --duration-theme: 0.5s;
+  --duration-page: 0.8s;
+  --ease-standard: ease;
+  --ease-emphasized: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* === Layout === */
+  --container-max-width: 1200px;
+  --container-padding: 40px 20px;
+  --grid-gap: 30px;
+  --player-bar-height: 72px;
+
+  /* === Ebenen (z-index) === */
+  --z-app-nav: 500;
+  --z-player-bar: 900;
+  --z-backdrop: 1000;
+  --z-dialog: 1001;
+  --z-toast: 9999;
+}
+
+/* === Light Theme === */
+/* Farbschema: #c9984d, #014f99, #003971, #f8e1a9, #f9f2d5 */
+.light-theme {
+  --bg-color: #f5f4d6;
+  --bg-secondary: #f0edbe;
+  --text-color: #003971;
+  --accent-color: #014f99;
+  --accent-secondary: #003971;
+  --accent-text-color: #f5f4d6;
+  --panel-color: #ffffff;
+  --btn-color: #f8e1a9;
+  --border-color: #c9984d;
+  --input-bg: #ffffff;
+  --muted-color: #3d6080;
+  --shadow-color: rgba(1, 79, 153, 0.15);
+  --glow-color: rgba(1, 79, 153, 0.25);
+  --success-color: #4caf50;
+  --warning-color: #c9984d;
+  --error-color: #d32f2f;
+
+  /* SSI-Partials Synchronisations-Variablen (Light Override) */
+  --color-primary: #014f99;
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f9f2d5;
+  --color-bg-gradient: #f5f4d6;
+  --color-text: #212529;
+  --color-text-light: #6c757d;
+  --color-text-muted: #adb5bd;
+  --color-border: #dee2e6;
+  --color-accent: #c9984d;
+  --color-accent-light: #f8e1a9;
+  --color-white: #ffffff;
+  --color-success: #50e3c2;
+  --color-warning: #f8e71c;
+  --color-error: #f44336;
+  --color-info: #2196f3;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Theme-abhängige Schatten erneut deklarieren (siehe Hinweis oben) */
+  --shadow-panel: 0 10px 40px var(--shadow-color);
+  --shadow-button-hover: 0 12px 25px var(--shadow-color), 0 0 20px var(--glow-color);
+  --shadow-glow: 0 0 20px var(--glow-color);
+  --shadow-focus-ring: 0 0 0 3px var(--glow-color);
+}
+
+/* data-theme Selector fuer SSI-Partials (spiegelt .light-theme) */
+:root[data-theme='light'] {
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f9f2d5;
+  --color-bg-gradient: #f5f4d6;
+  --color-text: #212529;
+  --color-text-light: #6c757d;
+  --color-text-muted: #adb5bd;
+  --color-border: #dee2e6;
+  --color-white: #ffffff;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

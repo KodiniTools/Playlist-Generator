@@ -1,3 +1,7 @@
+/* === Design Tokens (Single Source of Truth) === */
+/* Alle Theme-Variablen (Dark/Light, SSI-Spiegel) und Skalen liegen in src/design-system/tokens.css */
+@import '../design-system/tokens.css';
+
 /* === Custom Font (Supreme) === */
 /* Served from the site root: /var/www/kodinitools.com/fonts/ */
 @font-face {
@@ -6,102 +10,6 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-}
-
-/* === CSS Variables for Theme System === */
-/* Farbschema: #c9984d, #014f99, #091428, #f8e1a9, #f9f2d5 */
-:root {
-  --bg-color: #091428;
-  --bg-secondary: #0e1c32;
-  --text-color: #f9f2d5;
-  --accent-color: #c9984d;
-  --accent-secondary: #014f99;
-  --accent-text-color: #091428;
-  --panel-color: #142640;
-  --btn-color: #0e1c32;
-  --border-color: #2a4a6a;
-  --input-bg: #0e1c32;
-  --muted-color: #7a8da0;
-  --shadow-color: rgba(201, 152, 77, 0.15);
-  --glow-color: rgba(201, 152, 77, 0.3);
-  --success-color: #7dd87d;
-  --warning-color: #c9984d;
-  --error-color: #e57373;
-
-  /* SSI-Partials Synchronisations-Variablen (--color-* Namespace) */
-  --color-primary: #014f99;
-  --color-bg: #091428;
-  --color-bg-secondary: #0e1c32;
-  --color-bg-gradient: #091428;
-  --color-text: #f9f2d5;
-  --color-text-light: #f8e1a9;
-  --color-text-muted: #7a8da0;
-  --color-border: #1c3a5e;
-  --color-accent: #c9984d;
-  --color-accent-light: #f8e1a9;
-  --color-white: #142640;
-  --color-success: #50e3c2;
-  --color-warning: #f8e71c;
-  --color-error: #f44336;
-  --color-info: #2196f3;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
-  --transition-base: 0.2s ease;
-  --external-nav-height: 50px;
-}
-
-/* Light Theme */
-/* Farbschema: #c9984d, #014f99, #003971, #f8e1a9, #f9f2d5 */
-.light-theme {
-  --bg-color: #f5f4d6;
-  --bg-secondary: #f0edbe;
-  --text-color: #003971;
-  --accent-color: #014f99;
-  --accent-secondary: #003971;
-  --accent-text-color: #f5f4d6;
-  --panel-color: #ffffff;
-  --btn-color: #f8e1a9;
-  --border-color: #c9984d;
-  --input-bg: #ffffff;
-  --muted-color: #3d6080;
-  --shadow-color: rgba(1, 79, 153, 0.15);
-  --glow-color: rgba(1, 79, 153, 0.25);
-  --success-color: #4caf50;
-  --warning-color: #c9984d;
-  --error-color: #d32f2f;
-
-  /* SSI-Partials Synchronisations-Variablen (Light Override) */
-  --color-primary: #014f99;
-  --color-bg: #ffffff;
-  --color-bg-secondary: #f9f2d5;
-  --color-bg-gradient: #f5f4d6;
-  --color-text: #212529;
-  --color-text-light: #6c757d;
-  --color-text-muted: #adb5bd;
-  --color-border: #dee2e6;
-  --color-accent: #c9984d;
-  --color-accent-light: #f8e1a9;
-  --color-white: #ffffff;
-  --color-success: #50e3c2;
-  --color-warning: #f8e71c;
-  --color-error: #f44336;
-  --color-info: #2196f3;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* data-theme Selector fuer SSI-Partials (spiegelt .light-theme) */
-:root[data-theme='light'] {
-  --color-bg: #ffffff;
-  --color-bg-secondary: #f9f2d5;
-  --color-bg-gradient: #f5f4d6;
-  --color-text: #212529;
-  --color-text-light: #6c757d;
-  --color-text-muted: #adb5bd;
-  --color-border: #dee2e6;
-  --color-white: #ffffff;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* === Global Styles === */
