@@ -12,17 +12,18 @@ Bausteine des Zielbilds aus dem Design-Canvas (Reihe „Nachher“). Alle Kompon
 import { UiButton, UiPanel, UiTextField } from '@/components/ui'
 ```
 
-| Komponente           | Zweck                                      | Wichtige Props / Events                                                                               |
-| -------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| `UiButton`           | Textbutton                                 | `variant` primary · secondary · ghost · danger, `size` sm · md · lg, `block`, Slot `icon`             |
-| `UiIconButton`       | Quadratischer Icon-Button                  | `label` (Pflicht, wird aria-label), `variant`, `size` sm · md, `round`, `pressed` (aria-pressed)      |
-| `UiSegmentedControl` | Eine Option aus wenigen, Radiogroup-Muster | `v-model`, `options` `{ value, label, disabled? }`, `label`, `size`; Pfeiltasten wechseln             |
-| `UiTextField`        | Einzeiliges Textfeld mit Label             | `v-model`, `label`, `hint`, `error` (aria-invalid, role=alert), `required`, `disabled`, Attrs → input |
-| `UiPanel`            | Flache Fläche mit Kopfzeile                | `title`, `headingLevel` 2 · 3, `count`, `padded`, Slot `actions`                                      |
-| `UiToast`            | Benachrichtigung                           | `message`, `type` success · error · info, `actionLabel`; Events `action`, `dismiss`                   |
-| `UiDialog`           | Modaler Dialog, teleportiert nach body     | `open`, `title`, `description`, Slots default · `footer`; Event `close` (Escape, Hintergrund, Button) |
-| `UiKbd`              | Tastenkombination                          | `keys: string[]`                                                                                      |
-| `UiEmptyState`       | Leerzustand                                | `title`, `text`, Slots `icon` · `action`                                                              |
+| Komponente           | Zweck                                               | Wichtige Props / Events                                                                                                               |
+| -------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `UiButton`           | Textbutton                                          | `variant` primary · secondary · ghost · danger, `size` sm · md · lg, `block`, Slot `icon`                                             |
+| `UiIconButton`       | Quadratischer Icon-Button                           | `label` (Pflicht, wird aria-label), `variant`, `size` sm · md, `round`, `pressed` (aria-pressed)                                      |
+| `UiSegmentedControl` | Eine Option aus wenigen, Radiogroup-Muster          | `v-model`, `options` `{ value, label, disabled? }`, `label`, `size`; Pfeiltasten wechseln                                             |
+| `UiTextField`        | Einzeiliges Textfeld mit Label                      | `v-model`, `label`, `hint`, `error` (aria-invalid, role=alert), `required`, `disabled`, Attrs → input                                 |
+| `UiPanel`            | Flache Fläche mit Kopfzeile                         | `title`, `headingLevel` 2 · 3, `count`, `padded`, Slot `actions`                                                                      |
+| `UiToast`            | Benachrichtigung                                    | `message`, `type` success · error · info, `actionLabel`; Events `action`, `dismiss`                                                   |
+| `UiDialog`           | Modaler Dialog, teleportiert nach body              | `open`, `title`, `description`, Slots default · `footer`; Event `close` (Escape, Hintergrund, Button)                                 |
+| `UiKbd`              | Tastenkombination                                   | `keys: string[]`                                                                                                                      |
+| `UiEmptyState`       | Leerzustand                                         | `title`, `text`, Slots `icon` · `action`                                                                                              |
+| `UiFileList`         | Dateiliste als DOM-Liste, Ersatz für FileListCanvas | `items`, `v-model:selectedIndex`, `v-model:checked`, `playingIndex`, `isPlaying`, `labels`; Events `play`, `remove`, `move(from, to)` |
 
 ## Beispiel
 
@@ -57,7 +58,37 @@ import { UiButton, UiPanel, UiTextField } from '@/components/ui'
 - Primär ist die einzige Goldfläche pro Ansicht. Danger ist textbasiert, Vollfläche nur im Dialog-Footer.
 - Neue Komponenten kommen mit Test und landen im Barrel `index.ts`.
 
+## UiFileList
+
+Ersetzt die gezeichnete Canvas-Liste durch echte Zeilen: Griff, Häkchen, Name, Format-Chip, Dauer,
+Größe und Aktionen. Die Schnittstelle spiegelt `FileListCanvas.vue`, nur mit generischen Einträgen
+statt `File`-Objekten:
+
+```ts
+interface FileListItem {
+  id: string
+  name: string
+  size: number // Bytes
+  duration?: number | null // Sekunden, null = noch unbekannt
+}
+```
+
+- `v-model:selectedIndex`: markierte Zeile (-1 = keine). Pfeiltasten, Pos1/Ende, Enter (abspielen),
+  Leertaste (Häkchen), Entf (entfernen), Escape (Auswahl aufheben), Alt+Pfeil (verschieben).
+- `v-model:checked`: ids, die in die Wiedergabeliste aufgenommen werden. Ohne Angabe gelten alle als
+  aufgenommen. Die Summenzeile zählt nur angehakte Titel; fehlt eine Dauer, wird wie bisher aus Format
+  und Größe geschätzt und mit `~` markiert.
+- `move(from, to)`: `to` ist der Index im Endzustand, genau wie `usePlaylist.moveFile`.
+- Umsortieren per Pointer am Griff (Maus und Touch, Autoscroll am Rand) oder per Alt+Pfeil.
+- Tasten, die die Liste verarbeitet, werden nicht an `window` weitergereicht. Der globale Handler in
+  `AppPage.vue` greift also nur, wenn die Liste keinen Fokus hat.
+- Bei sehr großen Listen (mehrere tausend Einträge) wäre Virtualisierung der nächste Schritt; die
+  Liste rendert aktuell alle Zeilen.
+
+Adapter für die Migration (Phase 2): `files.map((file) => ({ id: file.name, name: file.name, size:
+file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` aus `isFileSelected`.
+
 ## Noch nicht enthalten
 
-- Dateiliste (`UiFileList`), Dropzone, Select und Switch folgen in Phase 2 mit der App-Seite.
+- Dropzone, Select und Switch folgen in Phase 2 mit der App-Seite.
 - Die bestehenden Komponenten (`PlaylistConfig`, `PlaylistPreview`, …) nutzen diese Bausteine noch nicht.

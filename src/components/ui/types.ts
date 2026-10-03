@@ -16,3 +16,26 @@ export interface SegmentedOption {
   label: string
   disabled?: boolean
 }
+
+/** Ein Eintrag der Dateiliste. `duration` in Sekunden; null oder undefined = noch unbekannt. */
+export interface FileListItem {
+  id: string
+  name: string
+  size: number
+  duration?: number | null
+}
+
+/** Beschriftungen der Dateiliste, alle mit deutschen Standardwerten. */
+export interface FileListLabels {
+  list: string
+  selectAll: string
+  include: string
+  dragHandle: string
+  play: string
+  pause: string
+  remove: string
+  tracks: string
+  approximate: string
+  emptyTitle: string
+  emptyText: string
+}
