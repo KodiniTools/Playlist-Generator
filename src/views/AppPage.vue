@@ -1,125 +1,125 @@
 <template>
-  <div class="app-page" :class="{ 'has-player': files.length > 0 }">
-    <!-- Page Header Navigation -->
-    <header class="page-header">
-      <div class="header-container">
-        <nav class="header-nav">
-          <router-link to="/" class="nav-link">{{ t('nav_home') }}</router-link>
-          <router-link to="/app" class="nav-link active">{{ t('nav_app') }}</router-link>
-          <router-link to="/faq" class="nav-link">{{ t('nav_faq') }}</router-link>
-          <router-link to="/blog" class="nav-link">{{ t('nav_blog') }}</router-link>
-        </nav>
+  <div :class="['app-page', { 'app-page--has-player': files.length > 0 }]">
+    <AppHeader>
+      <template #actions>
         <KeyboardShortcutsPanel />
-      </div>
-    </header>
+      </template>
+    </AppHeader>
 
-    <main class="container">
-      <header>
-        <h1>{{ t('main_title') }}</h1>
-        <p class="subtitle">{{ t('subtitle') }}</p>
+    <main class="app-page__main">
+      <header class="app-page__intro">
+        <h1 class="app-page__title">{{ t('main_title') }}</h1>
+        <p class="app-page__subtitle">{{ t('subtitle') }}</p>
       </header>
 
-      <div v-if="sharedBanner" class="shared-banner" :class="'shared-banner-' + sharedBanner.type">
-        <span class="shared-banner-icon">
-          <template v-if="sharedBanner.type === 'success'">&#10003;</template>
-          <template v-else-if="sharedBanner.type === 'error'">&#10007;</template>
-          <template v-else-if="sharedBanner.type === 'warning'">&#9888;</template>
-          <template v-else>&#8505;</template>
-        </span>
-        <span>{{ sharedBanner.message }}</span>
-      </div>
+      <UiCallout v-if="sharedBanner" :type="calloutType(sharedBanner.type)">
+        {{ sharedBanner.message }}
+      </UiCallout>
 
-      <OnboardingBanner :hasFiles="files.length > 0" />
+      <OnboardingBanner :has-files="files.length > 0" />
 
-      <div class="main-content">
+      <div class="app-page__workspace">
         <PlaylistConfig
           ref="playlistConfigRef"
           :files="files"
-          :sortOption="sortOption"
-          :playlistName="playlistName"
-          :replaceMode="replaceMode"
-          :selectedFileIndex="selectedFileIndex"
-          @update:sortOption="applySortOption"
-          @update:playlistName="setPlaylistName"
-          @update:replaceMode="setReplaceMode"
-          @update:selectedFileIndex="selectedFileIndex = $event"
-          @addFiles="handleAddFiles"
-          @clearFiles="handleClearFiles"
-          @removeFile="handleDeleteFile"
-          @moveFile="moveFile"
-          @playFile="handlePlayFile"
+          :sort-option="sortOption"
+          :playlist-name="playlistName"
+          :replace-mode="replaceMode"
+          :selected-file-index="selectedFileIndex"
+          :playing-index="playingIndex"
+          :is-playing="isPlaying"
+          @update:sort-option="applySortOption"
+          @update:playlist-name="setPlaylistName"
+          @update:replace-mode="setReplaceMode"
+          @update:selected-file-index="selectedFileIndex = $event"
+          @add-files="handleAddFiles"
+          @clear-files="handleClearFiles"
+          @remove-file="handleDeleteFile"
+          @move-file="moveFile"
+          @play-file="handlePlayFile"
         />
 
         <PlaylistPreview
-          :outputFormat="outputFormat"
-          :playlistContent="playlistContent"
-          @update:outputFormat="handleFormatChange"
+          :output-format="outputFormat"
+          :playlist-content="playlistContent"
+          :playlist-name="playlistName"
+          @update:output-format="handleFormatChange"
           @save="handleSave"
         />
       </div>
 
       <ToolsGrid />
 
-      <footer class="site-footer">
-        <div class="footer-actions">
-          <form
-            action="https://www.paypal.com/donate"
-            method="post"
-            target="_top"
-            class="donate-form"
-          >
-            <input type="hidden" name="hosted_button_id" value="8RGLGQ2BFMHU6" />
-            <button type="submit" class="donate-button" :title="t('donate_title')">
-              <svg class="paypal-icon" viewBox="0 0 24 24" width="16" height="16">
+      <footer class="app-page__footer">
+        <form
+          action="https://www.paypal.com/donate"
+          method="post"
+          target="_top"
+          class="app-page__donate"
+        >
+          <input type="hidden" name="hosted_button_id" value="8RGLGQ2BFMHU6" />
+          <UiButton type="submit" variant="ghost" size="sm" :title="t('donate_title')">
+            <template #icon>
+              <svg viewBox="0 0 24 24" fill="currentColor">
                 <path
-                  fill="currentColor"
                   d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .757-.62h6.597c2.179 0 3.893.603 5.091 1.791.602.598 1.014 1.291 1.223 2.063.219.796.264 1.724.13 2.758l-.015.1v.46l.358.205c.302.167.543.361.729.583.306.366.508.815.601 1.333.096.532.086 1.166-.028 1.884-.13.828-.355 1.551-.668 2.147a4.467 4.467 0 0 1-1.081 1.393c-.426.37-.932.653-1.504.84-.559.182-1.192.273-1.882.273H14.1a.947.947 0 0 0-.937.803l-.036.21-.604 3.832-.028.168a.947.947 0 0 1-.936.803H7.076Z"
                 />
               </svg>
-              {{ t('donate_button') }}
-            </button>
-          </form>
-          <button
-            class="facebook-share-button"
-            :title="t('facebook_share_title')"
-            @click="shareOnFacebook"
-          >
-            <svg class="facebook-icon" viewBox="0 0 24 24" width="16" height="16">
+            </template>
+            {{ t('donate_button') }}
+          </UiButton>
+        </form>
+        <UiButton
+          variant="ghost"
+          size="sm"
+          :title="t('facebook_share_title')"
+          @click="shareOnFacebook"
+        >
+          <template #icon>
+            <svg viewBox="0 0 24 24" fill="currentColor">
               <path
-                fill="currentColor"
                 d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
               />
             </svg>
-            {{ t('facebook_share') }}
-          </button>
-        </div>
+          </template>
+          {{ t('facebook_share') }}
+        </UiButton>
       </footer>
     </main>
 
-    <!-- Persistent sticky player bar, fixed to the bottom of the viewport -->
     <AudioPlayer
       ref="audioPlayerRef"
       :files="files"
-      :selectedIndex="selectedFileIndex"
-      @update:selectedIndex="selectedFileIndex = $event"
+      :selected-index="selectedFileIndex"
+      @update:selected-index="selectedFileIndex = $event"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, watch, onMounted, onUnmounted } from 'vue'
+  import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
+  import AppHeader from '../components/AppHeader.vue'
+  import AudioPlayer from '../components/AudioPlayer.vue'
+  import KeyboardShortcutsPanel from '../components/KeyboardShortcutsPanel.vue'
+  import OnboardingBanner from '../components/OnboardingBanner.vue'
   import PlaylistConfig from '../components/PlaylistConfig.vue'
   import PlaylistPreview from '../components/PlaylistPreview.vue'
   import ToolsGrid from '../components/ToolsGrid.vue'
-  import KeyboardShortcutsPanel from '../components/KeyboardShortcutsPanel.vue'
-  import OnboardingBanner from '../components/OnboardingBanner.vue'
-  import AudioPlayer from '../components/AudioPlayer.vue'
-  import { useTranslation } from '../composables/useTranslation'
-  import { usePlaylist } from '../composables/usePlaylist'
-  import { useUndoRedo } from '../composables/useUndoRedo'
+  import { UiButton, UiCallout } from '../components/ui'
+  import type { CalloutType } from '../components/ui'
+  import { usePlaylist, type OutputFormat } from '../composables/usePlaylist'
   import { useToast } from '../composables/useToast'
-  import { getSharedFiles, clearSharedFiles } from '../utils/sharedFileRepository'
+  import { useTranslation } from '../composables/useTranslation'
+  import { useUndoRedo } from '../composables/useUndoRedo'
+  import { clearSharedFiles, getSharedFiles } from '../utils/sharedFileRepository'
+
+  type BannerType = 'success' | 'error' | 'warning' | 'info'
+
+  interface SharedBanner {
+    type: BannerType
+    message: string
+  }
 
   const { t } = useTranslation()
   const toast = useToast()
@@ -146,25 +146,31 @@
   } = usePlaylist()
   const { performUndo, performRedo } = useUndoRedo()
 
-  // --- Shared files receiver ---
-  const sharedBanner = ref(null)
+  // --- Geteilte Dateien aus anderen KodiniTools ---------------------------------
+
+  const sharedBanner = ref<SharedBanner | null>(null)
   let sharedFilesHandled = false
 
   const SHARED_SOURCES = ['audiokonverter', 'audionormalizer']
+
+  const calloutType = (type: BannerType): CalloutType => (type === 'error' ? 'danger' : type)
+
+  const querySource = (): string | null => {
+    const source = route.query.source
+    return typeof source === 'string' ? source : null
+  }
 
   async function loadSharedFiles() {
     if (sharedFilesHandled) return
     sharedFilesHandled = true
 
-    const source = route.query.source as string
-    const isNormalizer = source === 'audionormalizer'
+    const isNormalizer = querySource() === 'audionormalizer'
 
     try {
       let records = await getSharedFiles()
 
-      // If IndexedDB is empty on first read, wait 1 s and retry once.
-      // This handles the race where the sender's async write has not yet
-      // committed by the time this tab finishes loading.
+      // Leere IndexedDB beim ersten Lesen: einmal nach 1 s erneut versuchen, falls
+      // der Absender seinen Schreibvorgang noch nicht abgeschlossen hatte.
       if (isNormalizer && (!records || records.length === 0)) {
         sharedBanner.value = {
           type: 'info',
@@ -177,9 +183,13 @@
       if (!records?.length) {
         sharedBanner.value = {
           type: 'warning',
-          message: isNormalizer ? t.value('sharedFilesNormalizerEmpty') : t.value('sharedFilesEmpty'),
+          message: isNormalizer
+            ? t.value('sharedFilesNormalizerEmpty')
+            : t.value('sharedFilesEmpty'),
         }
-        setTimeout(() => { sharedBanner.value = null }, 5000)
+        setTimeout(() => {
+          sharedBanner.value = null
+        }, 5000)
         return
       }
 
@@ -194,24 +204,22 @@
       let loaded = 0
 
       if (isNormalizer) {
-        // Bypass analyzeBlob — normalizer files are already valid WAV.
-        // Build File objects directly and hand them to addFiles().
+        // Normalizer-Dateien sind bereits gültige WAVs: direkt als File übernehmen.
         const normFiles = records
-          .map((r) => {
+          .map((record) => {
             const blob =
-              r.blob instanceof Blob
-                ? r.blob
-                : new Blob([r.blob], { type: r.mimeType || 'audio/wav' })
+              record.blob instanceof Blob
+                ? record.blob
+                : new Blob([record.blob], { type: record.mimeType || 'audio/wav' })
             if (blob.size === 0) return null
-            return new File([blob], r.name, {
-              type: r.mimeType || blob.type || 'audio/wav',
+            return new File([blob], record.name, {
+              type: record.mimeType || blob.type || 'audio/wav',
               lastModified: Date.now(),
             })
           })
-          .filter((f): f is File => f !== null)
+          .filter((file): file is File => file !== null)
 
-        const result = addFiles(normFiles)
-        loaded = result.added
+        loaded = addFiles(normFiles).added
       } else {
         const { processed } = await handleSharedFiles(records)
         loaded = processed
@@ -229,7 +237,9 @@
       } else {
         sharedBanner.value = {
           type: 'warning',
-          message: isNormalizer ? t.value('sharedFilesNormalizerEmpty') : t.value('sharedFilesEmpty'),
+          message: isNormalizer
+            ? t.value('sharedFilesNormalizerEmpty')
+            : t.value('sharedFilesEmpty'),
         }
       }
     } catch (err) {
@@ -237,29 +247,36 @@
       sharedBanner.value = { type: 'error', message: t.value('sharedFilesError') }
     }
 
-    setTimeout(() => { sharedBanner.value = null }, 5000)
+    setTimeout(() => {
+      sharedBanner.value = null
+    }, 5000)
   }
 
-  // Primary: after router is ready
-  router.isReady().then(() => {
-    if (SHARED_SOURCES.includes(route.query.source as string)) loadSharedFiles()
+  const isSharedSource = (source: string | null) =>
+    source !== null && SHARED_SOURCES.includes(source)
+
+  void router.isReady().then(() => {
+    if (isSharedSource(querySource())) void loadSharedFiles()
   })
 
-  // Fallback: route watcher
   watch(
     () => route.query.source,
-    (s) => {
-      if (SHARED_SOURCES.includes(s as string)) loadSharedFiles()
+    () => {
+      if (isSharedSource(querySource())) void loadSharedFiles()
     },
   )
 
-  // Template refs for child components
-  const playlistConfigRef = ref(null)
-  const audioPlayerRef = ref(null)
+  // --- Kind-Komponenten -----------------------------------------------------------
 
-  // A track was clicked in the interactive track list → select it and start
-  // playing it in the player right away.
-  const handlePlayFile = (index) => {
+  const playlistConfigRef = ref<InstanceType<typeof PlaylistConfig> | null>(null)
+  const audioPlayerRef = ref<InstanceType<typeof AudioPlayer> | null>(null)
+
+  // Wiedergabezustand des Players für die Markierung in der Dateiliste.
+  const playingIndex = computed(() => audioPlayerRef.value?.currentTrackIndex ?? -1)
+  const isPlaying = computed(() => audioPlayerRef.value?.isPlaying ?? false)
+
+  // Titel in der Liste angeklickt: markieren und sofort abspielen.
+  const handlePlayFile = (index: number) => {
     if (index < 0 || index >= files.value.length) return
     selectedFileIndex.value = index
     audioPlayerRef.value?.playTrack(index)
@@ -274,17 +291,17 @@
     )
   }
 
-  const handleAddFiles = (fileList) => {
+  const handleAddFiles = (fileList: File[] | FileList) => {
     const { added, skipped } = addFiles(fileList)
     if (added > 0) {
-      toast.info(t.value('toast_files_added').replace('{count}', added))
+      toast.info(t.value('toast_files_added').replace('{count}', String(added)))
     }
     if (skipped > 0) {
-      toast.info(t.value('toast_duplicates_skipped').replace('{count}', skipped))
+      toast.info(t.value('toast_duplicates_skipped').replace('{count}', String(skipped)))
     }
   }
 
-  const handleFormatChange = (format) => {
+  const handleFormatChange = (format: OutputFormat) => {
     setOutputFormat(format)
   }
 
@@ -316,16 +333,16 @@
     }
   }
 
-  // Toast with an inline "Undo" button for destructive actions. Only one such
-  // toast is shown at a time so the button always refers to the latest step.
-  let undoToastId = null
+  // Toast mit "Rückgängig"-Button nach destruktiven Aktionen; immer nur einer,
+  // damit der Button sich stets auf den letzten Schritt bezieht.
+  let undoToastId: number | null = null
 
   const dismissUndoToast = () => {
     if (undoToastId !== null) toast.removeToast(undoToastId)
     undoToastId = null
   }
 
-  const showUndoToast = (messageKey) => {
+  const showUndoToast = (messageKey: string) => {
     dismissUndoToast()
     undoToastId = toast.addToast(t.value(messageKey), 'info', 5000, {
       label: t.value('toast_undo_btn'),
@@ -346,7 +363,7 @@
     performRedo()
   }
 
-  const handleDeleteFile = (index) => {
+  const handleDeleteFile = (index: number) => {
     if (index < 0 || index >= files.value.length) return
     removeFile(index)
     if (selectedFileIndex.value >= files.value.length) {
@@ -366,73 +383,67 @@
     handleDeleteFile(selectedFileIndex.value)
   }
 
-  const handleKeyDown = (e) => {
-    // Don't capture shortcuts when typing in input/textarea
+  // Globale Kurzbefehle. Die Dateiliste verarbeitet Pfeile, Entf und Escape
+  // selbst, solange sie den Fokus hat, und reicht diese Tasten nicht weiter.
+  const handleKeyDown = (event: KeyboardEvent) => {
     const activeEl = document.activeElement
     if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
       return
     }
 
-    // Ctrl+O: Open files
-    if (e.ctrlKey && e.key === 'o') {
-      e.preventDefault()
+    if (event.ctrlKey && event.key === 'o') {
+      event.preventDefault()
       playlistConfigRef.value?.openFileDialog()
     }
 
-    // Ctrl+S: Save playlist
-    if (e.ctrlKey && e.key === 's') {
-      e.preventDefault()
-      handleSave()
+    if (event.ctrlKey && event.key === 's') {
+      event.preventDefault()
+      void handleSave()
     }
 
-    // Ctrl+C: Copy to clipboard (only when no text is selected)
-    if (e.ctrlKey && e.key === 'c' && !window.getSelection()?.toString()) {
-      e.preventDefault()
-      handleCopy()
+    if (event.ctrlKey && event.key === 'c' && !window.getSelection()?.toString()) {
+      event.preventDefault()
+      void handleCopy()
     }
 
-    // Delete: Remove selected file
-    if (e.key === 'Delete') {
-      e.preventDefault()
+    if (event.key === 'Delete') {
+      event.preventDefault()
       handleDeleteSelected()
     }
 
-    // Ctrl+Z: Undo last action · Ctrl+Y / Ctrl+Shift+Z: Redo
-    const key = e.key.toLowerCase()
-    if (e.ctrlKey && key === 'z') {
-      e.preventDefault()
-      if (e.shiftKey) handleRedo()
+    const key = event.key.toLowerCase()
+    if (event.ctrlKey && key === 'z') {
+      event.preventDefault()
+      if (event.shiftKey) handleRedo()
       else handleUndo()
-    } else if (e.ctrlKey && key === 'y') {
-      e.preventDefault()
+    } else if (event.ctrlKey && key === 'y') {
+      event.preventDefault()
       handleRedo()
     }
 
-    // Arrow keys for file selection
-    if (e.key === 'ArrowDown' && files.value.length > 0) {
-      e.preventDefault()
+    if (event.key === 'ArrowDown' && files.value.length > 0) {
+      event.preventDefault()
       selectedFileIndex.value = Math.min(selectedFileIndex.value + 1, files.value.length - 1)
     }
 
-    if (e.key === 'ArrowUp' && files.value.length > 0) {
-      e.preventDefault()
+    if (event.key === 'ArrowUp' && files.value.length > 0) {
+      event.preventDefault()
       selectedFileIndex.value = Math.max(selectedFileIndex.value - 1, 0)
     }
 
-    // Escape: Deselect
-    if (e.key === 'Escape') {
+    if (event.key === 'Escape') {
       selectedFileIndex.value = -1
     }
   }
 
   const AUDIO_EXTENSIONS = /\.(mp3|wav|flac|ogg|aac|m4a|wma|opus)$/i
 
-  const handlePaste = (e) => {
-    const items = e.clipboardData?.files
+  const handlePaste = (event: ClipboardEvent) => {
+    const items = event.clipboardData?.files
     if (!items || items.length === 0) return
-    const audioFiles = Array.from(items).filter((f) => AUDIO_EXTENSIONS.test(f.name))
+    const audioFiles = Array.from(items).filter((file) => AUDIO_EXTENSIONS.test(file.name))
     if (audioFiles.length > 0) {
-      e.preventDefault()
+      event.preventDefault()
       handleAddFiles(audioFiles)
     }
   }
@@ -450,375 +461,81 @@
 
 <style scoped>
   .app-page {
-    padding-top: 0;
+    min-height: 100vh;
+    background: var(--ds-surface-0);
+    color: var(--ds-text);
   }
 
-  /* Reserve space for the fixed player bar so the footer stays reachable */
-  .app-page.has-player {
-    padding-bottom: 72px;
+  /* Platz für die fixe Player-Leiste, damit der Footer erreichbar bleibt. */
+  .app-page--has-player {
+    padding-bottom: calc(var(--ds-player-height) + var(--ds-space-4));
   }
 
-  @media (max-width: 480px) {
-    .app-page.has-player {
-      padding-bottom: 64px;
-    }
-  }
-
-  /* Page Header Navigation */
-  .page-header {
-    background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .light-theme .page-header {
-    background: linear-gradient(135deg, rgba(245, 245, 245, 0.95), rgba(232, 232, 232, 0.95));
-  }
-
-  .header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 15px 20px;
+  .app-page__main {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-  }
-
-  .header-nav {
-    display: flex;
-    gap: 30px;
-  }
-
-  .header-nav .nav-link {
-    text-decoration: none;
-    color: var(--muted-color);
-    font-weight: 500;
-    padding: 8px 4px;
-    border-radius: 0;
-    transition: color 0.25s ease;
-    position: relative;
-  }
-
-  .header-nav .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--accent-color);
-    border-radius: 2px;
-    transform: scaleX(0);
-    transform-origin: center;
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .header-nav .nav-link:hover,
-  .header-nav .nav-link.active {
-    color: var(--accent-color);
-    background: transparent;
-  }
-
-  .header-nav .nav-link:hover::after,
-  .header-nav .nav-link.active::after {
-    transform: scaleX(1);
-  }
-
-  @media (max-width: 768px) {
-    .header-nav {
-      gap: 15px;
-    }
-
-    .header-nav .nav-link {
-      padding: 8px 4px;
-      font-size: 0.9rem;
-    }
-  }
-
-  .container {
-    max-width: 1200px;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    max-width: var(--ds-container);
     margin: 0 auto;
-    padding: 40px 20px;
-    animation: fade-in 0.8s ease-out;
+    padding: var(--ds-space-6) var(--ds-gutter) var(--ds-space-8);
+    box-sizing: border-box;
   }
 
-  .container > header {
-    text-align: center;
-    margin-bottom: 40px;
-    animation: slide-in 0.8s ease-out;
+  .app-page__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
   }
 
-  .container > header h1 {
-    font-size: 1.35rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--text-color);
-    margin-bottom: 8px;
+  .app-page__title {
+    margin: 0;
+    font-size: var(--ds-text-2xl);
+    font-weight: var(--ds-weight-semibold);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
   }
 
-  .subtitle {
-    font-size: 0.95rem;
-    color: var(--muted-color);
-    margin-bottom: 0;
+  .app-page__subtitle {
+    margin: 0;
+    font-size: var(--ds-text-md);
+    color: var(--ds-text-2);
   }
 
-  .main-content {
+  .app-page__workspace {
     display: grid;
-    grid-template-columns: 3fr 2fr;
-    gap: 30px;
-    margin-bottom: 50px;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: var(--ds-gap);
     align-items: start;
   }
 
-  .main-content :deep(.output-section) {
-    position: sticky;
-    top: 20px;
-  }
-
-  .site-footer {
-    margin-top: 50px;
-    padding: 30px 0;
-    text-align: center;
-    border-top: 1px solid var(--border-color);
-  }
-
-  .donate-form {
-    display: inline-block;
-  }
-
-  .donate-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--muted-color);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .donate-button:hover {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.05);
-  }
-
-  .light-theme .donate-button:hover {
-    background: rgba(162, 134, 128, 0.05);
-  }
-
-  .footer-actions {
+  .app-page__footer {
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-
-  .facebook-share-button {
-    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--muted-color);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    padding-top: var(--ds-space-5);
+    border-top: var(--ds-border-width) solid var(--ds-border);
   }
 
-  .facebook-share-button:hover {
-    border-color: #1877f2;
-    color: #1877f2;
-    background: rgba(24, 119, 242, 0.08);
+  .app-page__donate {
+    display: inline-flex;
   }
 
-  .facebook-icon {
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-  }
-
-  .facebook-share-button:hover .facebook-icon {
-    opacity: 1;
-  }
-
-  .paypal-icon {
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-  }
-
-  .donate-button:hover .paypal-icon {
-    opacity: 1;
-  }
-
-  /* Responsive */
   @media (max-width: 768px) {
-    .container {
-      padding: 30px 15px;
-    }
-
-    .main-content {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-
-    .container > header h1 {
-      font-size: 1.2rem;
-    }
-
-    .main-content {
-      grid-template-columns: 1fr;
-    }
-
-    .main-content :deep(.output-section) {
-      position: static;
+    .app-page__workspace {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
   @media (max-width: 480px) {
-    .container {
-      padding: 20px 10px;
+    .app-page__main {
+      gap: var(--ds-space-4);
+      padding: var(--ds-space-4) var(--ds-space-4) var(--ds-space-6);
     }
 
-    .container > header {
-      margin-bottom: 20px;
-    }
-
-    .container > header h1 {
-      font-size: 1.12rem;
-    }
-
-    .subtitle {
-      font-size: 0.88rem;
-    }
-
-    .main-content {
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-
-    .site-footer {
-      margin-top: 25px;
-      padding: 20px 0;
-    }
-
-    .donate-button,
-    .facebook-share-button {
-      padding: 8px 14px;
-      font-size: 0.85rem;
-    }
-
-    .header-container {
-      padding: 10px 12px;
-    }
-
-    .header-nav {
-      gap: 6px;
-    }
-
-    .header-nav .nav-link {
-      padding: 6px 4px;
-      font-size: 0.82rem;
-    }
-  }
-
-  /* Shared Banner */
-  .shared-banner {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    animation: slideIn 0.4s ease-out;
-  }
-
-  .shared-banner-icon {
-    font-size: 1.1rem;
-    flex-shrink: 0;
-  }
-
-  .shared-banner-success {
-    background: rgba(76, 175, 80, 0.15);
-    border: 1px solid rgba(76, 175, 80, 0.4);
-    color: #66bb6a;
-  }
-
-  .shared-banner-error {
-    background: rgba(244, 67, 54, 0.15);
-    border: 1px solid rgba(244, 67, 54, 0.4);
-    color: #ef5350;
-  }
-
-  .shared-banner-warning {
-    background: rgba(255, 193, 7, 0.15);
-    border: 1px solid rgba(255, 193, 7, 0.4);
-    color: #ffca28;
-  }
-
-  .shared-banner-info {
-    background: rgba(33, 150, 243, 0.15);
-    border: 1px solid rgba(33, 150, 243, 0.4);
-    color: #42a5f5;
-  }
-
-  .light-theme .shared-banner-success {
-    background: rgba(76, 175, 80, 0.1);
-    color: #2e7d32;
-  }
-
-  .light-theme .shared-banner-error {
-    background: rgba(244, 67, 54, 0.1);
-    color: #c62828;
-  }
-
-  .light-theme .shared-banner-warning {
-    background: rgba(255, 193, 7, 0.1);
-    color: #f57f17;
-  }
-
-  .light-theme .shared-banner-info {
-    background: rgba(33, 150, 243, 0.1);
-    color: #1565c0;
-  }
-
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Animations */
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slide-in {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    .app-page__title {
+      font-size: var(--ds-text-xl);
     }
   }
 </style>

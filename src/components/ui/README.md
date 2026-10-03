@@ -14,7 +14,7 @@ import { UiButton, UiPanel, UiTextField } from '@/components/ui'
 
 | Komponente           | Zweck                                               | Wichtige Props / Events                                                                                                               |
 | -------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `UiButton`           | Textbutton                                          | `variant` primary · secondary · ghost · danger, `size` sm · md · lg, `block`, Slot `icon`                                             |
+| `UiButton`           | Textbutton, mit `href` als Link                     | `variant` primary · secondary · ghost · danger, `size` sm · md · lg, `block`, `href`, Slot `icon`                                     |
 | `UiCallout`          | Ruhiger Hinweis im Textfluss                        | `type` info · success · warning · danger, `title`, Slot default                                                                       |
 | `UiIconButton`       | Quadratischer Icon-Button                           | `label` (Pflicht, wird aria-label), `variant`, `size` sm · md, `round`, `pressed` (aria-pressed)                                      |
 | `UiSegmentedControl` | Eine Option aus wenigen, Radiogroup-Muster          | `v-model`, `options` `{ value, label, disabled? }`, `label`, `size`; Pfeiltasten wechseln                                             |
@@ -93,6 +93,7 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
 ## Noch nicht enthalten
 
 - Dropzone und Switch folgen mit der weiteren App-Seite.
-- Alle Komponenten der App-Seite (`PlaylistConfig`, `PlaylistPreview`, `UndoRedoControls`,
-  `ToastContainer`, `AudioPlayer`, `KeyboardShortcutsPanel`) nutzen die Bausteine. Offen sind die
-  Kopfzeile in `AppPage.vue`, die Landing-, FAQ- und Blog-Seiten sowie das ungenutzte `FileListCanvas.vue`.
+- Die App-Seite ist komplett umgestellt: `AppPage`, `AppHeader`, `OnboardingBanner`, `ToolsGrid`,
+  `PlaylistConfig`, `PlaylistPreview`, `UndoRedoControls`, `ToastContainer`, `AudioPlayer` und
+  `KeyboardShortcutsPanel`. Offen sind Landing-, FAQ- und Blog-Seite (die `AppHeader` übernehmen
+  können) sowie das ungenutzte `FileListCanvas.vue`.

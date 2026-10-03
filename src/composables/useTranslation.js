@@ -12,6 +12,7 @@ const translations = {
     nav_app: 'App',
     nav_faq: 'FAQ',
     nav_blog: 'Blog',
+    nav_label: 'Seiten',
 
     // Landing Page - Hero
     hero_title: 'Audio Wiedergabeliste Generator',
@@ -309,6 +310,7 @@ const translations = {
     nav_app: 'App',
     nav_faq: 'FAQ',
     nav_blog: 'Blog',
+    nav_label: 'Pages',
 
     // Landing Page - Hero
     hero_title: 'Audio Playlist Generator',

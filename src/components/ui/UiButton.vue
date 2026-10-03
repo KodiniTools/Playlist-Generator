@@ -1,19 +1,21 @@
 <template>
-  <button
-    :type="type"
+  <component
+    :is="href ? 'a' : 'button'"
+    :href="href"
+    :type="href ? undefined : type"
+    :disabled="href ? undefined : disabled"
     :class="[
       'ui-button',
       `ui-button--${variant}`,
       `ui-button--${size}`,
       { 'ui-button--block': block },
     ]"
-    :disabled="disabled"
   >
     <span v-if="$slots.icon" class="ui-button__icon" aria-hidden="true">
       <slot name="icon" />
     </span>
     <slot />
-  </button>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +23,8 @@
 
   /**
    * Textbutton in vier Varianten. Primär ist die einzige Vollfläche in Gold,
-   * alle anderen sind flach. Click-Listener fallen auf das native <button> durch.
+   * alle anderen sind flach. Click-Listener fallen auf das native Element durch.
+   * Mit `href` rendert er als Link im selben Look (target, rel usw. als Attribute).
    */
   withDefaults(
     defineProps<{
@@ -30,6 +33,7 @@
       type?: ButtonType
       disabled?: boolean
       block?: boolean
+      href?: string
     }>(),
     { variant: 'secondary', size: 'md', type: 'button', disabled: false, block: false },
   )
@@ -57,6 +61,10 @@
       background-color var(--ds-duration) var(--ds-ease),
       border-color var(--ds-duration) var(--ds-ease),
       color var(--ds-duration) var(--ds-ease);
+  }
+
+  a.ui-button {
+    text-decoration: none;
   }
 
   .ui-button:focus-visible {

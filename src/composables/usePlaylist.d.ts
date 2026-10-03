@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import type { SharedFileRecord } from '../utils/sharedFileRepository'
 
 export type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
 export type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'cue' | 'csv' | 'json' | 'xspf'
@@ -45,6 +46,6 @@ export function usePlaylist(): {
   redoLabel: Ref<string>
   clearHistory(): void
   savePlaylist(): Promise<unknown>
-  analyzeBlob(...args: unknown[]): unknown
-  handleSharedFiles(...args: unknown[]): unknown
+  analyzeBlob(blob: Blob, name: string): Promise<unknown>
+  handleSharedFiles(records: SharedFileRecord[]): Promise<{ processed: number }>
 }

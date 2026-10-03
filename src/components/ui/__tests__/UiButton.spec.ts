@@ -34,6 +34,19 @@ describe('UiButton', () => {
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
+  it('rendert mit href als Link im selben Look', () => {
+    const wrapper = mount(UiButton, {
+      props: { href: 'https://kodinitools.com/', variant: 'primary' },
+      attrs: { target: '_blank', rel: 'noopener noreferrer' },
+      slots: { default: 'Ausprobieren' },
+    })
+    expect(wrapper.element.tagName).toBe('A')
+    expect(wrapper.attributes('href')).toBe('https://kodinitools.com/')
+    expect(wrapper.attributes('target')).toBe('_blank')
+    expect(wrapper.attributes('type')).toBeUndefined()
+    expect(wrapper.classes()).toContain('ui-button--primary')
+  })
+
   it('versteckt das Icon aus dem icon-Slot vor Screenreadern', () => {
     const wrapper = mount(UiButton, {
       slots: { default: 'Dateien', icon: '<svg data-test="icon"></svg>' },
