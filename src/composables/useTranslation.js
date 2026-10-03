@@ -158,6 +158,14 @@ export const translations = {
     toast_duplicates_skipped: '{count} Duplikate übersprungen',
     toast_playlist_saved: 'Wiedergabeliste gespeichert ✓',
     toast_copied: 'In Zwischenablage kopiert ✓',
+    handoff_title: 'Im Texteditor öffnen?',
+    handoff_text_saved:
+      '„{name}“ wurde gespeichert. Möchten Sie die Datei jetzt im Kodini Texteditor weiterbearbeiten?',
+    handoff_text_copied:
+      '„{name}“ liegt in der Zwischenablage. Möchten Sie die Wiedergabeliste jetzt im Kodini Texteditor weiterbearbeiten?',
+    handoff_accept: 'Im Texteditor öffnen',
+    handoff_decline: 'Nicht jetzt',
+    handoff_error: 'Übergabe nicht möglich: Der Browser-Speicher ist nicht verfügbar.',
     toast_copy_error: 'Kopieren fehlgeschlagen',
     toast_close: 'Schließen',
     toast_file_removed: 'Track entfernt',
@@ -450,6 +458,14 @@ export const translations = {
     toast_duplicates_skipped: '{count} duplicates skipped',
     toast_playlist_saved: 'Playlist saved ✓',
     toast_copied: 'Copied to clipboard ✓',
+    handoff_title: 'Open in text editor?',
+    handoff_text_saved:
+      '"{name}" has been saved. Would you like to continue editing it in the Kodini text editor?',
+    handoff_text_copied:
+      '"{name}" is in your clipboard. Would you like to continue editing the playlist in the Kodini text editor?',
+    handoff_accept: 'Open in text editor',
+    handoff_decline: 'Not now',
+    handoff_error: 'Handoff not possible: browser storage is unavailable.',
     toast_copy_error: 'Copy failed',
     toast_close: 'Close',
     toast_file_removed: 'Track removed',

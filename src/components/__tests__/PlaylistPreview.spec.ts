@@ -73,11 +73,13 @@ describe('PlaylistPreview', () => {
     await flushPromises()
     expect(writeText).toHaveBeenCalledWith(content)
     expect(toasts.value.map((toast) => toast.type)).toEqual(['success'])
+    expect(wrapper.emitted('copied')).toHaveLength(1)
 
     writeText.mockRejectedValueOnce(new Error('denied'))
     await wrapper.get('.ui-button--secondary').trigger('click')
     await flushPromises()
     expect(toasts.value.map((toast) => toast.type)).toEqual(['success', 'error'])
+    expect(wrapper.emitted('copied')).toHaveLength(1)
   })
 
   it('bietet Kopieren nur einmal an, in der Aktionsleiste', () => {

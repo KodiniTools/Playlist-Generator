@@ -45,6 +45,7 @@
           :playlist-name="playlistName"
           @update:output-format="handleFormatChange"
           @save="handleSave"
+          @copied="offerTextEditor('copied')"
         />
       </div>
 
@@ -93,6 +94,23 @@
       :selected-index="selectedFileIndex"
       @update:selected-index="selectedFileIndex = $event"
     />
+
+    <UiDialog
+      :open="handoffOffer !== null"
+      :title="t('handoff_title')"
+      :description="handoffDescription"
+      :close-label="t('toast_close')"
+      @close="declineHandoff"
+    >
+      <template #footer>
+        <UiButton variant="secondary" data-action="handoff-decline" @click="declineHandoff">
+          {{ t('handoff_decline') }}
+        </UiButton>
+        <UiButton variant="primary" data-action="handoff-accept" @click="acceptHandoff">
+          {{ t('handoff_accept') }}
+        </UiButton>
+      </template>
+    </UiDialog>
   </div>
 </template>
 
@@ -106,13 +124,14 @@
   import PlaylistConfig from '../components/PlaylistConfig.vue'
   import PlaylistPreview from '../components/PlaylistPreview.vue'
   import ToolsGrid from '../components/ToolsGrid.vue'
-  import { UiButton, UiCallout } from '../components/ui'
+  import { UiButton, UiCallout, UiDialog } from '../components/ui'
   import type { CalloutType } from '../components/ui'
   import { usePlaylist, type OutputFormat } from '../composables/usePlaylist'
   import { useToast } from '../composables/useToast'
   import { useTranslation } from '../composables/useTranslation'
   import { useUndoRedo } from '../composables/useUndoRedo'
   import { clearSharedFiles, getSharedFiles } from '../utils/sharedFileRepository'
+  import { FORMAT_MIME, openInTextEditor } from '../utils/textEditorHandoff'
 
   type BannerType = 'success' | 'error' | 'warning' | 'info'
 
@@ -311,11 +330,13 @@
       return
     }
 
+    // true = gespeichert, false = Fehler, null = vom Nutzer abgebrochen
     const result = await savePlaylist()
     if (result === false) {
       toast.error(t.value('alert_save_error'))
-    } else {
+    } else if (result === true) {
       toast.success(t.value('toast_playlist_saved'))
+      offerTextEditor('saved')
     }
   }
 
@@ -328,9 +349,46 @@
     try {
       await navigator.clipboard.writeText(playlistContent.value)
       toast.success(t.value('toast_copied'))
+      offerTextEditor('copied')
     } catch {
       toast.error(t.value('toast_copy_error'))
     }
+  }
+
+  // --- Übergabe an den Kodini Texteditor ---------------------------------------
+  // Nach Kopieren oder Speichern fragt ein Dialog, ob die Datei im Texteditor
+  // weiterbearbeitet werden soll. Annehmen legt sie ab und öffnet den Editor.
+  type HandoffReason = 'saved' | 'copied'
+
+  const handoffOffer = ref<HandoffReason | null>(null)
+
+  const handoffFileName = computed(
+    () => `${playlistName.value.trim() || 'playlist'}.${outputFormat.value}`,
+  )
+
+  const handoffDescription = computed(() =>
+    t
+      .value(handoffOffer.value === 'saved' ? 'handoff_text_saved' : 'handoff_text_copied')
+      .replace('{name}', handoffFileName.value),
+  )
+
+  const offerTextEditor = (reason: HandoffReason) => {
+    if (!playlistContent.value) return
+    handoffOffer.value = reason
+  }
+
+  const declineHandoff = () => {
+    handoffOffer.value = null
+  }
+
+  const acceptHandoff = () => {
+    const opened = openInTextEditor({
+      name: handoffFileName.value,
+      content: playlistContent.value,
+      mimeType: FORMAT_MIME[outputFormat.value],
+    })
+    handoffOffer.value = null
+    if (!opened) toast.error(t.value('handoff_error'))
   }
 
   // Toast mit "Rückgängig"-Button nach destruktiven Aktionen; immer nur einer,
