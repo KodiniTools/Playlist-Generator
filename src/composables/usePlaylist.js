@@ -1,4 +1,4 @@
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, effectScope } from 'vue'
 import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPersistence'
 import { createHistory } from './useHistory'
 
@@ -530,14 +530,14 @@ async function restorePersistedState() {
 // Auto-regenerate playlist when format or name changes (module-level watchers)
 let watchersInitialized = false
 
-export function usePlaylist() {
-  // Set up watchers only once (from the first component setup context)
-  if (!watchersInitialized) {
-    watchersInitialized = true
-
-    // Restore any previously persisted playlist as soon as the app uses it.
-    restorePersistedState()
-
+/**
+ * Registers the module-level watchers in a detached effect scope. The first
+ * caller of usePlaylist() is a component (AppPage); watchers created in its
+ * setup would be stopped on unmount and never re-created, so after navigating
+ * away and back, format changes and persistence would silently stop working.
+ */
+function initWatchers() {
+  effectScope(true).run(() => {
     watch(outputFormat, () => {
       if (files.value.length > 0) {
         generatePlaylist()
@@ -558,6 +558,17 @@ export function usePlaylist() {
     // settings + selection (cheap) on their own.
     watch(files, scheduleFilesSave, { deep: true })
     watch([sortOption, playlistName, outputFormat, replaceMode, excludedFiles], scheduleMetaSave)
+  })
+}
+
+export function usePlaylist() {
+  // Set up watchers only once, independent of the calling component's lifetime
+  if (!watchersInitialized) {
+    watchersInitialized = true
+
+    // Restore any previously persisted playlist as soon as the app uses it.
+    restorePersistedState()
+    initWatchers()
   }
 
   return {
