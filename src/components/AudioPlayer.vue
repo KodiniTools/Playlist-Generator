@@ -1,80 +1,75 @@
 <template>
-  <div class="player-bar" v-if="files.length > 0" role="region" :aria-label="t('player_title')">
-    <!-- Full-width seek strip along the top edge of the bar -->
-    <div
-      class="pb-progress"
-      @mousedown="onProgressMouseDown"
-      ref="progressBarRef"
-      role="slider"
-      :aria-valuemin="0"
-      :aria-valuemax="Math.round(duration)"
-      :aria-valuenow="Math.round(currentTime)"
-      :aria-label="t('player_title')"
-    >
-      <div class="pb-progress-fill" :style="{ width: progressPercent + '%' }"></div>
-    </div>
-
-    <div class="pb-inner">
-      <!-- Left: current track + time -->
-      <div class="pb-track">
-        <span class="pb-track-title" v-if="currentTrack" :title="currentTrack.title">
-          {{ currentTrack.title }}
+  <div v-if="files.length > 0" class="player" role="region" :aria-label="t('player_title')">
+    <div class="player__inner">
+      <div class="player__track">
+        <span class="player__art" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 18V5l12-2v13" />
+            <circle cx="6" cy="18" r="3" />
+            <circle cx="18" cy="16" r="3" />
+          </svg>
         </span>
-        <span class="pb-track-title pb-track-empty" v-else>{{ t('player_no_track') }}</span>
-        <span class="pb-time">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
+        <div class="player__meta">
+          <span v-if="currentTrack" class="player__title" :title="currentTrack.title">
+            {{ currentTrack.title }}
+          </span>
+          <span v-else class="player__title player__title--empty">{{ t('player_no_track') }}</span>
+          <span class="player__time"
+            >{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span
+          >
+        </div>
       </div>
 
-      <!-- Center: transport controls -->
-      <div class="pb-controls">
-        <button class="pb-btn pb-btn-sm" @click="previous" :title="t('player_previous')">
-          <svg viewBox="0 0 24 24" width="18" height="18">
-            <polygon points="19,20 9,12 19,4" fill="currentColor" />
-            <line x1="5" y1="4" x2="5" y2="20" stroke="currentColor" stroke-width="2" />
+      <div class="player__controls">
+        <UiIconButton :label="t('player_previous')" @click="previous">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="19 20 9 12 19 4 19 20" />
+            <rect x="4" y="4" width="2" height="16" rx="1" />
           </svg>
-        </button>
-
-        <button class="pb-btn pb-btn-sm" @click="stop" :title="t('player_stop')">
-          <svg viewBox="0 0 24 24" width="18" height="18">
-            <rect x="6" y="6" width="12" height="12" rx="1" fill="currentColor" />
+        </UiIconButton>
+        <UiIconButton class="player__stop" :label="t('player_stop')" @click="stop">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <rect x="6" y="6" width="12" height="12" rx="1" />
           </svg>
-        </button>
-
-        <button
-          class="pb-btn pb-btn-play"
+        </UiIconButton>
+        <UiIconButton
+          variant="primary"
+          round
+          :label="isPlaying ? t('player_pause') : t('player_play')"
           @click="handlePlay"
-          :title="isPlaying ? t('player_pause') : t('player_play')"
         >
-          <svg v-if="!isPlaying" viewBox="0 0 24 24" width="22" height="22">
-            <polygon points="6,3 20,12 6,21" fill="currentColor" />
+          <svg v-if="isPlaying" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="6" y="4" width="4" height="16" rx="1" />
+            <rect x="14" y="4" width="4" height="16" rx="1" />
           </svg>
-          <svg v-else viewBox="0 0 24 24" width="22" height="22">
-            <rect x="5" y="4" width="5" height="16" rx="1" fill="currentColor" />
-            <rect x="14" y="4" width="5" height="16" rx="1" fill="currentColor" />
+          <svg v-else viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="7 3 20 12 7 21 7 3" />
           </svg>
-        </button>
-
-        <button class="pb-btn pb-btn-sm" @click="next" :title="t('player_next')">
-          <svg viewBox="0 0 24 24" width="18" height="18">
-            <polygon points="5,4 15,12 5,20" fill="currentColor" />
-            <line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="2" />
+        </UiIconButton>
+        <UiIconButton :label="t('player_next')" @click="next">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 4 15 12 5 20 5 4" />
+            <rect x="18" y="4" width="2" height="16" rx="1" />
           </svg>
-        </button>
-
-        <button
-          class="pb-btn pb-btn-sm pb-repeat"
-          :class="{ active: repeatMode !== 'off' }"
+        </UiIconButton>
+        <UiIconButton
+          class="player__repeat"
+          :label="repeatTitle"
+          :pressed="repeatMode !== 'off'"
           @click="cycleRepeatMode"
-          :title="repeatTitle"
-          :aria-label="repeatTitle"
-          :aria-pressed="repeatMode !== 'off'"
         >
           <svg
             viewBox="0 0 24 24"
-            width="18"
-            height="18"
             fill="none"
             stroke="currentColor"
-            stroke-width="2"
+            stroke-width="1.75"
             stroke-linecap="round"
             stroke-linejoin="round"
           >
@@ -83,228 +78,185 @@
             <polyline points="7 23 3 19 7 15" />
             <path d="M21 13v2a4 4 0 0 1-4 4H3" />
           </svg>
-          <span v-if="repeatMode === 'one'" class="pb-repeat-badge">1</span>
-        </button>
+          <span v-if="repeatMode === 'one'" class="player__repeat-badge" aria-hidden="true">1</span>
+        </UiIconButton>
       </div>
 
-      <!-- Right: volume + queue toggle -->
-      <div class="pb-right">
-        <div class="pb-volume">
-          <button
-            class="pb-btn pb-btn-sm"
+      <div
+        ref="progressBarRef"
+        class="player__seek"
+        role="slider"
+        tabindex="0"
+        :aria-label="t('player_title')"
+        :aria-valuemin="0"
+        :aria-valuemax="Math.round(duration)"
+        :aria-valuenow="Math.round(currentTime)"
+        :aria-valuetext="`${formatTime(currentTime)} / ${formatTime(duration)}`"
+        @pointerdown="onSeekPointerDown"
+        @pointermove="onSeekPointerMove"
+        @pointerup="onSeekPointerUp"
+        @pointercancel="onSeekPointerUp"
+        @keydown="onSeekKeydown"
+      >
+        <span class="player__seek-track">
+          <span class="player__seek-fill" :style="{ width: `${progressPercent}%` }"></span>
+        </span>
+      </div>
+
+      <div class="player__right">
+        <div class="player__volume">
+          <UiIconButton
+            :label="isMuted ? t('player_unmute') : t('player_mute')"
             @click="toggleMute"
-            :title="isMuted ? t('player_unmute') : t('player_mute')"
           >
-            <svg v-if="isMuted || volume === 0" viewBox="0 0 24 24" width="16" height="16">
-              <polygon
-                points="11,5 6,9 2,9 2,15 6,15 11,19"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linejoin="round"
-              />
-              <line
-                x1="23"
-                y1="9"
-                x2="17"
-                y2="15"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-              <line
-                x1="17"
-                y1="9"
-                x2="23"
-                y2="15"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
+            <svg
+              v-if="isMuted || volume === 0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
             </svg>
-            <svg v-else-if="volume < 0.5" viewBox="0 0 24 24" width="16" height="16">
-              <polygon
-                points="11,5 6,9 2,9 2,15 6,15 11,19"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M15.54 8.46a5 5 0 0 1 0 7.07"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
+            <svg
+              v-else
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path v-if="volume >= 0.5" d="M19.07 4.93a10 10 0 0 1 0 14.14" />
             </svg>
-            <svg v-else viewBox="0 0 24 24" width="16" height="16">
-              <polygon
-                points="11,5 6,9 2,9 2,15 6,15 11,19"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M15.54 8.46a5 5 0 0 1 0 7.07"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-              <path
-                d="M19.07 4.93a10 10 0 0 1 0 14.14"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
+          </UiIconButton>
+          <label for="player-volume" class="player__sr-only">{{ t('player_volume') }}</label>
           <input
+            id="player-volume"
             type="range"
-            class="pb-volume-slider"
+            class="player__volume-slider"
             min="0"
             max="1"
             step="0.01"
             :value="volume"
             @input="onVolumeChange"
-            :title="t('player_mute')"
           />
         </div>
-
-        <button
-          class="pb-btn pb-btn-sm pb-queue-toggle"
-          :class="{ active: showQueue }"
-          @click="toggleQueue"
-          :title="t('player_queue')"
+        <UiButton
+          variant="ghost"
+          size="sm"
+          :class="['player__queue-toggle', { 'player__queue-toggle--active': showQueue }]"
+          :aria-label="t('player_queue')"
           :aria-expanded="showQueue"
+          aria-controls="player-queue"
+          @click="toggleQueue"
         >
-          <svg
-            viewBox="0 0 24 24"
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-          >
-            <line x1="8" y1="6" x2="21" y2="6" />
-            <line x1="8" y1="12" x2="21" y2="12" />
-            <line x1="8" y1="18" x2="21" y2="18" />
-            <circle cx="3.5" cy="6" r="1.2" fill="currentColor" stroke="none" />
-            <circle cx="3.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
-            <circle cx="3.5" cy="18" r="1.2" fill="currentColor" stroke="none" />
-          </svg>
-          <span class="pb-queue-count">{{ playlist.length }}</span>
-        </button>
+          <template #icon>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+            >
+              <line x1="8" y1="6" x2="21" y2="6" />
+              <line x1="8" y1="12" x2="21" y2="12" />
+              <line x1="8" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="6" x2="3.01" y2="6" />
+              <line x1="3" y1="12" x2="3.01" y2="12" />
+              <line x1="3" y1="18" x2="3.01" y2="18" />
+            </svg>
+          </template>
+          {{ playlist.length }}
+        </UiButton>
       </div>
     </div>
 
-    <!-- Expandable queue / tracklist above the bar -->
-    <Transition name="pb-queue-fade">
-      <div class="pb-queue" v-if="showQueue">
-        <div class="pb-queue-header">
-          <span class="pb-queue-title">{{ t('player_queue') }}</span>
-          <button
-            class="pb-btn pb-btn-sm"
-            @click="showQueue = false"
-            :title="t('shortcuts_close_btn')"
-          >
+    <Transition name="player-queue">
+      <div v-if="showQueue" id="player-queue" class="player__queue">
+        <div class="player__queue-header">
+          <span class="player__queue-title">{{ t('player_queue') }}</span>
+          <UiIconButton size="sm" :label="t('shortcuts_close_btn')" @click="showQueue = false">
             <svg
               viewBox="0 0 24 24"
-              width="16"
-              height="16"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
+              stroke-width="1.75"
               stroke-linecap="round"
             >
+              <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
-              <line x1="6" y1="18" x2="18" y2="6" />
             </svg>
-          </button>
+          </UiIconButton>
         </div>
-        <div class="pb-queue-list">
-          <div
-            v-for="(track, idx) in playlist"
-            :key="track.name + idx"
-            class="pb-queue-item"
-            :class="{
-              'pb-queue-active': idx === currentTrackIndex,
-              'pb-queue-playing': idx === currentTrackIndex && isPlaying,
-            }"
-            @click="play(idx)"
-            :title="track.title"
-          >
-            <span class="pb-queue-index">{{ idx + 1 }}</span>
-            <span class="pb-queue-name">{{ track.title }}</span>
-            <span class="pb-queue-playing-icon" v-if="idx === currentTrackIndex && isPlaying">
-              <svg viewBox="0 0 12 12" width="12" height="12">
-                <rect x="1" y="4" width="2" height="8" fill="currentColor">
-                  <animate
-                    attributeName="height"
-                    values="8;4;8"
-                    dur="0.8s"
-                    repeatCount="indefinite"
-                  />
-                  <animate attributeName="y" values="4;6;4" dur="0.8s" repeatCount="indefinite" />
-                </rect>
-                <rect x="5" y="2" width="2" height="10" fill="currentColor">
-                  <animate
-                    attributeName="height"
-                    values="10;5;10"
-                    dur="0.6s"
-                    repeatCount="indefinite"
-                  />
-                  <animate attributeName="y" values="2;5;2" dur="0.6s" repeatCount="indefinite" />
-                </rect>
-                <rect x="9" y="5" width="2" height="7" fill="currentColor">
-                  <animate
-                    attributeName="height"
-                    values="7;3;7"
-                    dur="0.7s"
-                    repeatCount="indefinite"
-                  />
-                  <animate attributeName="y" values="5;7;5" dur="0.7s" repeatCount="indefinite" />
-                </rect>
+        <ul class="player__queue-list">
+          <li v-for="(track, idx) in playlist" :key="`${track.name}-${idx}`">
+            <button
+              type="button"
+              :class="[
+                'player__queue-item',
+                { 'player__queue-item--active': idx === currentTrackIndex },
+              ]"
+              :title="track.title"
+              :aria-current="idx === currentTrackIndex ? 'true' : undefined"
+              @click="play(idx)"
+            >
+              <span class="player__queue-index">{{ idx + 1 }}</span>
+              <span class="player__queue-name">{{ track.title }}</span>
+              <svg
+                v-if="idx === currentTrackIndex && isPlaying"
+                class="player__queue-playing"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <rect x="2" y="6" width="2.5" height="8" rx="1" />
+                <rect x="6.75" y="2" width="2.5" height="12" rx="1" />
+                <rect x="11.5" y="8" width="2.5" height="6" rx="1" />
               </svg>
-            </span>
-          </div>
-        </div>
+            </button>
+          </li>
+        </ul>
       </div>
     </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, toRef, watch } from 'vue'
+  import { computed, ref, toRef, watch } from 'vue'
+  import { UiButton, UiIconButton } from './ui'
   import { useAudioPlayer } from '../composables/useAudioPlayer'
-  import { useTranslation } from '../composables/useTranslation'
   import { useToast } from '../composables/useToast'
+  import { useTranslation } from '../composables/useTranslation'
 
-  const props = defineProps({
-    files: {
-      type: Array,
-      required: true,
-    },
-    // Index of the track currently selected in the interactive track list.
-    // The play button starts this track when pressed.
-    selectedIndex: {
-      type: Number,
-      default: -1,
-    },
-  })
+  /**
+   * Player-Leiste am unteren Rand: Titel, Transport, Suchleiste, Lautstärke und
+   * Warteschlange. Logik und Zustand liegen in useAudioPlayer; die Leiste ist
+   * nur sichtbar, solange Dateien vorhanden sind.
+   */
+  const props = withDefaults(
+    defineProps<{
+      files: File[]
+      /** In der Dateiliste markierter Titel; der Play-Button startet ihn. */
+      selectedIndex?: number
+    }>(),
+    { selectedIndex: -1 },
+  )
 
-  // Emitted whenever the player's current track changes, so the interactive
-  // track list can keep its highlight in sync with what is actually playing.
-  const emit = defineEmits(['update:selectedIndex'])
+  // Hält die Markierung in der Dateiliste synchron zum laufenden Titel.
+  const emit = defineEmits<{
+    'update:selectedIndex': [index: number]
+  }>()
 
   const { t } = useTranslation()
   const toast = useToast()
   const filesRef = toRef(props, 'files')
-  const progressBarRef = ref(null)
+  const progressBarRef = ref<HTMLElement | null>(null)
   const showQueue = ref(false)
 
   const {
@@ -336,79 +288,61 @@
     return t.value('player_repeat_off')
   })
 
-  // Track whether the user actively picked a different track in the
-  // interactive list since the last time playback started. This lets the
-  // play button start a freshly selected track, while still resuming the
-  // current track after a pause (instead of jumping back to a stale
-  // selection when playback has since advanced).
+  // Merkt sich, ob seit dem letzten Start ein anderer Titel in der Liste markiert
+  // wurde: Dann startet Play diesen Titel, sonst setzt er den aktuellen fort.
   const selectionChanged = ref(false)
   watch(
     () => props.selectedIndex,
-    (idx) => {
-      if (idx < 0 || idx >= playlist.value.length) return
+    (index) => {
+      if (index < 0 || index >= playlist.value.length) return
       selectionChanged.value = true
-      // Reflect the clicked track in the player right away by cueing it
-      // (loads title + duration without playing). Skip while a track is
-      // playing so an active selection for delete/reorder never interrupts
-      // playback — the bar keeps showing the track that is actually playing.
-      if (!isPlaying.value && idx !== currentTrackIndex.value) {
-        cue(idx)
-      }
+      // Markierten Titel sofort anzeigen (laden ohne abzuspielen), aber eine
+      // laufende Wiedergabe nie unterbrechen.
+      if (!isPlaying.value && index !== currentTrackIndex.value) cue(index)
     },
   )
 
-  // Play button: honour the track selected in the interactive track list.
-  // - playing                         → pause
-  // - selection changed to another track → start that selected track
-  // - a track is loaded (paused/stopped) → resume/restart it
-  // - nothing loaded yet              → start the selection, or the first track
   const handlePlay = () => {
     if (isPlaying.value) {
       pause()
       return
     }
 
-    const sel = props.selectedIndex
-    const hasSelection = typeof sel === 'number' && sel >= 0 && sel < playlist.value.length
+    const selected = props.selectedIndex
+    const hasSelection = selected >= 0 && selected < playlist.value.length
 
-    if (selectionChanged.value && hasSelection && sel !== currentTrackIndex.value) {
-      play(sel)
+    if (selectionChanged.value && hasSelection && selected !== currentTrackIndex.value) {
+      play(selected)
     } else if (currentTrackIndex.value >= 0) {
       play()
     } else {
-      play(hasSelection ? sel : 0)
+      play(hasSelection ? selected : 0)
     }
 
     selectionChanged.value = false
   }
 
-  // "Now playing" toast — only when a track actually starts playing or the
-  // playing track advances, never for a pure cue (selection without playback).
+  // "Läuft jetzt"-Toast nur, wenn ein Titel tatsächlich startet oder wechselt.
   const lastAnnounced = ref(-1)
   const announceNowPlaying = () => {
-    const idx = currentTrackIndex.value
-    if (idx >= 0 && playlist.value[idx] && idx !== lastAnnounced.value) {
-      toast.info(`♪ ${playlist.value[idx].title}`)
-      lastAnnounced.value = idx
+    const index = currentTrackIndex.value
+    const track = playlist.value[index]
+    if (index >= 0 && track && index !== lastAnnounced.value) {
+      toast.info(`♪ ${track.title}`)
+      lastAnnounced.value = index
     }
   }
-  // Playback starts (play from stopped/paused resolves)
   watch(isPlaying, (playing) => {
     if (playing) announceNowPlaying()
   })
-  // Track changes while already playing (auto-advance, next/previous)
-  watch(currentTrackIndex, (idx) => {
+  watch(currentTrackIndex, (index) => {
     if (isPlaying.value) announceNowPlaying()
-    // Keep the interactive track list highlight synced to the player's
-    // current track (e.g. when playing through the entire playlist).
-    if (idx >= 0) emit('update:selectedIndex', idx)
+    if (index >= 0) emit('update:selectedIndex', index)
   })
 
-  // Play a specific track from the interactive track list. Clicking the
-  // track that is already playing is a no-op; clicking a paused/other track
-  // starts it immediately.
-  const playTrack = (index) => {
-    if (typeof index !== 'number' || index < 0 || index >= playlist.value.length) return
+  // Aus der Dateiliste: laufenden Titel nicht neu starten, andere sofort abspielen.
+  const playTrack = (index: number) => {
+    if (index < 0 || index >= playlist.value.length) return
     if (index === currentTrackIndex.value) {
       if (!isPlaying.value) play()
     } else {
@@ -416,13 +350,12 @@
     }
   }
 
-  defineExpose({ playTrack })
+  defineExpose({ playTrack, currentTrackIndex, isPlaying })
 
-  // Close the queue automatically once every track is gone
   watch(
     () => props.files.length,
-    (len) => {
-      if (len === 0) showQueue.value = false
+    (length) => {
+      if (length === 0) showQueue.value = false
     },
   )
 
@@ -430,438 +363,360 @@
     showQueue.value = !showQueue.value
   }
 
-  const progressPercent = computed(() => {
-    if (!duration.value || duration.value === 0) return 0
-    return (currentTime.value / duration.value) * 100
-  })
+  const progressPercent = computed(() =>
+    duration.value > 0 ? (currentTime.value / duration.value) * 100 : 0,
+  )
 
-  const onProgressMouseDown = (e) => {
-    if (!progressBarRef.value || !duration.value) return
-    const rect = progressBarRef.value.getBoundingClientRect()
-    const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
-    seek(percent * duration.value)
+  // --- Suchleiste: Pointer (Maus, Touch) und Tastatur ------------------------------
 
-    const onMouseMove = (moveEvent) => {
-      const p = Math.max(0, Math.min(1, (moveEvent.clientX - rect.left) / rect.width))
-      seek(p * duration.value)
-    }
+  const SEEK_STEP_SECONDS = 5
+  let seeking = false
 
-    const onMouseUp = () => {
-      document.removeEventListener('mousemove', onMouseMove)
-      document.removeEventListener('mouseup', onMouseUp)
-    }
-
-    document.addEventListener('mousemove', onMouseMove)
-    document.addEventListener('mouseup', onMouseUp)
+  const seekFromPointer = (event: PointerEvent) => {
+    const bar = progressBarRef.value
+    if (!bar || duration.value <= 0) return
+    const rect = bar.getBoundingClientRect()
+    if (rect.width <= 0) return
+    const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width))
+    seek(ratio * duration.value)
   }
 
-  const onVolumeChange = (e) => {
-    setVolume(parseFloat(e.target.value))
+  const onSeekPointerDown = (event: PointerEvent) => {
+    if (duration.value <= 0) return
+    seeking = true
+    const bar = event.currentTarget
+    if (bar instanceof HTMLElement && typeof bar.setPointerCapture === 'function') {
+      bar.setPointerCapture(event.pointerId)
+    }
+    seekFromPointer(event)
+    event.preventDefault()
+  }
+
+  const onSeekPointerMove = (event: PointerEvent) => {
+    if (seeking) seekFromPointer(event)
+  }
+
+  const onSeekPointerUp = () => {
+    seeking = false
+  }
+
+  const onSeekKeydown = (event: KeyboardEvent) => {
+    if (duration.value <= 0) return
+    const targets: Record<string, number> = {
+      ArrowRight: currentTime.value + SEEK_STEP_SECONDS,
+      ArrowUp: currentTime.value + SEEK_STEP_SECONDS,
+      ArrowLeft: currentTime.value - SEEK_STEP_SECONDS,
+      ArrowDown: currentTime.value - SEEK_STEP_SECONDS,
+      Home: 0,
+      End: duration.value,
+    }
+    const target = targets[event.key]
+    if (target === undefined) return
+    event.preventDefault()
+    seek(Math.max(0, Math.min(duration.value, target)))
+  }
+
+  const onVolumeChange = (event: Event) => {
+    setVolume(parseFloat((event.target as HTMLInputElement).value))
   }
 </script>
 
 <style scoped>
-  /* ===== Persistent sticky player bar (bottom of viewport) ===== */
-  .player-bar {
+  .player {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 900;
-    background: linear-gradient(135deg, rgba(12, 12, 16, 0.96), rgba(22, 22, 28, 0.96));
-    backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border-color);
-    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.35);
+    z-index: var(--ds-z-player);
+    background: var(--ds-surface-1);
+    border-top: var(--ds-border-width) solid var(--ds-border);
+    color: var(--ds-text);
   }
 
-  .light-theme .player-bar {
-    background: linear-gradient(135deg, rgba(245, 245, 245, 0.96), rgba(232, 232, 232, 0.96));
-    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.12);
-  }
-
-  /* Seek strip along the top edge */
-  .pb-progress {
-    position: relative;
-    height: 6px;
-    background: var(--input-bg);
-    cursor: pointer;
-    overflow: hidden;
-  }
-
-  .pb-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
-    transition: width 0.1s linear;
-  }
-
-  .pb-inner {
+  .player__inner {
     display: flex;
     align-items: center;
-    gap: 18px;
-    max-width: 1200px;
+    gap: var(--ds-space-4);
+    max-width: var(--ds-container);
+    min-height: var(--ds-player-height);
     margin: 0 auto;
-    padding: 10px 20px;
+    padding: var(--ds-space-2) var(--ds-gutter);
+    box-sizing: border-box;
   }
 
-  /* Left: track info */
-  .pb-track {
+  .player__track {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    flex: 1 1 180px;
+    min-width: 0;
+  }
+
+  .player__art {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--ds-control-md);
+    height: var(--ds-control-md);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface-2);
+    color: var(--ds-accent);
+    flex-shrink: 0;
+  }
+
+  .player__art svg {
+    width: var(--ds-icon-sm);
+    height: var(--ds-icon-sm);
+  }
+
+  .player__meta {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     min-width: 0;
-    flex: 1 1 0;
   }
 
-  .pb-track-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-color);
+  .player__title {
+    font-size: var(--ds-text-md);
+    font-weight: var(--ds-weight-medium);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .pb-track-empty {
-    color: var(--muted-color);
-    font-style: italic;
-    font-weight: 500;
+  .player__title--empty {
+    color: var(--ds-text-3);
+    font-weight: var(--ds-weight-regular);
   }
 
-  .pb-time {
-    font-size: 0.72rem;
-    color: var(--muted-color);
+  .player__time {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-3);
     font-variant-numeric: tabular-nums;
-    margin-top: 2px;
   }
 
-  /* Center: transport */
-  .pb-controls {
+  .player__controls {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: var(--ds-space-1);
     flex: 0 0 auto;
   }
 
-  /* Right: volume + queue */
-  .pb-right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-    flex: 1 1 0;
-    min-width: 0;
-  }
-
-  .pb-volume {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    max-width: 160px;
-  }
-
-  .pb-volume-slider {
-    width: 90px;
-    height: 4px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-
-  .pb-volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--accent-color);
-    cursor: pointer;
-    border: 2px solid var(--accent-text-color);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  }
-
-  .pb-volume-slider::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--accent-color);
-    cursor: pointer;
-    border: 2px solid var(--accent-text-color);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Buttons (shared) */
-  .pb-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--btn-color);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
-    flex-shrink: 0;
-  }
-
-  .pb-btn:hover {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-    background: rgba(201, 152, 77, 0.1);
-  }
-
-  .light-theme .pb-btn:hover {
-    background: rgba(1, 79, 153, 0.1);
-  }
-
-  .pb-btn-sm {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-  }
-
-  .pb-btn-play {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    color: var(--accent-text-color);
-    border: none;
-  }
-
-  .pb-btn-play:hover {
-    transform: scale(1.08);
-    box-shadow: 0 4px 15px var(--shadow-color);
-    color: var(--accent-text-color);
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-  }
-
-  /* Repeat button */
-  .pb-repeat {
+  .player__repeat {
     position: relative;
   }
 
-  .pb-repeat.active {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-  }
-
-  .pb-repeat.active:hover {
-    color: var(--accent-color);
-  }
-
-  .pb-repeat-badge {
+  .player__repeat-badge {
     position: absolute;
-    right: 3px;
-    bottom: 2px;
-    font-size: 0.55rem;
-    font-weight: 700;
+    right: 4px;
+    bottom: 3px;
+    font-size: 9px;
+    font-weight: var(--ds-weight-bold);
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    pointer-events: none;
   }
 
-  /* Queue toggle */
-  .pb-queue-toggle {
-    position: relative;
-    width: auto;
-    padding: 0 10px;
-    gap: 6px;
+  .player__seek {
+    display: flex;
+    align-items: center;
+    flex: 2 1 160px;
+    min-width: 0;
+    height: var(--ds-control-sm);
+    border-radius: var(--ds-radius-sm);
+    cursor: pointer;
+    touch-action: none;
   }
 
-  .pb-queue-toggle.active {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
+  .player__seek:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-focus-ring);
   }
 
-  .pb-queue-count {
-    font-size: 0.72rem;
-    font-weight: 600;
+  .player__seek-track {
+    display: block;
+    width: 100%;
+    height: 4px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-3);
+    overflow: hidden;
+  }
+
+  .player__seek-fill {
+    display: block;
+    height: 100%;
+    background: var(--ds-accent);
+    transition: width 0.1s linear;
+  }
+
+  .player__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    flex: 0 0 auto;
+  }
+
+  .player__volume {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+  }
+
+  .player__volume-slider {
+    width: 80px;
+    height: 4px;
+    accent-color: var(--ds-accent);
+    cursor: pointer;
+  }
+
+  .player__volume-slider:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-focus-ring);
+    border-radius: var(--ds-radius-full);
+  }
+
+  .player__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .player__queue-toggle {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Queue popover */
-  .pb-queue {
+  .player__queue-toggle--active {
+    border-color: var(--ds-accent);
+    color: var(--ds-accent);
+  }
+
+  .player__queue {
     position: absolute;
     bottom: 100%;
-    right: max(20px, calc((100% - 1200px) / 2 + 20px));
-    width: min(380px, calc(100vw - 40px));
+    right: max(var(--ds-gutter), calc((100% - var(--ds-container)) / 2 + var(--ds-gutter)));
+    width: min(380px, calc(100vw - 2 * var(--ds-gutter)));
     max-height: 50vh;
-    margin-bottom: 8px;
+    margin-bottom: var(--ds-space-2);
     display: flex;
     flex-direction: column;
-    background: var(--card-bg, var(--input-bg));
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: var(--ds-surface-1);
+    border: var(--ds-border-width) solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-overlay);
     overflow: hidden;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
   }
 
-  .light-theme .pb-queue {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
-  }
-
-  .pb-queue-header {
+  .player__queue-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--border-color);
-    background: rgba(0, 0, 0, 0.15);
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-2) var(--ds-space-2) var(--ds-space-2) var(--ds-space-4);
+    border-bottom: var(--ds-border-width) solid var(--ds-border);
   }
 
-  .light-theme .pb-queue-header {
-    background: rgba(0, 0, 0, 0.04);
+  .player__queue-title {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-semibold);
   }
 
-  .pb-queue-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--accent-color);
-  }
-
-  .pb-queue-list {
+  .player__queue-list {
+    list-style: none;
+    margin: 0;
+    padding: var(--ds-space-1) 0;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: var(--border-color) transparent;
   }
 
-  .pb-queue-list::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .pb-queue-list::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .pb-queue-list::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 3px;
-  }
-
-  .pb-queue-item {
-    display: flex;
+  .player__queue-item {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    gap: var(--ds-space-2);
     align-items: center;
-    gap: 8px;
-    padding: 9px 14px;
+    width: 100%;
+    height: var(--ds-control-md);
+    padding: 0 var(--ds-space-4);
+    border: none;
+    background: transparent;
+    color: var(--ds-text);
+    font: inherit;
+    font-size: var(--ds-text-sm);
+    text-align: left;
     cursor: pointer;
-    transition: all 0.15s ease;
-    border-bottom: 1px solid rgba(42, 74, 106, 0.3);
-    font-size: 0.82rem;
+    transition: background-color var(--ds-duration) var(--ds-ease);
   }
 
-  .pb-queue-item:last-child {
-    border-bottom: none;
+  .player__queue-item:hover {
+    background: var(--ds-surface-3);
   }
 
-  .pb-queue-item:hover {
-    background: rgba(201, 152, 77, 0.08);
+  .player__queue-item:focus-visible {
+    outline: none;
+    box-shadow: inset var(--ds-focus-ring);
   }
 
-  .light-theme .pb-queue-item:hover {
-    background: rgba(1, 79, 153, 0.08);
+  .player__queue-item--active {
+    background: var(--ds-accent-soft);
+    color: var(--ds-accent);
+    font-weight: var(--ds-weight-medium);
   }
 
-  .pb-queue-active {
-    background: rgba(201, 152, 77, 0.15);
-    border-left: 3px solid var(--accent-color);
-    padding-left: 11px;
-  }
-
-  .light-theme .pb-queue-active {
-    background: rgba(1, 79, 153, 0.12);
-  }
-
-  .pb-queue-index {
-    color: var(--muted-color);
-    min-width: 20px;
+  .player__queue-index {
+    color: var(--ds-text-3);
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
 
-  .pb-queue-active .pb-queue-index {
-    color: var(--accent-color);
-    font-weight: 600;
+  .player__queue-item--active .player__queue-index {
+    color: var(--ds-accent);
   }
 
-  .pb-queue-name {
-    flex: 1;
+  .player__queue-name {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--text-color);
   }
 
-  .pb-queue-active .pb-queue-name {
-    color: var(--accent-color);
-    font-weight: 500;
+  .player__queue-playing {
+    width: 14px;
+    height: 14px;
+    fill: var(--ds-accent);
   }
 
-  .pb-queue-playing-icon {
-    color: var(--accent-color);
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  /* Queue open/close transition */
-  .pb-queue-fade-enter-active,
-  .pb-queue-fade-leave-active {
+  .player-queue-enter-active,
+  .player-queue-leave-active {
     transition:
-      opacity 0.2s ease,
-      transform 0.2s ease;
+      opacity var(--ds-duration) var(--ds-ease),
+      transform var(--ds-duration) var(--ds-ease);
   }
-  .pb-queue-fade-enter-from,
-  .pb-queue-fade-leave-to {
+
+  .player-queue-enter-from,
+  .player-queue-leave-to {
     opacity: 0;
     transform: translateY(8px);
   }
 
-  /* ===== Responsive ===== */
   @media (max-width: 768px) {
-    .pb-inner {
-      gap: 10px;
-      padding: 8px 12px;
-    }
-
-    .pb-volume {
+    .player__volume {
       display: none;
-    }
-
-    .pb-right {
-      flex: 0 0 auto;
     }
   }
 
   @media (max-width: 480px) {
-    .pb-inner {
-      gap: 8px;
+    .player__inner {
+      gap: var(--ds-space-2);
+      flex-wrap: wrap;
     }
 
-    .pb-track-title {
-      font-size: 0.82rem;
-    }
-
-    .pb-controls {
-      gap: 6px;
-    }
-
-    .pb-btn-sm {
-      width: 36px;
-      height: 36px;
-    }
-
-    .pb-btn-play {
-      width: 42px;
-      height: 42px;
-    }
-
-    /* Stop button is the least essential on very small screens */
-    .pb-controls .pb-btn-sm:nth-child(2) {
+    .player__stop {
       display: none;
+    }
+
+    .player__seek {
+      order: 10;
+      flex-basis: 100%;
+      height: 20px;
     }
   }
 </style>

@@ -52,13 +52,11 @@ npm run preview
 ```
 src/
 ├── components/          # Vue-Komponenten
-│   ├── FAQ.vue
-│   ├── FileListCanvas.vue
-│   ├── LanguageSwitcher.vue
+│   ├── AppHeader.vue
 │   ├── PlaylistConfig.vue
 │   ├── PlaylistPreview.vue
-│   ├── ThemeSwitcher.vue
-│   └── ToolsGrid.vue
+│   ├── ToolsGrid.vue
+│   └── ui/              # Design-System-Komponenten (Ui*)
 ├── composables/         # Wiederverwendbare Logik
 │   ├── usePlaylist.js
 │   ├── useTheme.js
@@ -80,13 +78,12 @@ src/
 ### Komponenten
 
 - **App.vue**: Hauptkomponente mit Layout
-- **LanguageSwitcher**: Sprachumschalter
-- **ThemeSwitcher**: Theme-Umschalter
-- **FileListCanvas**: Canvas-basierte Dateiliste mit Scrolling
+- **AppHeader**: Seitennavigation aller Vue-Seiten
+- **UiFileList** (`src/components/ui/`): Dateiliste als DOM-Liste mit Tastatur- und Drag-Sortierung
 - **PlaylistConfig**: Formular für Konfiguration
 - **PlaylistPreview**: Vorschau und Speichern
 - **ToolsGrid**: Grid mit weiteren Tools
-- **FAQ**: Häufig gestellte Fragen
+- **FaqPage** (`src/views/`): Häufig gestellte Fragen
 
 ## Browser-Kompatibilität
 

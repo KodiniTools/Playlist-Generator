@@ -1,16 +1,6 @@
 <template>
   <div class="blog-page">
-    <!-- Page Header Navigation -->
-    <header class="page-header">
-      <div class="header-container">
-        <nav class="header-nav">
-          <router-link to="/" class="nav-link">{{ t('nav_home') }}</router-link>
-          <router-link to="/app" class="nav-link">{{ t('nav_app') }}</router-link>
-          <router-link to="/faq" class="nav-link">{{ t('nav_faq') }}</router-link>
-          <router-link to="/blog" class="nav-link active">{{ t('nav_blog') }}</router-link>
-        </nav>
-      </div>
-    </header>
+    <AppHeader />
 
     <article class="blog-container">
       <!-- German Content -->
@@ -27,14 +17,14 @@
           <p>
             Musik begleitet uns durch den Alltag - beim Sport, bei der Arbeit oder zum Entspannen.
             Doch wer kennt es nicht: Die eigene Musiksammlung wächst, aber das Erstellen von
-            Wiedergabelisten für verschiedene Media Player ist oft umständlich und zeitaufwändig. Genau
-            hier setzt der <strong>Audio Wiedergabeliste Generator</strong> an.
+            Wiedergabelisten für verschiedene Media Player ist oft umständlich und zeitaufwändig.
+            Genau hier setzt der <strong>Audio Wiedergabeliste Generator</strong> an.
           </p>
           <p>
             Dieses moderne Web-Tool ermöglicht es dir, aus deinen lokalen Audiodateien
-            professionelle Wiedergabelisten zu erstellen - und das komplett im Browser, ohne Installation
-            und ohne dass deine Dateien jemals hochgeladen werden. In diesem umfangreichen Artikel
-            stellen wir dir alle Funktionen im Detail vor.
+            professionelle Wiedergabelisten zu erstellen - und das komplett im Browser, ohne
+            Installation und ohne dass deine Dateien jemals hochgeladen werden. In diesem
+            umfangreichen Artikel stellen wir dir alle Funktionen im Detail vor.
           </p>
         </section>
 
@@ -59,14 +49,15 @@
         <section id="playlist-formate" class="blog-section">
           <h2>Unterstützte Wiedergabeliste-Formate</h2>
           <p>
-            Der Audio Wiedergabeliste Generator unterstützt drei verschiedene Wiedergabeliste-Formate, die jeweils
-            für unterschiedliche Anwendungsfälle optimiert sind:
+            Der Audio Wiedergabeliste Generator unterstützt drei verschiedene
+            Wiedergabeliste-Formate, die jeweils für unterschiedliche Anwendungsfälle optimiert
+            sind:
           </p>
 
           <h3>M3U-Format</h3>
           <p>
-            Das <strong>M3U-Format</strong> (MP3 URL) ist der Klassiker unter den Wiedergabeliste-Formaten.
-            Es wird von nahezu allen Media Playern unterstützt, darunter:
+            Das <strong>M3U-Format</strong> (MP3 URL) ist der Klassiker unter den
+            Wiedergabeliste-Formaten. Es wird von nahezu allen Media Playern unterstützt, darunter:
           </p>
           <ul>
             <li>VLC Media Player</li>
@@ -167,9 +158,9 @@
 
           <h3>Intelligente Duplikaterkennung</h3>
           <p>
-            Keine Sorge vor doppelten Einträgen! Der Wiedergabeliste Generator erkennt automatisch, wenn du
-            eine Datei hinzufügst, die bereits in deiner Liste vorhanden ist. Duplikate werden
-            übersprungen und du erhältst eine entsprechende Benachrichtigung.
+            Keine Sorge vor doppelten Einträgen! Der Wiedergabeliste Generator erkennt automatisch,
+            wenn du eine Datei hinzufügst, die bereits in deiner Liste vorhanden ist. Duplikate
+            werden übersprungen und du erhältst eine entsprechende Benachrichtigung.
           </p>
 
           <h3>Ersetzen oder Hinzufügen</h3>
@@ -183,8 +174,8 @@
         <section id="sortierung" class="blog-section">
           <h2>Sortier- und Ordnungsoptionen</h2>
           <p>
-            Eine gute Wiedergabeliste lebt von der richtigen Reihenfolge. Der Generator bietet dir vier
-            verschiedene Sortieroptionen:
+            Eine gute Wiedergabeliste lebt von der richtigen Reihenfolge. Der Generator bietet dir
+            vier verschiedene Sortieroptionen:
           </p>
 
           <div class="feature-list">
@@ -242,8 +233,8 @@
           <p>Bevor du deine Wiedergabeliste speicherst, siehst du genau, was du bekommst.</p>
           <ul>
             <li>
-              <strong>Live-Vorschau:</strong> In Echtzeit wird angezeigt, wie deine fertige Wiedergabeliste
-              aussehen wird
+              <strong>Live-Vorschau:</strong> In Echtzeit wird angezeigt, wie deine fertige
+              Wiedergabeliste aussehen wird
             </li>
             <li>
               <strong>In die Zwischenablage kopieren:</strong> Mit einem Klick wird der gesamte
@@ -254,7 +245,8 @@
               vorgeschlagenem Dateinamen
             </li>
             <li>
-              <strong>Wiedergabeliste benennen:</strong> Gib deiner Wiedergabeliste einen aussagekräftigen Namen
+              <strong>Wiedergabeliste benennen:</strong> Gib deiner Wiedergabeliste einen
+              aussagekräftigen Namen
             </li>
           </ul>
         </section>
@@ -262,8 +254,8 @@
         <section id="themes" class="blog-section">
           <h2>Dark Mode und Light Mode</h2>
           <p>
-            Moderne Software sollte sich deinen Vorlieben anpassen - der Wiedergabeliste Generator tut
-            genau das.
+            Moderne Software sollte sich deinen Vorlieben anpassen - der Wiedergabeliste Generator
+            tut genau das.
           </p>
 
           <h3>Dark Mode (Standard)</h3>
@@ -345,11 +337,13 @@
           <p>Die Statistikleiste gibt dir jederzeit einen Überblick:</p>
           <ul>
             <li>
-              <strong>Anzahl der Tracks:</strong> Wie viele Titel sich in deiner Wiedergabeliste befinden
+              <strong>Anzahl der Tracks:</strong> Wie viele Titel sich in deiner Wiedergabeliste
+              befinden
             </li>
             <li><strong>Gesamtgröße:</strong> Die kombinierte Dateigröße aller Tracks</li>
             <li>
-              <strong>Geschätzte Spielzeit:</strong> Eine ungefähre Gesamtspielzeit deiner Wiedergabeliste
+              <strong>Geschätzte Spielzeit:</strong> Eine ungefähre Gesamtspielzeit deiner
+              Wiedergabeliste
             </li>
           </ul>
         </section>
@@ -375,7 +369,9 @@
 
         <section id="responsive" class="blog-section">
           <h2>Responsives Design</h2>
-          <p>Ob am Desktop, Tablet oder Smartphone - der Wiedergabeliste Generator passt sich an.</p>
+          <p>
+            Ob am Desktop, Tablet oder Smartphone - der Wiedergabeliste Generator passt sich an.
+          </p>
           <ul>
             <li>
               <strong>Desktop-Optimiert:</strong> Zwei-Spalten-Layout für effizientes Arbeiten
@@ -396,7 +392,9 @@
             und absolutem Datenschutz macht ihn zu einem unverzichtbaren Werkzeug für alle
             Musikliebhaber.
           </p>
-          <router-link to="/app" class="cta-button">Jetzt ausprobieren</router-link>
+          <UiButton to="/app" variant="primary" size="lg" class="conclusion__cta">
+            Jetzt ausprobieren
+          </UiButton>
         </section>
       </div>
 
@@ -754,7 +752,9 @@
             options, intuitive drag & drop, dark and light mode, multilingual interface, and
             absolute privacy makes it an indispensable tool for all music lovers.
           </p>
-          <router-link to="/app" class="cta-button">Try it now</router-link>
+          <UiButton to="/app" variant="primary" size="lg" class="conclusion__cta">
+            Try it now
+          </UiButton>
         </section>
       </div>
     </article>
@@ -763,341 +763,299 @@
 
 <script setup lang="ts">
   import { useTranslation } from '../composables/useTranslation'
+  import AppHeader from '../components/AppHeader.vue'
+  import { UiButton } from '../components/ui'
 
-  const { t, currentLanguage } = useTranslation()
+  const { currentLanguage } = useTranslation()
 </script>
 
 <style scoped>
   .blog-page {
-    padding-top: 0;
     min-height: 100vh;
-  }
-
-  /* Page Header Navigation */
-  .page-header {
-    background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .light-theme .page-header {
-    background: linear-gradient(135deg, rgba(245, 245, 245, 0.95), rgba(232, 232, 232, 0.95));
-  }
-
-  .header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .header-nav {
-    display: flex;
-    gap: 30px;
-  }
-
-  .header-nav .nav-link {
-    text-decoration: none;
-    color: var(--muted-color);
-    font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-  }
-
-  .header-nav .nav-link:hover,
-  .header-nav .nav-link.active {
-    color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.1);
-  }
-
-  .light-theme .header-nav .nav-link:hover,
-  .light-theme .header-nav .nav-link.active {
-    background: rgba(162, 134, 128, 0.1);
-  }
-
-  @media (max-width: 768px) {
-    .header-nav {
-      gap: 15px;
-    }
-
-    .header-nav .nav-link {
-      padding: 8px 10px;
-      font-size: 0.9rem;
-    }
+    background: var(--ds-surface-0);
+    color: var(--ds-text);
   }
 
   .blog-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 60px 20px;
-  }
-
-  .blog-content {
-    animation: fade-in 0.8s ease-out;
+    padding: var(--ds-space-16) var(--ds-gutter);
   }
 
   .blog-header {
+    margin-bottom: var(--ds-space-10);
+    padding-bottom: var(--ds-space-8);
+    border-bottom: var(--ds-border-width) solid var(--ds-border);
     text-align: center;
-    margin-bottom: 50px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid var(--border-color);
   }
 
   .blog-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 15px;
-    line-height: 1.3;
+    margin: 0 0 var(--ds-space-3);
+    font-size: var(--ds-text-3xl);
+    font-weight: var(--ds-weight-bold);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
   }
 
   .blog-subtitle {
-    font-size: 1.2rem;
-    color: var(--muted-color);
-    font-style: italic;
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading);
+    color: var(--ds-text-2);
   }
 
+  /* Inhaltsverzeichnis */
   .table-of-contents {
-    background: linear-gradient(135deg, rgba(22, 22, 28, 0.6), rgba(22, 22, 28, 0.4));
-    border: 1px solid var(--border-color);
-    border-radius: 15px;
-    padding: 25px 30px;
-    margin-bottom: 40px;
-  }
-
-  .light-theme .table-of-contents {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
+    margin-bottom: var(--ds-space-10);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    border: var(--ds-border-width) solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-1);
   }
 
   .table-of-contents h2 {
-    font-size: 1.3rem;
-    color: var(--accent-color);
-    margin-bottom: 15px;
+    margin: 0 0 var(--ds-space-3);
+    font-size: var(--ds-text-lg);
+    font-weight: var(--ds-weight-semibold);
+    color: var(--ds-text);
   }
 
   .table-of-contents ol {
     columns: 2;
-    column-gap: 30px;
-    padding-left: 20px;
+    column-gap: var(--ds-space-6);
+    margin: 0;
+    padding-left: var(--ds-space-5);
   }
 
   .table-of-contents li {
-    margin-bottom: 8px;
+    margin-bottom: var(--ds-space-2);
     break-inside: avoid;
+    font-size: var(--ds-text-md);
+    line-height: var(--ds-leading);
   }
 
   .table-of-contents a {
-    color: var(--text-color);
+    border-radius: var(--ds-radius-sm);
+    color: var(--ds-text-2);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color var(--ds-duration) var(--ds-ease);
   }
 
   .table-of-contents a:hover {
-    color: var(--accent-color);
+    color: var(--ds-text);
+    text-decoration: underline;
   }
 
+  .table-of-contents a:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-focus-ring);
+  }
+
+  /* Abschnitte */
   .blog-section {
-    margin-bottom: 50px;
+    margin-bottom: var(--ds-space-12);
   }
 
   .blog-section h2 {
-    font-size: 1.8rem;
-    color: var(--accent-color);
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--border-color);
+    margin: 0 0 var(--ds-space-5);
+    padding-bottom: var(--ds-space-2);
+    border-bottom: var(--ds-border-width) solid var(--ds-border);
+    font-size: var(--ds-text-2xl);
+    font-weight: var(--ds-weight-semibold);
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text);
   }
 
   .blog-section h3 {
-    font-size: 1.3rem;
-    color: var(--text-color);
-    margin: 25px 0 15px;
+    margin: var(--ds-space-6) 0 var(--ds-space-3);
+    font-size: var(--ds-text-xl);
+    font-weight: var(--ds-weight-semibold);
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text);
   }
 
   .blog-section h4 {
-    font-size: 1.1rem;
-    color: var(--accent-secondary);
-    margin-bottom: 10px;
+    margin: 0 0 var(--ds-space-2);
+    font-size: var(--ds-text-lg);
+    font-weight: var(--ds-weight-semibold);
+    color: var(--ds-text);
   }
 
   .blog-section p {
-    color: var(--text-color);
-    line-height: 1.8;
-    margin-bottom: 15px;
+    margin: 0 0 var(--ds-space-4);
+    font-size: var(--ds-text-lg);
+    line-height: 1.7;
+    color: var(--ds-text-2);
+  }
+
+  .blog-section strong {
+    font-weight: var(--ds-weight-semibold);
+    color: var(--ds-text);
+  }
+
+  .blog-section a {
+    color: var(--ds-link);
   }
 
   .blog-section ul,
   .blog-section ol {
-    color: var(--text-color);
-    padding-left: 25px;
-    margin-bottom: 15px;
+    margin: 0 0 var(--ds-space-4);
+    padding-left: var(--ds-space-6);
+    color: var(--ds-text-2);
   }
 
   .blog-section li {
-    margin-bottom: 10px;
-    line-height: 1.6;
+    margin-bottom: var(--ds-space-2);
+    line-height: var(--ds-leading);
   }
 
+  /* Formatkarten */
   .format-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin: 25px 0;
+    gap: var(--ds-gap);
+    margin: var(--ds-space-6) 0;
   }
 
   .format-card {
-    background: linear-gradient(135deg, rgba(22, 22, 28, 0.8), rgba(22, 22, 28, 0.6));
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
-    transition: all 0.3s ease;
-  }
-
-  .light-theme .format-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+    padding: var(--ds-space-5);
+    border: var(--ds-border-width) solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface-1);
+    transition: border-color var(--ds-duration) var(--ds-ease);
   }
 
   .format-card:hover {
-    border-color: var(--accent-color);
-    transform: translateY(-3px);
+    border-color: var(--ds-border-strong);
   }
 
   .format-card h4 {
-    color: var(--accent-color);
+    color: var(--ds-accent);
   }
 
   .format-card p {
-    font-size: 0.9rem;
-    margin-bottom: 0;
+    margin: 0;
+    font-size: var(--ds-text-md);
   }
 
+  /* Feature-Liste */
   .feature-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin: 25px 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ds-gap);
+    margin: var(--ds-space-6) 0;
   }
 
   .feature-item {
-    padding: 15px;
-    border-left: 3px solid var(--accent-color);
-    background: rgba(242, 226, 142, 0.05);
-  }
-
-  .light-theme .feature-item {
-    background: rgba(162, 134, 128, 0.05);
+    padding: var(--ds-space-4);
+    border-left: 3px solid var(--ds-accent);
+    border-radius: 0 var(--ds-radius-md) var(--ds-radius-md) 0;
+    background: var(--ds-surface-1);
   }
 
   .feature-item h4 {
-    margin-bottom: 8px;
+    margin-bottom: var(--ds-space-2);
   }
 
   .feature-item p {
-    font-size: 0.9rem;
-    margin-bottom: 0;
+    margin: 0;
+    font-size: var(--ds-text-md);
   }
 
+  /* Tastaturkürzel */
   .shortcuts-table {
     width: 100%;
+    margin: var(--ds-space-5) 0;
     border-collapse: collapse;
-    margin: 20px 0;
+    font-size: var(--ds-text-md);
   }
 
   .shortcuts-table th,
   .shortcuts-table td {
-    padding: 12px 15px;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: var(--ds-border-width) solid var(--ds-border);
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
   }
 
   .shortcuts-table th {
-    background: var(--btn-color);
-    color: var(--accent-color);
-    font-weight: 600;
+    background: var(--ds-surface-1);
+    font-weight: var(--ds-weight-semibold);
+    color: var(--ds-text);
+  }
+
+  .shortcuts-table td {
+    color: var(--ds-text-2);
   }
 
   .shortcuts-table tr:hover td {
-    background: rgba(242, 226, 142, 0.05);
+    background: var(--ds-surface-1);
   }
 
-  .light-theme .shortcuts-table tr:hover td {
-    background: rgba(162, 134, 128, 0.05);
-  }
-
+  /* Spiegelt UiKbd, ohne jede Taste einzeln zu komponentisieren. */
   kbd {
-    background: var(--btn-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 3px 8px;
-    font-family: monospace;
-    font-size: 0.9em;
-    color: var(--accent-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 22px;
+    padding: 0 calc(var(--ds-space-1) + 2px);
+    box-sizing: border-box;
+    border: var(--ds-border-width) solid var(--ds-border-strong);
+    border-bottom-width: 2px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+    color: var(--ds-text);
+    font-family: inherit;
+    font-size: var(--ds-text-xs);
+    font-weight: var(--ds-weight-semibold);
+    line-height: 1;
+    white-space: nowrap;
   }
 
   .highlight-box {
-    background: linear-gradient(135deg, rgba(125, 216, 125, 0.1), rgba(125, 216, 125, 0.05));
-    border: 1px solid var(--success-color);
-    border-radius: 12px;
-    padding: 20px;
-    margin: 20px 0;
+    margin: var(--ds-space-5) 0;
+    padding: var(--ds-space-5);
+    border: var(--ds-border-width) solid var(--ds-border);
+    border-left: 3px solid var(--ds-success);
+    border-radius: 0 var(--ds-radius-md) var(--ds-radius-md) 0;
+    background: var(--ds-surface-1);
   }
 
   .highlight-box h3 {
-    color: var(--success-color);
     margin-top: 0;
+    color: var(--ds-success);
   }
 
   .highlight-box p {
     margin-bottom: 0;
   }
 
+  /* Fazit */
   .conclusion {
+    padding: var(--ds-space-10) var(--ds-space-8);
+    border: var(--ds-border-width) solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-1);
     text-align: center;
-    background: linear-gradient(135deg, rgba(22, 22, 28, 0.6), rgba(22, 22, 28, 0.4));
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 40px;
-  }
-
-  .light-theme .conclusion {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
   }
 
   .conclusion h2 {
+    padding-bottom: 0;
     border-bottom: none;
   }
 
-  .cta-button {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 15px 40px;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    color: var(--accent-text-color);
-    text-decoration: none;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-  }
-
-  .cta-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px var(--shadow-color);
+  .conclusion__cta {
+    margin-top: var(--ds-space-5);
   }
 
   @media (max-width: 768px) {
     .blog-container {
-      padding: 40px 15px;
+      padding: var(--ds-space-10) var(--ds-space-4);
     }
 
     .blog-header h1 {
-      font-size: 1.8rem;
+      font-size: var(--ds-text-2xl);
     }
 
     .table-of-contents ol {
@@ -1105,153 +1063,60 @@
     }
 
     .blog-section h2 {
-      font-size: 1.5rem;
+      font-size: var(--ds-text-xl);
     }
 
     .feature-list {
       grid-template-columns: 1fr;
-    }
-
-    .format-cards {
-      grid-template-columns: 1fr;
-    }
-
-    .header-container {
-      padding: 10px 15px;
     }
   }
 
   @media (max-width: 480px) {
     .blog-container {
-      padding: 25px 12px;
+      padding: var(--ds-space-6) var(--ds-space-3);
     }
 
     .blog-header {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
+      margin-bottom: var(--ds-space-6);
+      padding-bottom: var(--ds-space-5);
     }
 
     .blog-header h1 {
-      font-size: 1.4rem;
+      font-size: var(--ds-text-xl);
     }
 
     .blog-subtitle {
-      font-size: 1rem;
+      font-size: var(--ds-text-md);
     }
 
     .table-of-contents {
-      padding: 18px 15px;
-      margin-bottom: 25px;
-      border-radius: 12px;
-    }
-
-    .table-of-contents h2 {
-      font-size: 1.1rem;
-      margin-bottom: 10px;
-    }
-
-    .table-of-contents ol {
-      padding-left: 18px;
-    }
-
-    .table-of-contents li {
-      margin-bottom: 6px;
-      font-size: 0.9rem;
+      margin-bottom: var(--ds-space-6);
+      padding: var(--ds-space-4);
     }
 
     .blog-section {
-      margin-bottom: 30px;
-    }
-
-    .blog-section h2 {
-      font-size: 1.25rem;
-      margin-bottom: 14px;
+      margin-bottom: var(--ds-space-8);
     }
 
     .blog-section h3 {
-      font-size: 1.1rem;
-      margin: 18px 0 10px;
+      margin: var(--ds-space-5) 0 var(--ds-space-2);
+      font-size: var(--ds-text-lg);
     }
 
-    .blog-section p {
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-    }
-
-    .blog-section ul,
-    .blog-section ol {
-      padding-left: 18px;
-    }
-
+    .blog-section p,
     .blog-section li {
-      font-size: 0.9rem;
-      margin-bottom: 8px;
-    }
-
-    .format-card {
-      padding: 15px;
-      border-radius: 10px;
-    }
-
-    .format-cards {
-      gap: 12px;
-    }
-
-    .feature-list {
-      gap: 12px;
-    }
-
-    .feature-item {
-      padding: 12px;
-    }
-
-    .feature-item p {
-      font-size: 0.85rem;
+      font-size: var(--ds-text-md);
     }
 
     .shortcuts-table th,
     .shortcuts-table td {
-      padding: 10px 8px;
-      font-size: 0.85rem;
+      padding: var(--ds-space-2);
+      font-size: var(--ds-text-sm);
       word-break: break-word;
     }
 
-    .highlight-box {
-      padding: 15px;
-      border-radius: 10px;
-    }
-
     .conclusion {
-      padding: 25px 18px;
-      border-radius: 15px;
-    }
-
-    .cta-button {
-      padding: 12px 28px;
-      font-size: 1rem;
-      border-radius: 10px;
-    }
-
-    .header-container {
-      padding: 10px 12px;
-    }
-
-    .header-nav {
-      gap: 6px;
-    }
-
-    .header-nav .nav-link {
-      padding: 6px 8px;
-      font-size: 0.82rem;
-    }
-  }
-
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
+      padding: var(--ds-space-6) var(--ds-space-4);
     }
   }
 </style>

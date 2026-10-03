@@ -19,7 +19,6 @@ Diese Datei dokumentiert den technischen Kontext des Playlist-Generator-Projekts
 
 | Technologie    | Version | Beschreibung            |
 | -------------- | ------- | ----------------------- |
-| **Pinia**      | ^3.0.3  | Vue State Management    |
 | **Vue Router** | ^4.5.1  | Client-seitiges Routing |
 
 ### Testing
@@ -54,18 +53,13 @@ Diese Datei dokumentiert den technischen Kontext des Playlist-Generator-Projekts
 Playlist-Generator/
 ├── src/                          # Haupt-Quellcode
 │   ├── components/               # Wiederverwendbare Vue-Komponenten
-│   │   ├── AppNavigation.vue     # Top-Navigation mit Mobile-Menü
-│   │   ├── FAQ.vue               # FAQ-Anzeige-Komponente
-│   │   ├── FileListCanvas.vue    # Canvas-basierte interaktive Dateiliste
-│   │   ├── HelloWorld.vue        # Beispiel-Komponente
-│   │   ├── LanguageSwitcher.vue  # Sprachauswahl (DE/EN)
+│   │   ├── AppHeader.vue         # Seitennavigation aller Vue-Seiten
 │   │   ├── PlaylistConfig.vue    # Haupt-Konfigurationsformular
 │   │   ├── PlaylistPreview.vue   # Vorschau und Speichern/Kopieren
-│   │   ├── ThemeSwitcher.vue     # Dark/Light Theme Toggle
 │   │   ├── ToastContainer.vue    # Toast-Benachrichtigungssystem
 │   │   ├── ToolsGrid.vue         # Grid mit anderen Audio-Tools
 │   │   ├── __tests__/            # Komponenten-Tests
-│   │   └── icons/                # SVG-Icon-Komponenten
+│   │   └── ui/                   # Design-System-Komponenten (Ui*)
 │   │
 │   ├── composables/              # Vue Composition API Logik
 │   │   ├── usePlaylist.js        # Kern-Playlist-Logik
@@ -82,17 +76,14 @@ Playlist-Generator/
 │   ├── router/                   # Vue Router Konfiguration
 │   │   └── index.ts              # Routen-Definitionen
 │   │
-│   ├── stores/                   # Pinia State Management
 │   │   └── counter.ts            # Beispiel-Store
 │   │
 │   ├── assets/                   # Statische Assets
-│   │   ├── base.css              # CSS Reset und Basis-Styles
-│   │   ├── main.css              # Globales CSS mit Theme-Variablen
+│   │   ├── main.css              # Globale Basis-Styles (Reset, Body, SSI-Footer) auf Tokens v2
 │   │   └── logo.svg              # Anwendungs-Logo
 │   │
 │   ├── App.vue                   # Root-Komponente
-│   ├── main.js                   # JavaScript Entry Point
-│   ├── main.ts                   # TypeScript Entry Point
+│   ├── main.js                   # Entry Point (von index.html geladen)
 │   └── env.d.ts                  # TypeScript Umgebungsdefinitionen
 │
 ├── e2e/                          # End-to-End Tests

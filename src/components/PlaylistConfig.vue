@@ -1,208 +1,330 @@
 <template>
-  <section class="form-section">
-    <div class="section-head">
-      <h2 class="section-title">{{ t('config_title') }}</h2>
+  <UiPanel class="playlist-config" :title="t('files_panel_title')" :count="files.length">
+    <template #actions>
       <UndoRedoControls />
-    </div>
-    <form id="playlistForm" @submit.prevent>
-      <div class="form-group">
-        <label><span class="step-num" aria-hidden="true">1</span>{{ t('label_files') }}</label>
+      <UiButton variant="secondary" @click="folderInputRef?.click()">
+        <template #icon>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+          </svg>
+        </template>
+        {{ t('button_add_folder') }}
+      </UiButton>
+      <UiButton variant="primary" :title="t('shortcut_open')" @click="openFileDialog">
+        <template #icon>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+        </template>
+        {{ t('button_add_files') }}
+      </UiButton>
+    </template>
 
-        <!-- Hidden inputs — webkitdirectory must be in HTML at parse time, not set via JS -->
-        <input
-          type="file"
-          id="fileInput"
-          class="file-upload-input"
-          multiple
-          accept=".mp3,.wav,.flac,.ogg,.aac,.m4a,.wma,.opus"
-          @change="handleFileChange"
-          ref="fileInputRef"
-        />
-        <input
-          type="file"
-          id="folderInput"
-          class="file-upload-input"
-          webkitdirectory
-          @change="handleFolderChange"
-          ref="folderInputRef"
-        />
-
-        <div
-          class="file-upload-wrapper"
-          :class="{ 'drag-over': isDragging && !isScanning, 'is-scanning': isScanning }"
-          :aria-busy="isScanning"
-          @dragenter.prevent="handleDragEnter"
-          @dragover.prevent="handleDragOver"
-          @dragleave.prevent="handleDragLeave"
-          @drop.prevent="handleDrop"
-        >
-          <!-- Scanning state -->
-          <template v-if="isScanning">
-            <div class="scan-spinner" aria-hidden="true"></div>
-            <p class="zone-title">
-              {{ t('scanning_folder') }}
-              <span v-if="scanCount > 0" class="scan-count">{{ scanCount }}</span>
-            </p>
-          </template>
-
-          <!-- Idle state -->
-          <template v-else>
-            <div class="zone-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-              </svg>
-            </div>
-            <p class="zone-title">{{ t('drop_hint') || 'Dateien / Ordner hier ablegen' }}</p>
-            <div class="upload-buttons">
-              <button
-                type="button"
-                class="upload-btn primary"
-                :title="t('shortcut_open')"
-                @click="fileInputRef?.click()"
-              >
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="17 8 12 3 7 8"/>
-                  <line x1="12" y1="3" x2="12" y2="15"/>
-                </svg>
-                {{ t('button_add_files') || 'Dateien' }}
-              </button>
-              <button type="button" class="upload-btn" @click="folderInputRef?.click()">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                </svg>
-                {{ t('button_add_folder') || 'Ordner' }}
-              </button>
-            </div>
-          </template>
-        </div>
-        <div class="checkbox-option" v-if="files.length > 0">
-          <label class="checkbox-label">
-            <input type="checkbox" :checked="replaceMode" @change="handleReplaceModeChange" />
-            <span class="checkbox-text">{{ t('replace_list_option') }}</span>
-          </label>
-        </div>
-      </div>
-
-      <FileListCanvas
-        :files="files"
-        :selectedIndex="selectedFileIndex"
-        @clear="handleClear"
-        @removeFile="handleRemoveFile"
-        @moveFile="handleMoveFile"
-        @selectFile="handleSelectFile"
-        @playFile="handlePlayFile"
+    <div class="playlist-config__body">
+      <!-- Versteckte Inputs: webkitdirectory muss beim Parsen im HTML stehen -->
+      <input
+        id="fileInput"
+        ref="fileInputRef"
+        type="file"
+        class="playlist-config__input"
+        multiple
+        accept=".mp3,.wav,.flac,.ogg,.aac,.m4a,.wma,.opus"
+        tabindex="-1"
+        @change="handleFileChange"
+      />
+      <input
+        id="folderInput"
+        ref="folderInputRef"
+        type="file"
+        class="playlist-config__input"
+        webkitdirectory
+        tabindex="-1"
+        @change="handleFolderChange"
       />
 
-      <div class="form-group">
-        <label><span class="step-num" aria-hidden="true">2</span>{{ t('label_sort') }}</label>
-        <div class="sort-buttons" role="group" :aria-label="t('label_sort')">
-          <button
-            type="button"
-            :class="['sort-btn', { active: sortOption === 'alphabetical' }]"
-            @click="handleSortClick('alphabetical')"
-            :title="t('sort_alpha')"
+      <div
+        :class="[
+          'playlist-config__dropzone',
+          {
+            'playlist-config__dropzone--over': isDragging && !isScanning,
+            'playlist-config__dropzone--scanning': isScanning,
+          },
+        ]"
+        :aria-busy="isScanning"
+        @dragenter.prevent="handleDragEnter"
+        @dragover.prevent="handleDragOver"
+        @dragleave.prevent="handleDragLeave"
+        @drop.prevent="handleDrop"
+      >
+        <template v-if="isScanning">
+          <span class="playlist-config__spinner" aria-hidden="true"></span>
+          <span class="playlist-config__dropzone-title" role="status">
+            {{ t('scanning_folder') }}
+            <span v-if="scanCount > 0" class="playlist-config__scan-count">{{ scanCount }}</span>
+          </span>
+        </template>
+        <template v-else>
+          <svg
+            class="playlist-config__dropzone-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
           >
-            <span>{{ t('sort_alpha') }}</span>
-          </button>
-          <button
-            type="button"
-            :class="['sort-btn', { active: sortOption === 'date' }]"
-            @click="handleSortClick('date')"
-            :title="t('sort_date')"
-          >
-            <span>{{ t('sort_date') }}</span>
-          </button>
-          <button
-            type="button"
-            :class="['sort-btn', { active: sortOption === 'random' }]"
-            @click="handleSortClick('random')"
-            :title="t('sort_random')"
-          >
-            <span>{{ t('sort_random') }}</span>
-          </button>
-          <button
-            type="button"
-            :class="['sort-btn', { active: sortOption === 'manual' }]"
-            @click="handleSortClick('manual')"
-            :title="t('sort_manual')"
-          >
-            <span>{{ t('sort_manual') }}</span>
-          </button>
-        </div>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <span class="playlist-config__dropzone-title">{{ t('drop_zone_title') }}</span>
+          <span class="playlist-config__dropzone-hint">{{ t('drop_zone_hint') }}</span>
+        </template>
       </div>
 
-      <div class="form-group">
-        <label for="playlistName"><span class="step-num" aria-hidden="true">3</span>{{ t('label_name') }}</label>
+      <label v-if="files.length > 0" class="playlist-config__replace">
         <input
-          type="text"
-          id="playlistName"
-          :placeholder="t('placeholder_name')"
-          :value="playlistName"
-          @input="handleNameChange"
+          type="checkbox"
+          class="playlist-config__checkbox"
+          :checked="replaceMode"
+          @change="handleReplaceModeChange"
         />
-      </div>
-    </form>
-  </section>
+        <span>{{ t('replace_list_option') }}</span>
+      </label>
+
+      <UiFileList
+        :items="listItems"
+        :checked="checkedIds"
+        :selected-index="selectedFileIndex"
+        :playing-index="playingIndex"
+        :is-playing="isPlaying"
+        :labels="listLabels"
+        :locale="locale"
+        @update:selected-index="handleSelectFile"
+        @update:checked="handleCheckedChange"
+        @play="handlePlayFile"
+        @remove="handleRemoveFile"
+        @move="handleMoveFile"
+      >
+        <template #toolbar>
+          <UiSegmentedControl
+            :model-value="sortOption"
+            :options="sortOptions"
+            :label="t('label_sort')"
+            size="sm"
+            @update:model-value="handleSortClick"
+          />
+          <UiButton variant="ghost" size="sm" @click="handleClear">
+            <template #icon>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                <path d="M10 11v6" />
+                <path d="M14 11v6" />
+              </svg>
+            </template>
+            {{ t('button_clear_title') }}
+          </UiButton>
+        </template>
+      </UiFileList>
+
+      <UiTextField
+        id="playlistName"
+        :model-value="playlistName"
+        :label="t('label_name')"
+        :placeholder="t('placeholder_name')"
+        autocomplete="off"
+        @update:model-value="handleNameChange"
+      />
+    </div>
+  </UiPanel>
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import FileListCanvas from './FileListCanvas.vue'
+  import { computed, ref, watch } from 'vue'
   import UndoRedoControls from './UndoRedoControls.vue'
+  import { UiButton, UiFileList, UiPanel, UiSegmentedControl, UiTextField } from './ui'
+  import type { FileListItem, FileListLabels, SegmentedOption } from './ui'
+  import { useDurations } from '../composables/useDurations'
+  import { usePlaylist, type SortOption } from '../composables/usePlaylist'
   import { useTranslation } from '../composables/useTranslation'
 
-  defineProps({
-    files: Array,
-    sortOption: String,
-    playlistName: String,
-    replaceMode: Boolean,
-    selectedFileIndex: Number,
-  })
+  /**
+   * Linkes Panel der App-Seite: Dateien hinzufügen (Dialog, Ordner, Drag & Drop),
+   * Liste verwalten, Reihenfolge und Name festlegen. Die Schnittstelle zur
+   * AppPage ist unverändert; intern laufen Liste und Controls über src/components/ui.
+   */
+  const props = withDefaults(
+    defineProps<{
+      files?: File[]
+      sortOption?: SortOption
+      playlistName?: string
+      replaceMode?: boolean
+      selectedFileIndex?: number
+      playingIndex?: number
+      isPlaying?: boolean
+    }>(),
+    {
+      files: () => [],
+      sortOption: 'manual',
+      playlistName: '',
+      replaceMode: false,
+      selectedFileIndex: -1,
+      playingIndex: -1,
+      isPlaying: false,
+    },
+  )
 
-  const emit = defineEmits([
-    'update:sortOption',
-    'update:playlistName',
-    'update:replaceMode',
-    'update:selectedFileIndex',
-    'addFiles',
-    'clearFiles',
-    'removeFile',
-    'moveFile',
-    'playFile',
-  ])
+  const emit = defineEmits<{
+    'update:sortOption': [value: SortOption]
+    'update:playlistName': [value: string]
+    'update:replaceMode': [value: boolean]
+    'update:selectedFileIndex': [value: number]
+    addFiles: [files: File[] | FileList]
+    clearFiles: []
+    removeFile: [index: number]
+    moveFile: [from: number, to: number]
+    playFile: [index: number]
+  }>()
 
-  const handleReplaceModeChange = (e) => {
-    emit('update:replaceMode', e.target.checked)
+  const { t, currentLanguage } = useTranslation()
+  const { known: knownDurations, measureDurations } = useDurations()
+  const { isFileSelected, toggleFileSelected, setAllSelected } = usePlaylist()
+
+  const AUDIO_EXTENSIONS = /\.(mp3|wav|flac|ogg|aac|m4a|wma|opus)$/i
+
+  // --- Liste -------------------------------------------------------------------
+
+  // Stabile ids je File-Objekt; Dateinamen können sich wiederholen.
+  const fileIds = new WeakMap<File, string>()
+  let nextFileId = 0
+  const idFor = (file: File): string => {
+    let id = fileIds.get(file)
+    if (id === undefined) {
+      id = `file-${++nextFileId}`
+      fileIds.set(file, id)
+    }
+    return id
   }
 
-  const { t } = useTranslation()
-  const fileInputRef = ref(null)
-  const folderInputRef = ref(null)
+  const listItems = computed<FileListItem[]>(() =>
+    props.files.map((file) => ({
+      id: idFor(file),
+      name: file.name,
+      size: file.size,
+      duration: knownDurations.get(file.name) ?? null,
+    })),
+  )
+
+  const checkedIds = computed(() => props.files.filter(isFileSelected).map(idFor))
+
+  const locale = computed(() => (currentLanguage.value === 'de' ? 'de-DE' : 'en-US'))
+
+  const listLabels = computed<Partial<FileListLabels>>(() => ({
+    list: t.value('file_list_label'),
+    selectAll: t.value('select_all'),
+    include: t.value('file_list_include'),
+    dragHandle: t.value('file_list_drag_handle'),
+    play: t.value('player_play'),
+    pause: t.value('player_pause'),
+    remove: t.value('file_list_remove'),
+    tracks: t.value('stats_tracks'),
+    approximate: t.value('duration_approx_title'),
+    emptyTitle: t.value('file_list_empty_title'),
+    emptyText: t.value('file_list_empty_text'),
+  }))
+
+  const sortOptions = computed<SegmentedOption[]>(() => [
+    { value: 'alphabetical', label: t.value('sort_alpha') },
+    { value: 'date', label: t.value('sort_date') },
+    { value: 'random', label: t.value('sort_random') },
+    { value: 'manual', label: t.value('sort_manual') },
+  ])
+
+  // Echte Dauern aus den Metadaten lesen, sobald sich die Liste ändert.
+  watch(
+    () => props.files.slice(),
+    (files) => {
+      void measureDurations(files)
+    },
+    { immediate: true },
+  )
+
+  function handleCheckedChange(ids: string[]) {
+    if (ids.length === 0) {
+      setAllSelected(false)
+      return
+    }
+    if (ids.length === props.files.length) {
+      setAllSelected(true)
+      return
+    }
+    const wanted = new Set(ids)
+    props.files.forEach((file, index) => {
+      if (wanted.has(idFor(file)) !== isFileSelected(file)) toggleFileSelected(index)
+    })
+  }
+
+  const handleSelectFile = (index: number) => emit('update:selectedFileIndex', index)
+  const handlePlayFile = (index: number) => emit('playFile', index)
+  const handleRemoveFile = (index: number) => emit('removeFile', index)
+  const handleMoveFile = (from: number, to: number) => emit('moveFile', from, to)
+
+  // Die AppPage wendet die Option an und sortiert in einem (rückgängig machbaren) Schritt.
+  const handleSortClick = (value: string) => emit('update:sortOption', value as SortOption)
+  const handleNameChange = (value: string) => emit('update:playlistName', value)
+  const handleReplaceModeChange = (event: Event) =>
+    emit('update:replaceMode', (event.target as HTMLInputElement).checked)
+
+  // --- Dateien hinzufügen --------------------------------------------------------
+
+  const fileInputRef = ref<HTMLInputElement | null>(null)
+  const folderInputRef = ref<HTMLInputElement | null>(null)
   const isDragging = ref(false)
   const isScanning = ref(false)
   const scanCount = ref(0)
   let dragCounter = 0
 
-  const AUDIO_EXTENSIONS = /\.(mp3|wav|flac|ogg|aac|m4a|wma|opus)$/i
-
-  const handleFileChange = (e) => {
-    emit('addFiles', e.target.files)
-    e.target.value = ''
+  const handleFileChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    emit('addFiles', input.files ?? [])
+    input.value = ''
   }
 
-  const handleFolderChange = (e) => {
-    const all = e.target.files
+  const handleFolderChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
     isScanning.value = true
     scanCount.value = 0
-    // browser already traversed the tree via webkitdirectory – filter is instant
-    const audio = Array.from(all).filter((f) => AUDIO_EXTENSIONS.test(f.name))
+    // Der Browser hat den Ordner über webkitdirectory bereits durchlaufen, filtern ist sofort möglich.
+    const audio = Array.from(input.files ?? []).filter((file) => AUDIO_EXTENSIONS.test(file.name))
     scanCount.value = audio.length
     isScanning.value = false
     if (audio.length > 0) emit('addFiles', audio)
-    e.target.value = ''
+    input.value = ''
   }
 
   const handleDragEnter = () => {
@@ -210,53 +332,56 @@
     isDragging.value = true
   }
 
-  const handleDragOver = (e) => {
-    e.dataTransfer.dropEffect = 'copy'
+  const handleDragOver = (event: DragEvent) => {
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy'
   }
 
   const handleDragLeave = () => {
     dragCounter--
-    if (dragCounter === 0) {
-      isDragging.value = false
-    }
+    if (dragCounter === 0) isDragging.value = false
   }
 
-  // Recursively read a FileSystemDirectoryEntry and collect audio files.
-  // onProgress is called with the running total each time a file is found.
-  const readDirectoryEntry = (dirEntry, onProgress) => {
-    return new Promise((resolve) => {
-      const reader = dirEntry.createReader()
-      const results = []
+  // Liest ein Verzeichnis rekursiv und sammelt Audiodateien; onProgress meldet den Zwischenstand.
+  const readDirectoryEntry = (
+    directory: FileSystemDirectoryEntry,
+    onProgress?: (count: number) => void,
+  ): Promise<File[]> =>
+    new Promise((resolve) => {
+      const reader = directory.createReader()
+      const results: File[] = []
 
       const readBatch = () => {
         reader.readEntries(
           (entries) => {
-            if (!entries.length) {
+            if (entries.length === 0) {
               resolve(results)
               return
             }
-            const promises = entries.map((entry) => {
+            const pending = entries.map((entry) => {
               if (entry.isFile) {
-                return new Promise((res) => {
-                  entry.file(
+                return new Promise<void>((done) => {
+                  ;(entry as FileSystemFileEntry).file(
                     (file) => {
                       if (AUDIO_EXTENSIONS.test(file.name)) {
                         results.push(file)
                         onProgress?.(results.length)
                       }
-                      res()
+                      done()
                     },
-                    () => res(),
+                    () => done(),
                   )
                 })
-              } else if (entry.isDirectory) {
-                return readDirectoryEntry(entry, onProgress).then((files) =>
-                  results.push(...files),
+              }
+              if (entry.isDirectory) {
+                return readDirectoryEntry(entry as FileSystemDirectoryEntry, onProgress).then(
+                  (files) => {
+                    results.push(...files)
+                  },
                 )
               }
               return Promise.resolve()
             })
-            Promise.all(promises).then(readBatch)
+            void Promise.all(pending).then(readBatch)
           },
           () => resolve(results),
         )
@@ -264,60 +389,58 @@
 
       readBatch()
     })
-  }
 
-  const handleDrop = async (e) => {
+  const handleDrop = async (event: DragEvent) => {
     dragCounter = 0
     isDragging.value = false
 
-    const items = e.dataTransfer.items
+    const items = event.dataTransfer?.items
     if (!items || items.length === 0) return
 
-    const hasDirectory = Array.from(items).some((item) => {
-      const entry = item.webkitGetAsEntry?.()
-      return entry?.isDirectory
-    })
-
+    const hasDirectory = Array.from(items).some((item) => item.webkitGetAsEntry?.()?.isDirectory)
     if (hasDirectory) {
       isScanning.value = true
       scanCount.value = 0
     }
 
-    const collectedFiles = []
+    const collected: File[] = []
 
-    const promises = Array.from(items).map((item) => {
+    const pending = Array.from(items).map((item) => {
       const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null
       if (!entry) {
         const file = item.getAsFile()
-        if (file && AUDIO_EXTENSIONS.test(file.name)) collectedFiles.push(file)
+        if (file && AUDIO_EXTENSIONS.test(file.name)) collected.push(file)
         return Promise.resolve()
       }
 
       if (entry.isFile) {
-        return new Promise((resolve) => {
-          entry.file((file) => {
-            if (AUDIO_EXTENSIONS.test(file.name)) collectedFiles.push(file)
-            resolve()
-          }, resolve)
+        return new Promise<void>((done) => {
+          ;(entry as FileSystemFileEntry).file(
+            (file) => {
+              if (AUDIO_EXTENSIONS.test(file.name)) collected.push(file)
+              done()
+            },
+            () => done(),
+          )
         })
       }
 
       if (entry.isDirectory) {
-        return readDirectoryEntry(entry, (count) => {
+        return readDirectoryEntry(entry as FileSystemDirectoryEntry, (count) => {
           scanCount.value = count
-        }).then((files) => collectedFiles.push(...files))
+        }).then((files) => {
+          collected.push(...files)
+        })
       }
 
       return Promise.resolve()
     })
 
-    await Promise.all(promises)
+    await Promise.all(pending)
     isScanning.value = false
     scanCount.value = 0
 
-    if (collectedFiles.length > 0) {
-      emit('addFiles', collectedFiles)
-    }
+    if (collected.length > 0) emit('addFiles', collected)
   }
 
   const handleClear = () => {
@@ -326,279 +449,125 @@
     emit('clearFiles')
   }
 
-  const handleRemoveFile = (index) => {
-    emit('removeFile', index)
-  }
-
-  const handleMoveFile = (fromIndex, toIndex) => {
-    emit('moveFile', fromIndex, toIndex)
-  }
-
-  // The parent applies the option and re-sorts in one (undoable) step.
-  const handleSortClick = (value) => {
-    emit('update:sortOption', value)
-  }
-
-  const handleNameChange = (e) => {
-    emit('update:playlistName', e.target.value)
-  }
-
-  const handleSelectFile = (index) => {
-    emit('update:selectedFileIndex', index)
-  }
-
-  const handlePlayFile = (index) => {
-    emit('playFile', index)
-  }
-
-  // Expose method for keyboard shortcut (Ctrl+O opens files)
+  // Für den Kurzbefehl Strg+O aus der AppPage
   const openFileDialog = () => {
     fileInputRef.value?.click()
   }
 
-  defineExpose({
-    openFileDialog,
-  })
+  defineExpose({ openFileDialog })
 </script>
 
 <style scoped>
-  .section-head {
+  .playlist-config__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+
+  .playlist-config__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .playlist-config__dropzone {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .section-head .section-title {
-    margin-bottom: 0;
-  }
-
-  .file-upload-input {
-    display: none;
-  }
-
-  /* Upload Zone */
-  .file-upload-wrapper {
-    border: 2px dashed var(--border-color);
-    border-radius: 14px;
-    padding: 28px 20px 20px;
+    justify-content: center;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    min-height: var(--ds-control-lg);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border: var(--ds-border-width) solid transparent;
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface-2);
+    color: var(--ds-text-2);
     text-align: center;
     transition:
-      border-color 0.25s ease,
-      background 0.25s ease;
+      border-color var(--ds-duration) var(--ds-ease),
+      background-color var(--ds-duration) var(--ds-ease);
   }
 
-  /* Scanning state */
-  .file-upload-wrapper.is-scanning {
-    border-style: solid;
-    border-color: var(--accent-color);
+  .playlist-config__dropzone--over {
+    border-color: var(--ds-accent);
+    background: var(--ds-accent-soft);
+    color: var(--ds-text);
+  }
+
+  .playlist-config__dropzone--scanning {
+    border-color: var(--ds-accent);
     cursor: wait;
   }
 
-  .scan-spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid var(--border-color);
-    border-top-color: var(--accent-color);
-    border-radius: 50%;
-    animation: spin 0.75s linear infinite;
-    margin-bottom: 10px;
+  .playlist-config__dropzone-icon {
+    width: var(--ds-icon-sm);
+    height: var(--ds-icon-sm);
+    color: var(--ds-text-3);
+    flex-shrink: 0;
   }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
+  .playlist-config__dropzone--over .playlist-config__dropzone-icon {
+    color: var(--ds-accent);
   }
 
-  .scan-count {
-    display: inline-block;
-    margin-left: 6px;
+  .playlist-config__dropzone-title {
+    font-size: var(--ds-text-md);
+    font-weight: var(--ds-weight-medium);
+  }
+
+  .playlist-config__dropzone-hint {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-3);
+  }
+
+  .playlist-config__scan-count {
+    margin-left: var(--ds-space-1);
+    color: var(--ds-accent);
+    font-weight: var(--ds-weight-semibold);
     font-variant-numeric: tabular-nums;
-    color: var(--accent-color);
-    font-weight: 600;
   }
 
-  .file-upload-wrapper.drag-over {
-    border-color: var(--accent-color);
-    border-style: solid;
-    background: rgba(201, 152, 77, 0.06);
+  .playlist-config__spinner {
+    width: var(--ds-icon-sm);
+    height: var(--ds-icon-sm);
+    border: 2px solid var(--ds-border-strong);
+    border-top-color: var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    animation: playlist-config-spin 0.75s linear infinite;
   }
 
-  .light-theme .file-upload-wrapper.drag-over {
-    background: rgba(1, 79, 153, 0.06);
+  @keyframes playlist-config-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
-  .zone-icon {
-    color: var(--muted-color);
-    margin-bottom: 10px;
-    transition:
-      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-      color 0.25s ease;
-  }
-
-  .file-upload-wrapper:hover .zone-icon,
-  .file-upload-wrapper.drag-over .zone-icon {
-    color: var(--accent-color);
-    transform: translateY(-5px);
-  }
-
-  .file-upload-wrapper.drag-over .zone-icon {
-    animation: zone-bounce 0.55s ease infinite;
-  }
-
-  @keyframes zone-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-
-  .zone-title {
-    font-size: 0.88rem;
-    color: var(--muted-color);
-    margin-bottom: 14px;
-    font-weight: 500;
-  }
-
-  .upload-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .upload-btn {
+  .playlist-config__replace {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 8px 16px;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--muted-color);
-    font-size: 0.88rem;
-    font-family: inherit;
+    gap: var(--ds-space-2);
+    align-self: flex-start;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-2);
     cursor: pointer;
-    transition: all 0.2s ease;
   }
 
-  .upload-btn:hover {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-    background: rgba(201, 152, 77, 0.05);
-  }
-
-  .light-theme .upload-btn:hover {
-    background: rgba(1, 79, 153, 0.05);
-  }
-
-  .upload-btn.primary {
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    color: var(--accent-text-color);
-    border-color: transparent;
-    font-weight: 600;
-  }
-
-  .upload-btn.primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px var(--shadow-color);
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    color: var(--accent-text-color);
-  }
-
-  .drop-hint {
-    margin: 12px 0 0;
-    font-size: 0.78rem;
-    color: var(--muted-color);
-    opacity: 0.55;
-  }
-
-  /* Sort Buttons */
-  .sort-buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 3px;
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 3px;
-    width: 100%;
-  }
-
-  .sort-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 7px 6px;
-    border: none;
-    border-radius: 7px;
-    background: transparent;
-    color: var(--muted-color);
-    font-size: 0.76rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font-family: inherit;
-    line-height: 1.25;
-    word-break: break-word;
-    hyphens: auto;
-    min-width: 0;
-  }
-
-  .sort-btn:hover {
-    color: var(--text-color);
-  }
-
-  .sort-btn.active {
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    color: var(--accent-text-color);
-    box-shadow: 0 2px 8px var(--shadow-color);
-  }
-
-  /* Checkbox */
-  .checkbox-option {
-    margin-top: 10px;
-  }
-
-  .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--text-secondary, #666);
-  }
-
-  .checkbox-label input[type='checkbox'] {
+  .playlist-config__checkbox {
     width: 16px;
     height: 16px;
+    margin: 0;
+    accent-color: var(--ds-accent);
     cursor: pointer;
-    accent-color: var(--accent-color);
   }
 
-  .checkbox-text {
-    user-select: none;
-  }
-
-  /* Step number badges on form labels */
-  .step-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    color: var(--accent-text-color);
-    font-size: 0.64rem;
-    font-weight: 700;
-    margin-right: 8px;
-    flex-shrink: 0;
-    vertical-align: middle;
-    line-height: 1;
-  }
-
-  .form-group label {
-    display: flex;
-    align-items: center;
+  .playlist-config__checkbox:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-focus-ring);
   }
 </style>

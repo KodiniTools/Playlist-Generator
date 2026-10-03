@@ -1,97 +1,33 @@
 <template>
   <div class="faq-page">
-    <!-- Page Header Navigation -->
-    <header class="page-header">
-      <div class="header-container">
-        <nav class="header-nav">
-          <router-link to="/" class="nav-link">{{ t('nav_home') }}</router-link>
-          <router-link to="/app" class="nav-link">{{ t('nav_app') }}</router-link>
-          <router-link to="/faq" class="nav-link active">{{ t('nav_faq') }}</router-link>
-          <router-link to="/blog" class="nav-link">{{ t('nav_blog') }}</router-link>
-        </nav>
-      </div>
-    </header>
+    <AppHeader />
 
-    <main class="container">
-      <!-- Content Header -->
+    <main class="faq-container">
       <header class="content-header">
         <h1>{{ t('faq_page_title') }}</h1>
-        <p class="subtitle">{{ t('faq_page_subtitle') }}</p>
+        <p class="content-header__subtitle">{{ t('faq_page_subtitle') }}</p>
       </header>
 
-      <!-- Privacy Notice -->
-      <section class="privacy-notice">
-        <div class="privacy-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-        </div>
-        <div class="privacy-content">
-          <h3>{{ t('privacy_title') }}</h3>
-          <p>{{ t('privacy_text') }}</p>
-        </div>
-      </section>
+      <UiCallout type="success" :title="t('privacy_title')" class="privacy-notice">
+        {{ t('privacy_text') }}
+      </UiCallout>
 
-      <!-- FAQ Section -->
-      <section class="faq-section">
-        <h2 class="section-title">{{ t('faq_title') }}</h2>
+      <section class="faq-questions" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" class="faq-questions__title">{{ t('faq_title') }}</h2>
 
         <div class="faq-list">
-          <details>
-            <summary>{{ t('faq_q1_title') }}</summary>
-            <p v-html="t('faq_q1_text')"></p>
-          </details>
-
-          <details>
-            <summary>{{ t('faq_q9_title') }}</summary>
-            <p v-html="t('faq_q9_text')"></p>
-          </details>
-
-          <details>
-            <summary>{{ t('faq_q2_title') }}</summary>
-            <p v-html="t('faq_q2_text')"></p>
-          </details>
-
-          <details>
-            <summary>{{ t('faq_q3_title') }}</summary>
-            <p v-html="t('faq_q3_text')"></p>
-          </details>
-
-          <details>
-            <summary>{{ t('faq_q4_title') }}</summary>
-            <p v-html="t('faq_q4_text')"></p>
-          </details>
-
-          <details>
-            <summary>{{ t('faq_q5_title') }}</summary>
-            <p v-html="t('faq_q5_text')"></p>
-          </details>
-
-          <details>
-            <summary>{{ t('faq_q6_title') }}</summary>
-            <p v-html="t('faq_q6_text')"></p>
-          </details>
-
-          <details>
-            <summary>{{ t('faq_q7_title') }}</summary>
-            <p v-html="t('faq_q7_text')"></p>
-          </details>
-
-          <details>
-            <summary>{{ t('faq_q8_title') }}</summary>
-            <p v-html="t('faq_q8_text')"></p>
+          <details v-for="key in questionKeys" :key="key">
+            <summary>{{ t(`${key}_title`) }}</summary>
+            <p v-html="t(`${key}_text`)"></p>
           </details>
         </div>
       </section>
 
-      <!-- CTA Section -->
       <section class="cta-section">
         <div class="cta-content">
           <h2>{{ t('cta_title') }}</h2>
           <p>{{ t('cta_desc') }}</p>
-          <router-link to="/app" class="btn btn-primary btn-large">
-            {{ t('cta_button') }}
-          </router-link>
+          <UiButton to="/app" variant="primary" size="lg">{{ t('cta_button') }}</UiButton>
         </div>
       </section>
     </main>
@@ -100,476 +36,250 @@
 
 <script setup lang="ts">
   import { useTranslation } from '../composables/useTranslation'
+  import AppHeader from '../components/AppHeader.vue'
+  import { UiButton, UiCallout } from '../components/ui'
 
   const { t } = useTranslation()
+
+  /** Reihenfolge der Fragen; jeder Schlüssel hat `_title` und `_text` in beiden Sprachen. */
+  const questionKeys = [
+    'faq_q1',
+    'faq_q9',
+    'faq_q2',
+    'faq_q3',
+    'faq_q4',
+    'faq_q5',
+    'faq_q6',
+    'faq_q7',
+    'faq_q8',
+  ] as const
 </script>
 
 <style scoped>
   .faq-page {
-    padding-top: 0;
+    min-height: 100vh;
+    background: var(--ds-surface-0);
+    color: var(--ds-text);
   }
 
-  /* Page Header Navigation */
-  .page-header {
-    background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .light-theme .page-header {
-    background: linear-gradient(135deg, rgba(245, 245, 245, 0.95), rgba(232, 232, 232, 0.95));
-  }
-
-  .header-container {
-    max-width: 1200px;
+  .faq-container {
+    max-width: 880px;
     margin: 0 auto;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .header-nav {
-    display: flex;
-    gap: 30px;
-  }
-
-  .header-nav .nav-link {
-    text-decoration: none;
-    color: var(--muted-color);
-    font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-  }
-
-  .header-nav .nav-link:hover,
-  .header-nav .nav-link.active {
-    color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.1);
-  }
-
-  .light-theme .header-nav .nav-link:hover,
-  .light-theme .header-nav .nav-link.active {
-    background: rgba(162, 134, 128, 0.1);
-  }
-
-  @media (max-width: 768px) {
-    .header-nav {
-      gap: 15px;
-    }
-
-    .header-nav .nav-link {
-      padding: 8px 10px;
-      font-size: 0.9rem;
-    }
-  }
-
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 60px 20px;
-    animation: fade-in 0.8s ease-out;
+    padding: var(--ds-space-16) var(--ds-gutter);
   }
 
   .content-header {
+    margin-bottom: var(--ds-space-10);
     text-align: center;
-    margin-bottom: 50px;
-    animation: slide-in 0.8s ease-out;
   }
 
   .content-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 15px;
+    margin: 0 0 var(--ds-space-3);
+    font-size: var(--ds-text-3xl);
+    font-weight: var(--ds-weight-bold);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
   }
 
-  .content-header .subtitle {
-    font-size: 1.1rem;
-    color: var(--muted-color);
-  }
-
-  /* Privacy Notice */
-  .privacy-notice {
-    display: flex;
-    gap: 20px;
-    background: linear-gradient(135deg, rgba(125, 216, 125, 0.1), rgba(125, 216, 125, 0.05));
-    border: 2px solid var(--success-color);
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 50px;
-    animation: slide-in 0.8s ease-out 0.2s both;
-  }
-
-  .light-theme .privacy-notice {
-    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
-  }
-
-  .privacy-icon {
-    flex-shrink: 0;
-    width: 50px;
-    height: 50px;
-    color: var(--success-color);
-  }
-
-  .privacy-icon svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .privacy-content h3 {
-    font-size: 1.2rem;
-    color: var(--success-color);
-    margin-bottom: 10px;
-  }
-
-  .privacy-content p {
-    font-size: 0.95rem;
-    color: var(--text-color);
-    line-height: 1.7;
+  .content-header__subtitle {
     margin: 0;
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-2);
   }
 
-  /* FAQ Section */
-  .faq-section {
-    margin-bottom: 60px;
-    animation: slide-in 0.8s ease-out 0.3s both;
+  .privacy-notice {
+    margin-bottom: var(--ds-space-10);
   }
 
-  .section-title {
-    font-size: 1.8rem;
-    color: var(--accent-color);
-    margin-bottom: 30px;
+  /* Fragen */
+  .faq-questions {
+    margin-bottom: var(--ds-space-12);
+  }
+
+  .faq-questions__title {
+    margin: 0 0 var(--ds-space-6);
+    font-size: var(--ds-text-2xl);
+    font-weight: var(--ds-weight-semibold);
+    line-height: var(--ds-leading-tight);
     text-align: center;
+    color: var(--ds-text);
   }
 
   .faq-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: var(--ds-space-3);
   }
 
+  /* Akkordeon vollständig scoped; main.css stylt details/summary nicht mehr global. */
   details {
-    background: linear-gradient(135deg, rgba(22, 22, 28, 0.8), rgba(22, 22, 28, 0.6));
-    border: 1px solid var(--border-color);
-    border-radius: 15px;
-    overflow: hidden;
-    transition: all 0.3s ease;
+    margin: 0;
+    overflow: visible;
+    border: var(--ds-border-width) solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface-1);
+    box-shadow: none;
+    transition: border-color var(--ds-duration) var(--ds-ease);
   }
 
-  .light-theme details {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
-  }
-
-  details:hover {
-    border-color: var(--accent-color);
-    box-shadow: 0 4px 20px var(--shadow-color);
+  details:hover,
+  details[open] {
+    border-color: var(--ds-border-strong);
+    box-shadow: none;
   }
 
   summary {
-    background: var(--btn-color);
-    padding: 20px 25px;
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--text-color);
-    transition: all 0.3s ease;
-    user-select: none;
-    list-style: none;
     display: flex;
     align-items: center;
-    gap: 15px;
-  }
-
-  summary::before {
-    content: '+';
-    font-size: 1.3rem;
-    font-weight: 400;
-    color: var(--accent-color);
-    transition: transform 0.3s ease;
-  }
-
-  details[open] summary::before {
-    transform: rotate(45deg);
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    background: transparent;
+    font-size: var(--ds-text-lg);
+    font-weight: var(--ds-weight-medium);
+    color: var(--ds-text);
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--ds-duration) var(--ds-ease);
   }
 
   summary::-webkit-details-marker {
     display: none;
   }
 
-  summary:hover {
-    background: var(--accent-color);
-    color: var(--accent-text-color);
+  summary::before {
+    content: '+';
+    flex-shrink: 0;
+    width: var(--ds-icon-md);
+    font-size: var(--ds-text-xl);
+    font-weight: var(--ds-weight-regular);
+    line-height: 1;
+    text-align: center;
+    color: var(--ds-accent);
+    transition: transform var(--ds-duration) var(--ds-ease);
   }
 
-  summary:hover::before {
-    color: var(--accent-text-color);
+  summary:hover,
+  details[open] summary {
+    background: var(--ds-surface-2);
+    color: var(--ds-text);
   }
 
   details[open] summary {
-    background: var(--accent-color);
-    color: var(--accent-text-color);
+    border-radius: var(--ds-radius-md) var(--ds-radius-md) 0 0;
   }
 
   details[open] summary::before {
-    color: var(--accent-text-color);
+    transform: rotate(45deg);
+  }
+
+  summary:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-focus-ring);
   }
 
   details p {
     margin: 0;
-    color: var(--muted-color);
-    padding: 25px;
-    background: linear-gradient(135deg, rgba(22, 22, 28, 0.3), rgba(22, 22, 28, 0.1));
-    border-left: 3px solid var(--accent-color);
-    line-height: 1.7;
-    animation: slide-down 0.3s ease-out;
+    padding: var(--ds-space-4) var(--ds-space-5) var(--ds-space-5);
+    border: 0;
+    border-top: var(--ds-border-width) solid var(--ds-border);
+    border-radius: 0;
+    background: transparent;
+    font-size: var(--ds-text-md);
+    line-height: var(--ds-leading);
+    color: var(--ds-text-2);
+    animation: none;
   }
 
-  .light-theme details p {
-    background: linear-gradient(135deg, rgba(232, 232, 232, 0.5), rgba(232, 232, 232, 0.3));
+  details p :deep(strong) {
+    font-weight: var(--ds-weight-semibold);
+    color: var(--ds-text);
   }
 
-  /* CTA Section */
+  details p :deep(a) {
+    color: var(--ds-link);
+  }
+
+  /* Abschluss */
   .cta-section {
-    animation: slide-in 0.8s ease-out 0.4s both;
+    text-align: center;
   }
 
   .cta-content {
-    text-align: center;
-    background: linear-gradient(135deg, rgba(22, 22, 28, 0.8), rgba(22, 22, 28, 0.6));
-    border: 1px solid var(--border-color);
-    border-radius: 25px;
-    padding: 50px 40px;
-    backdrop-filter: blur(15px);
-  }
-
-  .light-theme .cta-content {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+    padding: var(--ds-space-10) var(--ds-space-8);
+    border: var(--ds-border-width) solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-1);
   }
 
   .cta-content h2 {
-    font-size: 1.8rem;
-    color: var(--text-color);
-    margin-bottom: 15px;
+    margin: 0 0 var(--ds-space-3);
+    font-size: var(--ds-text-2xl);
+    font-weight: var(--ds-weight-bold);
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text);
   }
 
   .cta-content p {
-    font-size: 1rem;
-    color: var(--muted-color);
-    margin-bottom: 25px;
+    margin: 0 0 var(--ds-space-6);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading);
+    color: var(--ds-text-2);
   }
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px 35px;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-    color: var(--accent-text-color);
-    box-shadow: 0 4px 20px var(--shadow-color);
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 8px 30px var(--shadow-color),
-      0 0 20px var(--glow-color);
-  }
-
-  .btn-large {
-    padding: 18px 45px;
-    font-size: 1.1rem;
-  }
-
-  /* Responsive */
   @media (max-width: 768px) {
-    .container {
-      padding: 40px 15px;
-    }
-
-    .page-header h1 {
-      font-size: 1.8rem;
-    }
-
-    .privacy-notice {
-      flex-direction: column;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .privacy-icon {
-      margin: 0 auto;
+    .faq-container {
+      padding: var(--ds-space-10) var(--ds-space-4);
     }
 
     summary {
-      padding: 15px 20px;
+      padding: var(--ds-space-3) var(--ds-space-4);
+      font-size: var(--ds-text-md);
     }
 
     details p {
-      padding: 20px;
+      padding: var(--ds-space-3) var(--ds-space-4) var(--ds-space-4);
     }
 
     .cta-content {
-      padding: 35px 25px;
+      padding: var(--ds-space-8) var(--ds-space-5);
     }
 
     .cta-content h2 {
-      font-size: 1.4rem;
-    }
-
-    .header-container {
-      padding: 10px 15px;
+      font-size: var(--ds-text-xl);
     }
   }
 
   @media (max-width: 480px) {
-    .container {
-      padding: 25px 12px;
+    .faq-container {
+      padding: var(--ds-space-6) var(--ds-space-3);
     }
 
     .content-header {
-      margin-bottom: 30px;
+      margin-bottom: var(--ds-space-6);
     }
 
     .content-header h1 {
-      font-size: 1.6rem;
+      font-size: var(--ds-text-2xl);
     }
 
-    .content-header .subtitle {
-      font-size: 0.95rem;
+    .content-header__subtitle {
+      font-size: var(--ds-text-md);
     }
 
     .privacy-notice {
-      gap: 12px;
-      padding: 18px;
-      border-radius: 14px;
-      margin-bottom: 30px;
+      margin-bottom: var(--ds-space-6);
     }
 
-    .privacy-icon {
-      width: 40px;
-      height: 40px;
+    .faq-questions {
+      margin-bottom: var(--ds-space-8);
     }
 
-    .privacy-content h3 {
-      font-size: 1.05rem;
-    }
-
-    .privacy-content p {
-      font-size: 0.85rem;
-    }
-
-    .faq-section {
-      margin-bottom: 35px;
-    }
-
-    .section-title {
-      font-size: 1.4rem;
-      margin-bottom: 20px;
-    }
-
-    .faq-list {
-      gap: 10px;
-    }
-
-    details {
-      border-radius: 10px;
-    }
-
-    summary {
-      padding: 14px 15px;
-      font-size: 0.9rem;
-      gap: 10px;
-    }
-
-    summary::before {
-      font-size: 1.1rem;
-    }
-
-    details p {
-      padding: 18px 15px;
-      font-size: 0.85rem;
-    }
-
-    .cta-content {
-      padding: 28px 18px;
-      border-radius: 18px;
-    }
-
-    .cta-content h2 {
-      font-size: 1.25rem;
-    }
-
-    .cta-content p {
-      font-size: 0.9rem;
-      margin-bottom: 18px;
-    }
-
-    .btn {
-      padding: 12px 25px;
-      font-size: 0.9rem;
-      border-radius: 10px;
-    }
-
-    .btn-large {
-      padding: 14px 30px;
-      font-size: 1rem;
-    }
-
-    .header-container {
-      padding: 10px 12px;
-    }
-
-    .header-nav {
-      gap: 6px;
-    }
-
-    .header-nav .nav-link {
-      padding: 6px 8px;
-      font-size: 0.82rem;
-    }
-  }
-
-  /* Animations */
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slide-in {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slide-down {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    .faq-questions__title {
+      margin-bottom: var(--ds-space-4);
+      font-size: var(--ds-text-xl);
     }
   }
 </style>

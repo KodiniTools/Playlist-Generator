@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 
-const translations = {
+/** Übersetzungstabellen je Sprache; exportiert für Tests und Tooling. */
+export const translations = {
   de: {
     // Meta tags
     meta_title: 'Audio Wiedergabeliste Generator - M3U, XSPF & JSON Wiedergabelisten Erstellen',
@@ -12,6 +13,7 @@ const translations = {
     nav_app: 'App',
     nav_faq: 'FAQ',
     nav_blog: 'Blog',
+    nav_label: 'Seiten',
 
     // Landing Page - Hero
     hero_title: 'Audio Wiedergabeliste Generator',
@@ -83,12 +85,10 @@ const translations = {
     click_to_upload: 'dateien auswählen oder hierher ziehen...',
     drop_files_here: 'dateien hier ablegen...',
     files_selected: 'dateien ausgewählt',
-    canvas_title: 'interaktive trackliste',
     select_all: 'Alle auswählen',
     button_clear_title: 'Liste leeren',
     stats_tracks: 'Tracks',
     duration_approx_title: 'Geschätzte Gesamtdauer (noch nicht alle Tracks abgespielt)',
-    duration_exact_title: 'Exakte Gesamtdauer',
     label_sort: 'Abspielreihenfolge festlegen',
     sort_alpha: 'Alphabetisch',
     sort_date: 'Nach Datum',
@@ -111,6 +111,8 @@ const translations = {
       "Klicken Sie auf 'Wiedergabeliste erstellen', um hier eine Vorschau zu sehen...",
     button_save: 'Speichern unter...',
     button_copy: 'Kopieren',
+    lines: 'Zeilen',
+    preview_empty_title: 'Noch keine Vorschau',
 
     // FAQ Page
     faq_page_title: 'Häufig gestellte Fragen',
@@ -157,6 +159,7 @@ const translations = {
     toast_playlist_saved: 'Wiedergabeliste gespeichert ✓',
     toast_copied: 'In Zwischenablage kopiert ✓',
     toast_copy_error: 'Kopieren fehlgeschlagen',
+    toast_close: 'Schließen',
     toast_file_removed: 'Track entfernt',
     toast_files_cleared: 'Liste geleert',
     toast_undo_btn: 'Rückgängig',
@@ -182,6 +185,15 @@ const translations = {
     history_format_changed: 'Format geändert',
     history_replace_mode_changed: 'Ersetzen-Option geändert',
     replace_list_option: 'Bestehende Liste ersetzen',
+    files_panel_title: 'Dateien',
+    drop_zone_title: 'Dateien oder Ordner hierher ziehen',
+    drop_zone_hint: 'oder Strg+V zum Einfügen',
+    file_list_label: 'Dateiliste',
+    file_list_include: 'In Wiedergabeliste aufnehmen',
+    file_list_drag_handle: 'Verschieben, auch mit Alt und Pfeiltasten',
+    file_list_remove: 'Entfernen',
+    file_list_empty_title: 'Noch keine Dateien',
+    file_list_empty_text: 'Füge Audiodateien hinzu oder zieh sie hierher.',
 
     // Shared Files (audiokonverter)
     sharedFilesLoading: '{count} Datei(en) vom Audio Konverter werden importiert…',
@@ -243,6 +255,7 @@ const translations = {
     player_previous: 'Vorheriger Track',
     player_next: 'Nächster Track',
     player_mute: 'Stummschalten',
+    player_volume: 'Lautstärke',
     player_unmute: 'Ton einschalten',
     player_queue: 'Warteschlange',
     player_repeat_off: 'Wiederholen: Aus',
@@ -296,6 +309,7 @@ const translations = {
     nav_app: 'App',
     nav_faq: 'FAQ',
     nav_blog: 'Blog',
+    nav_label: 'Pages',
 
     // Landing Page - Hero
     hero_title: 'Audio Playlist Generator',
@@ -364,12 +378,10 @@ const translations = {
     click_to_upload: 'choose files or drag here...',
     drop_files_here: 'drop files here...',
     files_selected: 'files selected',
-    canvas_title: 'interactive track list',
     select_all: 'Select all',
     button_clear_title: 'Clear List',
     stats_tracks: 'Tracks',
     duration_approx_title: 'Estimated total duration (not all tracks played yet)',
-    duration_exact_title: 'Exact total duration',
     label_sort: '2. Set Playback Order',
     sort_alpha: 'Alphabetical',
     sort_date: 'By Date',
@@ -391,6 +403,8 @@ const translations = {
     placeholder_output: "Click 'Create Playlist' to see a preview here...",
     button_save: 'Save As...',
     button_copy: 'Copy',
+    lines: 'lines',
+    preview_empty_title: 'No preview yet',
 
     // FAQ Page
     faq_page_title: 'Frequently Asked Questions',
@@ -437,6 +451,7 @@ const translations = {
     toast_playlist_saved: 'Playlist saved ✓',
     toast_copied: 'Copied to clipboard ✓',
     toast_copy_error: 'Copy failed',
+    toast_close: 'Close',
     toast_file_removed: 'Track removed',
     toast_files_cleared: 'List cleared',
     toast_undo_btn: 'Undo',
@@ -462,6 +477,15 @@ const translations = {
     history_format_changed: 'Format changed',
     history_replace_mode_changed: 'Replace option changed',
     replace_list_option: 'Replace existing list',
+    files_panel_title: 'Files',
+    drop_zone_title: 'Drop files or folders here',
+    drop_zone_hint: 'or Ctrl+V to paste',
+    file_list_label: 'File list',
+    file_list_include: 'Include in playlist',
+    file_list_drag_handle: 'Move, also with Alt and arrow keys',
+    file_list_remove: 'Remove',
+    file_list_empty_title: 'No files yet',
+    file_list_empty_text: 'Add audio files or drop them here.',
 
     // Shared Files (audiokonverter)
     sharedFilesLoading: 'Importing {count} file(s) from Audio Converter…',
@@ -523,6 +547,7 @@ const translations = {
     player_previous: 'Previous track',
     player_next: 'Next track',
     player_mute: 'Mute',
+    player_volume: 'Volume',
     player_unmute: 'Unmute',
     player_queue: 'Queue',
     player_repeat_off: 'Repeat: Off',
