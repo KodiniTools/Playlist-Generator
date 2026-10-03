@@ -1,16 +1,6 @@
 <template>
   <div class="landing-page">
-    <!-- Page Header Navigation -->
-    <header class="page-header">
-      <div class="header-container">
-        <nav class="header-nav">
-          <router-link to="/" class="nav-link active">{{ t('nav_home') }}</router-link>
-          <router-link to="/app" class="nav-link">{{ t('nav_app') }}</router-link>
-          <router-link to="/faq" class="nav-link">{{ t('nav_faq') }}</router-link>
-          <router-link to="/blog" class="nav-link">{{ t('nav_blog') }}</router-link>
-        </nav>
-      </div>
-    </header>
+    <AppHeader />
 
     <!-- Hero Section -->
     <section class="hero">
@@ -363,6 +353,7 @@
 
 <script setup lang="ts">
   import { useTranslation } from '../composables/useTranslation'
+  import AppHeader from '../components/AppHeader.vue'
 
   const { t } = useTranslation()
 
@@ -401,95 +392,9 @@
     padding-top: 0;
   }
 
-  /* Page Header */
-  .page-header {
-    background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .light-theme .page-header {
-    background: linear-gradient(135deg, rgba(245, 245, 245, 0.95), rgba(232, 232, 232, 0.95));
-  }
-
-  .header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .header-nav {
-    display: flex;
-    gap: 30px;
-  }
-
-  .header-nav .nav-link {
-    text-decoration: none;
-    color: var(--muted-color);
-    font-weight: 500;
-    padding: 8px 4px;
-    border-radius: 0;
-    transition: color 0.25s ease;
-    position: relative;
-  }
-
-  .header-nav .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--accent-color);
-    border-radius: 2px;
-    transform: scaleX(0);
-    transform-origin: center;
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .header-nav .nav-link:hover,
-  .header-nav .nav-link.active {
-    color: var(--accent-color);
-    background: transparent;
-  }
-
-  .header-nav .nav-link:hover::after,
-  .header-nav .nav-link.active::after {
-    transform: scaleX(1);
-  }
-
-  @media (max-width: 768px) {
-    .header-nav {
-      gap: 15px;
-    }
-
-    .header-nav .nav-link {
-      padding: 8px 4px;
-      font-size: 0.9rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .header-container {
-      padding: 10px 12px;
-    }
-
-    .header-nav {
-      gap: 6px;
-    }
-
-    .header-nav .nav-link {
-      padding: 6px 4px;
-      font-size: 0.82rem;
-    }
-  }
-
   /* Hero Section */
   .hero {
-    min-height: calc(100vh - 70px - var(--external-nav-height, 0px));
+    min-height: calc(100vh - var(--ds-topbar-height) - var(--external-nav-height, 0px));
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -24,8 +24,9 @@
   import { useTranslation } from '../composables/useTranslation'
 
   /**
-   * Seitennavigation der App unterhalb der externen SSI-Navigation.
-   * Rechts optional Aktionen (z. B. der Tastaturkürzel-Button).
+   * Gemeinsame Seitennavigation aller Vue-Seiten unterhalb der externen SSI-Navigation.
+   * Die aktive Seite markiert der Router (exakter Pfad), rechts optional Aktionen
+   * (z. B. der Tastaturkürzel-Button). Höhe = --ds-topbar-height.
    */
   const { t } = useTranslation()
 
@@ -47,6 +48,7 @@
     display: flex;
     align-items: center;
     gap: var(--ds-space-3);
+    min-height: var(--ds-topbar-height);
     max-width: var(--ds-container);
     margin: 0 auto;
     padding: var(--ds-space-2) var(--ds-gutter);

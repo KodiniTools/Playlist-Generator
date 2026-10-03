@@ -95,5 +95,5 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
 - Dropzone und Switch folgen mit der weiteren App-Seite.
 - Die App-Seite ist komplett umgestellt: `AppPage`, `AppHeader`, `OnboardingBanner`, `ToolsGrid`,
   `PlaylistConfig`, `PlaylistPreview`, `UndoRedoControls`, `ToastContainer`, `AudioPlayer` und
-  `KeyboardShortcutsPanel`. Offen sind Landing-, FAQ- und Blog-Seite (die `AppHeader` übernehmen
-  können) sowie das ungenutzte `FileListCanvas.vue`.
+  `KeyboardShortcutsPanel`. Landing-, FAQ- und Blog-Seite nutzen denselben `AppHeader`; ihr
+  restlicher Inhalt läuft noch auf den v1-Variablen. Offen ist das ungenutzte `FileListCanvas.vue`.

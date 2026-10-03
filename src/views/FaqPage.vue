@@ -1,16 +1,6 @@
 <template>
   <div class="faq-page">
-    <!-- Page Header Navigation -->
-    <header class="page-header">
-      <div class="header-container">
-        <nav class="header-nav">
-          <router-link to="/" class="nav-link">{{ t('nav_home') }}</router-link>
-          <router-link to="/app" class="nav-link">{{ t('nav_app') }}</router-link>
-          <router-link to="/faq" class="nav-link active">{{ t('nav_faq') }}</router-link>
-          <router-link to="/blog" class="nav-link">{{ t('nav_blog') }}</router-link>
-        </nav>
-      </div>
-    </header>
+    <AppHeader />
 
     <main class="container">
       <!-- Content Header -->
@@ -100,6 +90,7 @@
 
 <script setup lang="ts">
   import { useTranslation } from '../composables/useTranslation'
+  import AppHeader from '../components/AppHeader.vue'
 
   const { t } = useTranslation()
 </script>
@@ -107,62 +98,6 @@
 <style scoped>
   .faq-page {
     padding-top: 0;
-  }
-
-  /* Page Header Navigation */
-  .page-header {
-    background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .light-theme .page-header {
-    background: linear-gradient(135deg, rgba(245, 245, 245, 0.95), rgba(232, 232, 232, 0.95));
-  }
-
-  .header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .header-nav {
-    display: flex;
-    gap: 30px;
-  }
-
-  .header-nav .nav-link {
-    text-decoration: none;
-    color: var(--muted-color);
-    font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-  }
-
-  .header-nav .nav-link:hover,
-  .header-nav .nav-link.active {
-    color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.1);
-  }
-
-  .light-theme .header-nav .nav-link:hover,
-  .light-theme .header-nav .nav-link.active {
-    background: rgba(162, 134, 128, 0.1);
-  }
-
-  @media (max-width: 768px) {
-    .header-nav {
-      gap: 15px;
-    }
-
-    .header-nav .nav-link {
-      padding: 8px 10px;
-      font-size: 0.9rem;
-    }
   }
 
   .container {
@@ -398,10 +333,6 @@
       padding: 40px 15px;
     }
 
-    .page-header h1 {
-      font-size: 1.8rem;
-    }
-
     .privacy-notice {
       flex-direction: column;
       text-align: center;
@@ -426,10 +357,6 @@
 
     .cta-content h2 {
       font-size: 1.4rem;
-    }
-
-    .header-container {
-      padding: 10px 15px;
     }
   }
 
@@ -525,19 +452,6 @@
     .btn-large {
       padding: 14px 30px;
       font-size: 1rem;
-    }
-
-    .header-container {
-      padding: 10px 12px;
-    }
-
-    .header-nav {
-      gap: 6px;
-    }
-
-    .header-nav .nav-link {
-      padding: 6px 8px;
-      font-size: 0.82rem;
     }
   }
 

@@ -1,16 +1,6 @@
 <template>
   <div class="blog-page">
-    <!-- Page Header Navigation -->
-    <header class="page-header">
-      <div class="header-container">
-        <nav class="header-nav">
-          <router-link to="/" class="nav-link">{{ t('nav_home') }}</router-link>
-          <router-link to="/app" class="nav-link">{{ t('nav_app') }}</router-link>
-          <router-link to="/faq" class="nav-link">{{ t('nav_faq') }}</router-link>
-          <router-link to="/blog" class="nav-link active">{{ t('nav_blog') }}</router-link>
-        </nav>
-      </div>
-    </header>
+    <AppHeader />
 
     <article class="blog-container">
       <!-- German Content -->
@@ -27,14 +17,14 @@
           <p>
             Musik begleitet uns durch den Alltag - beim Sport, bei der Arbeit oder zum Entspannen.
             Doch wer kennt es nicht: Die eigene Musiksammlung wächst, aber das Erstellen von
-            Wiedergabelisten für verschiedene Media Player ist oft umständlich und zeitaufwändig. Genau
-            hier setzt der <strong>Audio Wiedergabeliste Generator</strong> an.
+            Wiedergabelisten für verschiedene Media Player ist oft umständlich und zeitaufwändig.
+            Genau hier setzt der <strong>Audio Wiedergabeliste Generator</strong> an.
           </p>
           <p>
             Dieses moderne Web-Tool ermöglicht es dir, aus deinen lokalen Audiodateien
-            professionelle Wiedergabelisten zu erstellen - und das komplett im Browser, ohne Installation
-            und ohne dass deine Dateien jemals hochgeladen werden. In diesem umfangreichen Artikel
-            stellen wir dir alle Funktionen im Detail vor.
+            professionelle Wiedergabelisten zu erstellen - und das komplett im Browser, ohne
+            Installation und ohne dass deine Dateien jemals hochgeladen werden. In diesem
+            umfangreichen Artikel stellen wir dir alle Funktionen im Detail vor.
           </p>
         </section>
 
@@ -59,14 +49,15 @@
         <section id="playlist-formate" class="blog-section">
           <h2>Unterstützte Wiedergabeliste-Formate</h2>
           <p>
-            Der Audio Wiedergabeliste Generator unterstützt drei verschiedene Wiedergabeliste-Formate, die jeweils
-            für unterschiedliche Anwendungsfälle optimiert sind:
+            Der Audio Wiedergabeliste Generator unterstützt drei verschiedene
+            Wiedergabeliste-Formate, die jeweils für unterschiedliche Anwendungsfälle optimiert
+            sind:
           </p>
 
           <h3>M3U-Format</h3>
           <p>
-            Das <strong>M3U-Format</strong> (MP3 URL) ist der Klassiker unter den Wiedergabeliste-Formaten.
-            Es wird von nahezu allen Media Playern unterstützt, darunter:
+            Das <strong>M3U-Format</strong> (MP3 URL) ist der Klassiker unter den
+            Wiedergabeliste-Formaten. Es wird von nahezu allen Media Playern unterstützt, darunter:
           </p>
           <ul>
             <li>VLC Media Player</li>
@@ -167,9 +158,9 @@
 
           <h3>Intelligente Duplikaterkennung</h3>
           <p>
-            Keine Sorge vor doppelten Einträgen! Der Wiedergabeliste Generator erkennt automatisch, wenn du
-            eine Datei hinzufügst, die bereits in deiner Liste vorhanden ist. Duplikate werden
-            übersprungen und du erhältst eine entsprechende Benachrichtigung.
+            Keine Sorge vor doppelten Einträgen! Der Wiedergabeliste Generator erkennt automatisch,
+            wenn du eine Datei hinzufügst, die bereits in deiner Liste vorhanden ist. Duplikate
+            werden übersprungen und du erhältst eine entsprechende Benachrichtigung.
           </p>
 
           <h3>Ersetzen oder Hinzufügen</h3>
@@ -183,8 +174,8 @@
         <section id="sortierung" class="blog-section">
           <h2>Sortier- und Ordnungsoptionen</h2>
           <p>
-            Eine gute Wiedergabeliste lebt von der richtigen Reihenfolge. Der Generator bietet dir vier
-            verschiedene Sortieroptionen:
+            Eine gute Wiedergabeliste lebt von der richtigen Reihenfolge. Der Generator bietet dir
+            vier verschiedene Sortieroptionen:
           </p>
 
           <div class="feature-list">
@@ -242,8 +233,8 @@
           <p>Bevor du deine Wiedergabeliste speicherst, siehst du genau, was du bekommst.</p>
           <ul>
             <li>
-              <strong>Live-Vorschau:</strong> In Echtzeit wird angezeigt, wie deine fertige Wiedergabeliste
-              aussehen wird
+              <strong>Live-Vorschau:</strong> In Echtzeit wird angezeigt, wie deine fertige
+              Wiedergabeliste aussehen wird
             </li>
             <li>
               <strong>In die Zwischenablage kopieren:</strong> Mit einem Klick wird der gesamte
@@ -254,7 +245,8 @@
               vorgeschlagenem Dateinamen
             </li>
             <li>
-              <strong>Wiedergabeliste benennen:</strong> Gib deiner Wiedergabeliste einen aussagekräftigen Namen
+              <strong>Wiedergabeliste benennen:</strong> Gib deiner Wiedergabeliste einen
+              aussagekräftigen Namen
             </li>
           </ul>
         </section>
@@ -262,8 +254,8 @@
         <section id="themes" class="blog-section">
           <h2>Dark Mode und Light Mode</h2>
           <p>
-            Moderne Software sollte sich deinen Vorlieben anpassen - der Wiedergabeliste Generator tut
-            genau das.
+            Moderne Software sollte sich deinen Vorlieben anpassen - der Wiedergabeliste Generator
+            tut genau das.
           </p>
 
           <h3>Dark Mode (Standard)</h3>
@@ -345,11 +337,13 @@
           <p>Die Statistikleiste gibt dir jederzeit einen Überblick:</p>
           <ul>
             <li>
-              <strong>Anzahl der Tracks:</strong> Wie viele Titel sich in deiner Wiedergabeliste befinden
+              <strong>Anzahl der Tracks:</strong> Wie viele Titel sich in deiner Wiedergabeliste
+              befinden
             </li>
             <li><strong>Gesamtgröße:</strong> Die kombinierte Dateigröße aller Tracks</li>
             <li>
-              <strong>Geschätzte Spielzeit:</strong> Eine ungefähre Gesamtspielzeit deiner Wiedergabeliste
+              <strong>Geschätzte Spielzeit:</strong> Eine ungefähre Gesamtspielzeit deiner
+              Wiedergabeliste
             </li>
           </ul>
         </section>
@@ -375,7 +369,9 @@
 
         <section id="responsive" class="blog-section">
           <h2>Responsives Design</h2>
-          <p>Ob am Desktop, Tablet oder Smartphone - der Wiedergabeliste Generator passt sich an.</p>
+          <p>
+            Ob am Desktop, Tablet oder Smartphone - der Wiedergabeliste Generator passt sich an.
+          </p>
           <ul>
             <li>
               <strong>Desktop-Optimiert:</strong> Zwei-Spalten-Layout für effizientes Arbeiten
@@ -763,70 +759,15 @@
 
 <script setup lang="ts">
   import { useTranslation } from '../composables/useTranslation'
+  import AppHeader from '../components/AppHeader.vue'
 
-  const { t, currentLanguage } = useTranslation()
+  const { currentLanguage } = useTranslation()
 </script>
 
 <style scoped>
   .blog-page {
     padding-top: 0;
     min-height: 100vh;
-  }
-
-  /* Page Header Navigation */
-  .page-header {
-    background: linear-gradient(135deg, rgba(12, 12, 16, 0.95), rgba(22, 22, 28, 0.95));
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .light-theme .page-header {
-    background: linear-gradient(135deg, rgba(245, 245, 245, 0.95), rgba(232, 232, 232, 0.95));
-  }
-
-  .header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .header-nav {
-    display: flex;
-    gap: 30px;
-  }
-
-  .header-nav .nav-link {
-    text-decoration: none;
-    color: var(--muted-color);
-    font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-  }
-
-  .header-nav .nav-link:hover,
-  .header-nav .nav-link.active {
-    color: var(--accent-color);
-    background: rgba(242, 226, 142, 0.1);
-  }
-
-  .light-theme .header-nav .nav-link:hover,
-  .light-theme .header-nav .nav-link.active {
-    background: rgba(162, 134, 128, 0.1);
-  }
-
-  @media (max-width: 768px) {
-    .header-nav {
-      gap: 15px;
-    }
-
-    .header-nav .nav-link {
-      padding: 8px 10px;
-      font-size: 0.9rem;
-    }
   }
 
   .blog-container {
@@ -1115,10 +1056,6 @@
     .format-cards {
       grid-template-columns: 1fr;
     }
-
-    .header-container {
-      padding: 10px 15px;
-    }
   }
 
   @media (max-width: 480px) {
@@ -1230,19 +1167,6 @@
       padding: 12px 28px;
       font-size: 1rem;
       border-radius: 10px;
-    }
-
-    .header-container {
-      padding: 10px 12px;
-    }
-
-    .header-nav {
-      gap: 6px;
-    }
-
-    .header-nav .nav-link {
-      padding: 6px 8px;
-      font-size: 0.82rem;
     }
   }
 
