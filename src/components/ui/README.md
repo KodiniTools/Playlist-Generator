@@ -90,5 +90,7 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
 
 ## Noch nicht enthalten
 
-- Dropzone, Select und Switch folgen in Phase 2 mit der App-Seite.
-- Die bestehenden Komponenten (`PlaylistConfig`, `PlaylistPreview`, …) nutzen diese Bausteine noch nicht.
+- Dropzone, Select und Switch folgen mit der weiteren App-Seite.
+- `PlaylistConfig.vue` nutzt die Bausteine bereits (Panel, Buttons, Dateiliste, Segmented Control,
+  Textfeld). `PlaylistPreview`, `AudioPlayer`, `ToastContainer`, `KeyboardShortcutsPanel` und
+  `UndoRedoControls` folgen.

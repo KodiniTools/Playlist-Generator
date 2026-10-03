@@ -182,6 +182,15 @@ const translations = {
     history_format_changed: 'Format geändert',
     history_replace_mode_changed: 'Ersetzen-Option geändert',
     replace_list_option: 'Bestehende Liste ersetzen',
+    files_panel_title: 'Dateien',
+    drop_zone_title: 'Dateien oder Ordner hierher ziehen',
+    drop_zone_hint: 'oder Strg+V zum Einfügen',
+    file_list_label: 'Dateiliste',
+    file_list_include: 'In Wiedergabeliste aufnehmen',
+    file_list_drag_handle: 'Verschieben, auch mit Alt und Pfeiltasten',
+    file_list_remove: 'Entfernen',
+    file_list_empty_title: 'Noch keine Dateien',
+    file_list_empty_text: 'Füge Audiodateien hinzu oder zieh sie hierher.',
 
     // Shared Files (audiokonverter)
     sharedFilesLoading: '{count} Datei(en) vom Audio Konverter werden importiert…',
@@ -462,6 +471,15 @@ const translations = {
     history_format_changed: 'Format changed',
     history_replace_mode_changed: 'Replace option changed',
     replace_list_option: 'Replace existing list',
+    files_panel_title: 'Files',
+    drop_zone_title: 'Drop files or folders here',
+    drop_zone_hint: 'or Ctrl+V to paste',
+    file_list_label: 'File list',
+    file_list_include: 'Include in playlist',
+    file_list_drag_handle: 'Move, also with Alt and arrow keys',
+    file_list_remove: 'Remove',
+    file_list_empty_title: 'No files yet',
+    file_list_empty_text: 'Add audio files or drop them here.',
 
     // Shared Files (audiokonverter)
     sharedFilesLoading: 'Importing {count} file(s) from Audio Converter…',
