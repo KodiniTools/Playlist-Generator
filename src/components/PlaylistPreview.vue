@@ -131,6 +131,8 @@
   const emit = defineEmits<{
     'update:outputFormat': [format: OutputFormat]
     save: []
+    /** Nach erfolgreichem Kopieren; die AppPage bietet daraufhin den Texteditor an. */
+    copied: []
   }>()
 
   const { t } = useTranslation()
@@ -180,6 +182,7 @@
     try {
       await navigator.clipboard.writeText(props.playlistContent)
       toast.success(t.value('toast_copied'))
+      emit('copied')
     } catch {
       toast.error(t.value('toast_copy_error'))
     }

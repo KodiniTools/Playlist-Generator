@@ -85,6 +85,16 @@ src/
 - **ToolsGrid**: Grid mit weiteren Tools
 - **FaqPage** (`src/views/`): Häufig gestellte Fragen
 
+## Übergabe an den Kodini Texteditor
+
+Nach **Kopieren** oder **Speichern unter…** bietet ein Dialog an, die Wiedergabeliste im
+[Kodini Texteditor](https://kodinitools.com/texteditor/) weiterzubearbeiten („Im Texteditor
+öffnen“ / „Nicht jetzt“). Bei Zustimmung legt die App die Datei unter
+`localStorage['kodinitools-texteditor-handoff-v1']` ab (`{ version: 1, source, name, content,
+mimeType, sharedAt }`) und öffnet `https://kodinitools.com/texteditor/app?source=playlist_generator`
+in einem neuen Tab. Der Editor übernimmt den Eintrag beim Start als neues Dokument und entfernt ihn.
+Umsetzung: `src/utils/textEditorHandoff.ts` (getestet), Dialog in `src/views/AppPage.vue`.
+
 ## Browser-Kompatibilität
 
 Die Anwendung nutzt moderne Web-APIs:
