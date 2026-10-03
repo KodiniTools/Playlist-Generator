@@ -3,6 +3,7 @@
     <Transition name="ui-dialog">
       <div v-if="open" class="ui-dialog__backdrop" @click.self="emit('close')">
         <div
+          :id="dialogId"
           ref="panel"
           class="ui-dialog"
           role="dialog"
@@ -43,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-  import { nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
+  import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
   import UiIconButton from './UiIconButton.vue'
 
   /**
@@ -57,6 +58,8 @@
       title: string
       description?: string
       closeLabel?: string
+      /** Eigene id, z. B. für aria-controls am auslösenden Button. */
+      id?: string
     }>(),
     { closeLabel: 'Schließen' },
   )
@@ -65,9 +68,10 @@
     close: []
   }>()
 
-  const id = useId()
-  const titleId = `ui-dialog-${id}-title`
-  const descriptionId = `ui-dialog-${id}-description`
+  const generatedId = useId()
+  const dialogId = computed(() => props.id ?? `ui-dialog-${generatedId}`)
+  const titleId = computed(() => `${dialogId.value}-title`)
+  const descriptionId = computed(() => `${dialogId.value}-description`)
 
   const panel = ref<HTMLElement | null>(null)
   let previouslyFocused: HTMLElement | null = null

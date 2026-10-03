@@ -36,6 +36,15 @@ describe('UiDialog', () => {
     expect(wrapper.emitted('close')).toHaveLength(3)
   })
 
+  it('übernimmt eine eigene id für aria-controls', () => {
+    const wrapper = mount(UiDialog, {
+      props: { open: true, title: 'Tastaturkürzel', id: 'shortcuts-panel' },
+      global: { stubs: { teleport: true } },
+    })
+    expect(wrapper.get('[role="dialog"]').attributes('id')).toBe('shortcuts-panel')
+    expect(wrapper.get('h2').attributes('id')).toBe('shortcuts-panel-title')
+  })
+
   it('schließt nicht bei Klicks innerhalb des Dialogs', async () => {
     const wrapper = mountDialog(true)
     await wrapper.get('[role="dialog"]').trigger('click')

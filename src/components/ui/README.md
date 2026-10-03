@@ -22,7 +22,7 @@ import { UiButton, UiPanel, UiTextField } from '@/components/ui'
 | `UiTextField`        | Einzeiliges Textfeld mit Label                      | `v-model`, `label`, `hint`, `error` (aria-invalid, role=alert), `required`, `disabled`, Attrs → input                                 |
 | `UiPanel`            | Flache Fläche mit Kopfzeile                         | `title`, `headingLevel` 2 · 3, `count`, `padded`, Slot `actions`                                                                      |
 | `UiToast`            | Benachrichtigung                                    | `message`, `type` success · error · info, `actionLabel`, `dismissLabel`, `dismissOnClick`; Events `action`, `dismiss`                 |
-| `UiDialog`           | Modaler Dialog, teleportiert nach body              | `open`, `title`, `description`, Slots default · `footer`; Event `close` (Escape, Hintergrund, Button)                                 |
+| `UiDialog`           | Modaler Dialog, teleportiert nach body              | `open`, `title`, `description`, `id` (für aria-controls), Slots default · `footer`; Event `close` (Escape, Hintergrund, Button)       |
 | `UiKbd`              | Tastenkombination                                   | `keys: string[]`                                                                                                                      |
 | `UiEmptyState`       | Leerzustand                                         | `title`, `text`, Slots `icon` · `action`                                                                                              |
 | `UiFileList`         | Dateiliste als DOM-Liste, Ersatz für FileListCanvas | `items`, `v-model:selectedIndex`, `v-model:checked`, `playingIndex`, `isPlaying`, `labels`; Events `play`, `remove`, `move(from, to)` |
@@ -93,5 +93,6 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
 ## Noch nicht enthalten
 
 - Dropzone und Switch folgen mit der weiteren App-Seite.
-- `PlaylistConfig`, `PlaylistPreview`, `UndoRedoControls` und `ToastContainer` nutzen die Bausteine
-  bereits. `AudioPlayer` und `KeyboardShortcutsPanel` folgen.
+- Alle Komponenten der App-Seite (`PlaylistConfig`, `PlaylistPreview`, `UndoRedoControls`,
+  `ToastContainer`, `AudioPlayer`, `KeyboardShortcutsPanel`) nutzen die Bausteine. Offen sind die
+  Kopfzeile in `AppPage.vue`, die Landing-, FAQ- und Blog-Seiten sowie das ungenutzte `FileListCanvas.vue`.
