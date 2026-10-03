@@ -24,24 +24,6 @@
           <span v-if="hasContent" class="playlist-preview__line-count">
             {{ lineCount }} {{ t('lines') }}
           </span>
-          <UiIconButton
-            size="sm"
-            :label="t('button_copy')"
-            :disabled="!hasContent"
-            @click="handleCopy"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.75"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg>
-          </UiIconButton>
         </div>
 
         <ol v-if="hasContent" class="playlist-preview__lines">
@@ -126,7 +108,7 @@
 
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
-  import { UiButton, UiCallout, UiEmptyState, UiIconButton, UiPanel, UiSelect } from './ui'
+  import { UiButton, UiCallout, UiEmptyState, UiPanel, UiSelect } from './ui'
   import type { SelectOption } from './ui'
   import type { OutputFormat } from '../composables/usePlaylist'
   import { useToast } from '../composables/useToast'
@@ -245,7 +227,7 @@
     display: flex;
     align-items: center;
     gap: var(--ds-space-2);
-    padding: var(--ds-space-2) var(--ds-space-2) var(--ds-space-2) var(--ds-space-3);
+    padding: var(--ds-space-2) var(--ds-space-3);
     border-bottom: var(--ds-border-width) solid var(--ds-border);
   }
 
