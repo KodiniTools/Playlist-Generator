@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 
-const translations = {
+/** Übersetzungstabellen je Sprache; exportiert für Tests und Tooling. */
+export const translations = {
   de: {
     // Meta tags
     meta_title: 'Audio Wiedergabeliste Generator - M3U, XSPF & JSON Wiedergabelisten Erstellen',
@@ -84,12 +85,10 @@ const translations = {
     click_to_upload: 'dateien auswählen oder hierher ziehen...',
     drop_files_here: 'dateien hier ablegen...',
     files_selected: 'dateien ausgewählt',
-    canvas_title: 'interaktive trackliste',
     select_all: 'Alle auswählen',
     button_clear_title: 'Liste leeren',
     stats_tracks: 'Tracks',
     duration_approx_title: 'Geschätzte Gesamtdauer (noch nicht alle Tracks abgespielt)',
-    duration_exact_title: 'Exakte Gesamtdauer',
     label_sort: 'Abspielreihenfolge festlegen',
     sort_alpha: 'Alphabetisch',
     sort_date: 'Nach Datum',
@@ -379,12 +378,10 @@ const translations = {
     click_to_upload: 'choose files or drag here...',
     drop_files_here: 'drop files here...',
     files_selected: 'files selected',
-    canvas_title: 'interactive track list',
     select_all: 'Select all',
     button_clear_title: 'Clear List',
     stats_tracks: 'Tracks',
     duration_approx_title: 'Estimated total duration (not all tracks played yet)',
-    duration_exact_title: 'Exact total duration',
     label_sort: '2. Set Playback Order',
     sort_alpha: 'Alphabetical',
     sort_date: 'By Date',
