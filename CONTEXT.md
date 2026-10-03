@@ -19,7 +19,6 @@ Diese Datei dokumentiert den technischen Kontext des Playlist-Generator-Projekts
 
 | Technologie    | Version | Beschreibung            |
 | -------------- | ------- | ----------------------- |
-| **Pinia**      | ^3.0.3  | Vue State Management    |
 | **Vue Router** | ^4.5.1  | Client-seitiges Routing |
 
 ### Testing
@@ -77,7 +76,6 @@ Playlist-Generator/
 │   ├── router/                   # Vue Router Konfiguration
 │   │   └── index.ts              # Routen-Definitionen
 │   │
-│   ├── stores/                   # Pinia State Management
 │   │   └── counter.ts            # Beispiel-Store
 │   │
 │   ├── assets/                   # Statische Assets
