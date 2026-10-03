@@ -1,5 +1,9 @@
 <template>
-  <div :class="['ui-toast', `ui-toast--${type}`]" :role="type === 'error' ? 'alert' : 'status'">
+  <div
+    :class="['ui-toast', `ui-toast--${type}`, { 'ui-toast--dismissable': dismissOnClick }]"
+    :role="type === 'error' ? 'alert' : 'status'"
+    @click="onRootClick"
+  >
     <span class="ui-toast__icon" aria-hidden="true">
       <svg
         v-if="type === 'success'"
@@ -66,21 +70,30 @@
   /**
    * Eine Benachrichtigung: Statusfarbe als Linie und Icon, flache Fläche,
    * optionale Aktion. Fehler sind role=alert, alles andere role=status.
+   * `dismissOnClick` schließt zusätzlich bei Klick auf die Fläche; der
+   * Schließen-Button bleibt der Weg für Tastatur und Screenreader.
    */
-  withDefaults(
+  const props = withDefaults(
     defineProps<{
       message: string
       type?: ToastType
       actionLabel?: string
       dismissLabel?: string
+      dismissOnClick?: boolean
     }>(),
-    { type: 'info', dismissLabel: 'Schließen' },
+    { type: 'info', dismissLabel: 'Schließen', dismissOnClick: false },
   )
 
   const emit = defineEmits<{
     action: []
     dismiss: []
   }>()
+
+  function onRootClick(event: MouseEvent) {
+    if (!props.dismissOnClick) return
+    if (event.target instanceof Element && event.target.closest('button')) return
+    emit('dismiss')
+  }
 </script>
 
 <style scoped>
@@ -96,6 +109,10 @@
     background: var(--ds-surface-1);
     color: var(--ds-text);
     box-shadow: var(--ds-shadow-overlay);
+  }
+
+  .ui-toast--dismissable {
+    cursor: pointer;
   }
 
   .ui-toast__icon {

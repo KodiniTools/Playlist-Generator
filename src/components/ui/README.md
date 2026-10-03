@@ -21,7 +21,7 @@ import { UiButton, UiPanel, UiTextField } from '@/components/ui'
 | `UiSelect`           | Natives Select im System-Look                       | `v-model`, `options`, `label` (Pflicht), `inline`, `labelHidden`, `size`; Attrs → select                                              |
 | `UiTextField`        | Einzeiliges Textfeld mit Label                      | `v-model`, `label`, `hint`, `error` (aria-invalid, role=alert), `required`, `disabled`, Attrs → input                                 |
 | `UiPanel`            | Flache Fläche mit Kopfzeile                         | `title`, `headingLevel` 2 · 3, `count`, `padded`, Slot `actions`                                                                      |
-| `UiToast`            | Benachrichtigung                                    | `message`, `type` success · error · info, `actionLabel`; Events `action`, `dismiss`                                                   |
+| `UiToast`            | Benachrichtigung                                    | `message`, `type` success · error · info, `actionLabel`, `dismissLabel`, `dismissOnClick`; Events `action`, `dismiss`                 |
 | `UiDialog`           | Modaler Dialog, teleportiert nach body              | `open`, `title`, `description`, Slots default · `footer`; Event `close` (Escape, Hintergrund, Button)                                 |
 | `UiKbd`              | Tastenkombination                                   | `keys: string[]`                                                                                                                      |
 | `UiEmptyState`       | Leerzustand                                         | `title`, `text`, Slots `icon` · `action`                                                                                              |
@@ -93,5 +93,5 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
 ## Noch nicht enthalten
 
 - Dropzone und Switch folgen mit der weiteren App-Seite.
-- `PlaylistConfig.vue` und `PlaylistPreview.vue` nutzen die Bausteine bereits. `AudioPlayer`,
-  `ToastContainer`, `KeyboardShortcutsPanel` und `UndoRedoControls` folgen.
+- `PlaylistConfig`, `PlaylistPreview`, `UndoRedoControls` und `ToastContainer` nutzen die Bausteine
+  bereits. `AudioPlayer` und `KeyboardShortcutsPanel` folgen.

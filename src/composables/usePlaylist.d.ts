@@ -36,8 +36,9 @@ export function usePlaylist(): {
   setOutputFormat(format: OutputFormat): void
   setReplaceMode(enabled: boolean): void
   generatePlaylist(): void
-  undo(): void
-  redo(): void
+  /** Liefert das Label des rückgängig gemachten Schritts, sonst einen falsy Wert. */
+  undo(): string | null | undefined
+  redo(): string | null | undefined
   canUndo: Ref<boolean>
   canRedo: Ref<boolean>
   undoLabel: Ref<string>
