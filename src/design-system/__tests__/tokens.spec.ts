@@ -1,54 +1,20 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import tokens from '../tokens.json'
 import { breakpoints, colorCssVar, colorToken, cssVar, themeColors } from '../tokens'
+import {
+  collectTokens,
+  normalize,
+  parseBlock,
+  readRelative,
+  resolveFrom,
+  type TokenLeaf,
+} from './tokenTestUtils'
 
-const resolve = (relative: string) => fileURLToPath(new URL(relative, import.meta.url))
-const read = (relative: string) => readFileSync(resolve(relative), 'utf8')
-
-const tokensCss = read('../tokens.css')
-const mainCss = read('../../assets/main.css')
-
-type Declarations = Record<string, string>
-
-interface TokenLeaf {
-  path: string
-  value: string
-  cssVar?: string
-}
-
-const normalize = (value: string) => value.replace(/\s+/g, ' ').trim()
-
-/** Liest alle Custom Properties eines Blocks mit exakt diesem Selektor (keine verschachtelten Blöcke). */
-function parseBlock(css: string, selector: string): Declarations {
-  const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '')
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const match = withoutComments.match(new RegExp(`(^|\\n)${escaped}\\s*\\{([^}]*)\\}`))
-  if (!match) throw new Error(`Block "${selector}" nicht in tokens.css gefunden`)
-
-  const declarations: Declarations = {}
-  for (const [, name, value] of (match[2] ?? '').matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
-    if (name !== undefined && value !== undefined) declarations[name] = normalize(value)
-  }
-  return declarations
-}
-
-/** Sammelt alle Token-Blätter ($value) aus dem JSON mit ihrem Pfad. */
-function collectTokens(node: unknown, path: string[] = []): TokenLeaf[] {
-  if (typeof node !== 'object' || node === null) return []
-  const record = node as Record<string, unknown>
-
-  if ('$value' in record) {
-    const extensions = record.$extensions as { css?: string } | undefined
-    return [{ path: path.join('.'), value: String(record.$value), cssVar: extensions?.css }]
-  }
-
-  return Object.entries(record)
-    .filter(([key]) => !key.startsWith('$'))
-    .flatMap(([key, child]) => collectTokens(child, [...path, key]))
-}
+const base = import.meta.url
+const tokensCss = readRelative(base, '../tokens.css')
+const mainCss = readRelative(base, '../../assets/main.css')
 
 function listFiles(dir: string, extensions: string[]): string[] {
   return readdirSync(dir, { recursive: true, withFileTypes: true })
@@ -56,9 +22,9 @@ function listFiles(dir: string, extensions: string[]): string[] {
     .map((entry) => join(entry.parentPath, entry.name))
 }
 
-const rootBlock = parseBlock(tokensCss, ':root')
-const lightBlock = parseBlock(tokensCss, '.light-theme')
-const dataThemeLightBlock = parseBlock(tokensCss, ":root[data-theme='light']")
+const rootBlock = parseBlock(tokensCss, ':root', 'tokens.css')
+const lightBlock = parseBlock(tokensCss, '.light-theme', 'tokens.css')
+const dataThemeLightBlock = parseBlock(tokensCss, ":root[data-theme='light']", 'tokens.css')
 const allTokens = collectTokens(tokens)
 
 describe('tokens.json ↔ tokens.css', () => {
@@ -129,11 +95,16 @@ describe('Verwendung in Komponenten', () => {
     // Vue-Starter-Reste (nicht eingebunden, nutzen Variablen aus dem ebenfalls ungenutzten base.css)
     const starterLeftovers = ['WelcomeItem.vue', 'TheWelcome.vue', 'HelloWorld.vue']
     const files = [
-      ...listFiles(resolve('../../components'), ['.vue']),
-      ...listFiles(resolve('../../views'), ['.vue']),
-      resolve('../../assets/main.css'),
+      ...listFiles(resolveFrom(base, '../../components'), ['.vue']),
+      ...listFiles(resolveFrom(base, '../../views'), ['.vue']),
+      resolveFrom(base, '../../assets/main.css'),
     ].filter((file) => !starterLeftovers.some((name) => file.endsWith(name)))
-    const defined = new Set([...Object.keys(rootBlock), ...Object.keys(lightBlock)])
+    const v2Css = readRelative(base, '../tokens-v2.css')
+    const defined = new Set([
+      ...Object.keys(rootBlock),
+      ...Object.keys(lightBlock),
+      ...Object.keys(parseBlock(v2Css, ':root', 'tokens-v2.css')),
+    ])
     const undefinedWithoutFallback: string[] = []
 
     for (const file of files) {

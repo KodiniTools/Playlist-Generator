@@ -1,6 +1,8 @@
 /* === Design Tokens (Single Source of Truth) === */
-/* Alle Theme-Variablen (Dark/Light, SSI-Spiegel) und Skalen liegen in src/design-system/tokens.css */
+/* v1: Theme-Variablen (Dark/Light, SSI-Spiegel) und Skalen in src/design-system/tokens.css */
+/* v2: Modernisierungs-Tokens mit Namespace --ds-* in src/design-system/tokens-v2.css */
 @import '../design-system/tokens.css';
+@import '../design-system/tokens-v2.css';
 
 /* === Custom Font (Supreme) === */
 /* Served from the site root: /var/www/kodinitools.com/fonts/ */
