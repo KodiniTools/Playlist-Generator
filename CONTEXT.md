@@ -54,17 +54,13 @@ Diese Datei dokumentiert den technischen Kontext des Playlist-Generator-Projekts
 Playlist-Generator/
 ├── src/                          # Haupt-Quellcode
 │   ├── components/               # Wiederverwendbare Vue-Komponenten
-│   │   ├── AppNavigation.vue     # Top-Navigation mit Mobile-Menü
-│   │   ├── FAQ.vue               # FAQ-Anzeige-Komponente
-│   │   ├── HelloWorld.vue        # Beispiel-Komponente
-│   │   ├── LanguageSwitcher.vue  # Sprachauswahl (DE/EN)
+│   │   ├── AppHeader.vue         # Seitennavigation aller Vue-Seiten
 │   │   ├── PlaylistConfig.vue    # Haupt-Konfigurationsformular
 │   │   ├── PlaylistPreview.vue   # Vorschau und Speichern/Kopieren
-│   │   ├── ThemeSwitcher.vue     # Dark/Light Theme Toggle
 │   │   ├── ToastContainer.vue    # Toast-Benachrichtigungssystem
 │   │   ├── ToolsGrid.vue         # Grid mit anderen Audio-Tools
 │   │   ├── __tests__/            # Komponenten-Tests
-│   │   └── icons/                # SVG-Icon-Komponenten
+│   │   └── ui/                   # Design-System-Komponenten (Ui*)
 │   │
 │   ├── composables/              # Vue Composition API Logik
 │   │   ├── usePlaylist.js        # Kern-Playlist-Logik
@@ -85,7 +81,6 @@ Playlist-Generator/
 │   │   └── counter.ts            # Beispiel-Store
 │   │
 │   ├── assets/                   # Statische Assets
-│   │   ├── base.css              # CSS Reset und Basis-Styles
 │   │   ├── main.css              # Globale Basis-Styles (Reset, Body, SSI-Footer) auf Tokens v2
 │   │   └── logo.svg              # Anwendungs-Logo
 │   │

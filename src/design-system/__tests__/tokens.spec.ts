@@ -92,13 +92,11 @@ describe('main.css', () => {
 
 describe('Verwendung in Komponenten', () => {
   it('nutzt nur definierte Variablen oder gibt einen Fallback an', () => {
-    // Vue-Starter-Reste (nicht eingebunden, nutzen Variablen aus dem ebenfalls ungenutzten base.css)
-    const starterLeftovers = ['WelcomeItem.vue', 'TheWelcome.vue', 'HelloWorld.vue']
     const files = [
       ...listFiles(resolveFrom(base, '../../components'), ['.vue']),
       ...listFiles(resolveFrom(base, '../../views'), ['.vue']),
       resolveFrom(base, '../../assets/main.css'),
-    ].filter((file) => !starterLeftovers.some((name) => file.endsWith(name)))
+    ]
     const v2Css = readRelative(base, '../tokens-v2.css')
     const defined = new Set([
       ...Object.keys(rootBlock),

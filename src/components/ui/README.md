@@ -102,5 +102,5 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
   SSI-Footers (auf Elemente außerhalb von `#app` begrenzt), reduzierte Bewegung und Druck, alles auf
   `--ds-*`. Globale Element-Regeln (`header`, `details`, `input`, …) gibt es nicht mehr; der Test
   `tokensV2.spec.ts` verhindert ihre Rückkehr.
-- Noch auf v1: nur die SSI-Partials außerhalb des Repos (deshalb bleibt `tokens.css` eingebunden)
-  sowie nicht eingebundene Alt-Komponenten (`AppNavigation.vue`, `FAQ.vue`, Vue-Starter-Reste).
+- Noch auf v1: nur die SSI-Partials außerhalb des Repos (deshalb bleibt `tokens.css` eingebunden).
+  Im Repo gibt es keine v1-Nutzer mehr; die Alt-Komponenten und Vue-Starter-Reste sind gelöscht.
