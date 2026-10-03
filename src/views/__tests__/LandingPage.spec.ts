@@ -67,3 +67,19 @@ describe('LandingPage – Kopfleiste', () => {
     expect(wrapper.get('.hero-title').text()).toBe('Audio Wiedergabeliste Generator')
   })
 })
+
+describe('LandingPage – Aktionen', () => {
+  beforeEach(() => {
+    useTranslation().setLanguage('de')
+  })
+
+  it('führt mit UiButtons zur App und zu den Features', () => {
+    const wrapper = mountLandingPage()
+    const { t } = useTranslation()
+    const toApp = wrapper.findAll('a.ui-button--primary[href="/app"]')
+    expect(toApp.map((link) => link.text())).toEqual([t.value('hero_cta'), t.value('cta_button')])
+    expect(wrapper.get('a.ui-button--secondary[href="#features"]').text()).toBe('Mehr erfahren')
+    expect(wrapper.get('a.scroll-indicator').attributes('aria-label')).toBe('Mehr erfahren')
+    expect(wrapper.find('.btn').exists()).toBe(false)
+  })
+})

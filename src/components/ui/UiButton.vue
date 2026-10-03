@@ -1,9 +1,7 @@
 <template>
   <component
-    :is="href ? 'a' : 'button'"
-    :href="href"
-    :type="href ? undefined : type"
-    :disabled="href ? undefined : disabled"
+    :is="tag"
+    v-bind="rootProps"
     :class="[
       'ui-button',
       `ui-button--${variant}`,
@@ -19,14 +17,18 @@
 </template>
 
 <script setup lang="ts">
+  import { computed } from 'vue'
+  import { RouterLink } from 'vue-router'
+  import type { RouteLocationRaw } from 'vue-router'
   import type { ButtonSize, ButtonType, ButtonVariant } from './types'
 
   /**
    * Textbutton in vier Varianten. Primär ist die einzige Vollfläche in Gold,
    * alle anderen sind flach. Click-Listener fallen auf das native Element durch.
-   * Mit `href` rendert er als Link im selben Look (target, rel usw. als Attribute).
+   * Mit `to` rendert er als RouterLink, mit `href` als gewöhnlicher Link,
+   * jeweils im selben Look (target, rel usw. als Attribute).
    */
-  withDefaults(
+  const props = withDefaults(
     defineProps<{
       variant?: ButtonVariant
       size?: ButtonSize
@@ -34,9 +36,19 @@
       disabled?: boolean
       block?: boolean
       href?: string
+      to?: RouteLocationRaw
     }>(),
     { variant: 'secondary', size: 'md', type: 'button', disabled: false, block: false },
   )
+
+  const tag = computed(() => (props.to ? RouterLink : props.href ? 'a' : 'button'))
+
+  /** Nur die Attribute des jeweiligen Elements, damit kein `href: undefined` den RouterLink stört. */
+  const rootProps = computed(() => {
+    if (props.to) return { to: props.to }
+    if (props.href) return { href: props.href }
+    return { type: props.type, disabled: props.disabled }
+  })
 </script>
 
 <style scoped>
@@ -124,6 +136,7 @@
   .ui-button--lg {
     height: var(--ds-control-lg);
     padding: 0 var(--ds-space-5);
+    font-size: var(--ds-text-lg);
   }
 
   .ui-button--block {

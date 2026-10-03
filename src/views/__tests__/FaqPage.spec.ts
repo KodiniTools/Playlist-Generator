@@ -15,6 +15,25 @@ describe('FaqPage', () => {
     expect(wrapper.find('.page-header').exists()).toBe(false)
   })
 
+  it('zeigt den Datenschutzhinweis als Erfolgs-Callout', () => {
+    const wrapper = mountPage(FaqPage)
+    const callout = wrapper.get('.privacy-notice')
+    expect(callout.classes()).toContain('ui-callout--success')
+    expect(callout.get('.ui-callout__title').text()).toBe(useTranslation().t.value('privacy_title'))
+    expect(callout.text()).toContain(useTranslation().t.value('privacy_text'))
+  })
+
+  it('rendert alle neun Fragen übersetzt und führt per UiButton zur App', () => {
+    const wrapper = mountPage(FaqPage)
+    const questions = wrapper.findAll('details')
+    expect(questions).toHaveLength(9)
+    expect(questions[0]?.get('summary').text()).toBe(useTranslation().t.value('faq_q1_title'))
+    expect(wrapper.text()).not.toContain('faq_q')
+    expect(wrapper.get('a.ui-button--primary[href="/app"]').text()).toBe(
+      useTranslation().t.value('cta_button'),
+    )
+  })
+
   it('zeigt den übersetzten Seitentitel', async () => {
     const wrapper = mountPage(FaqPage)
     expect(wrapper.get('h1').text()).toBe('Häufig gestellte Fragen')

@@ -14,7 +14,7 @@ import { UiButton, UiPanel, UiTextField } from '@/components/ui'
 
 | Komponente           | Zweck                                                       | Wichtige Props / Events                                                                                                               |
 | -------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `UiButton`           | Textbutton, mit `href` als Link                             | `variant` primary · secondary · ghost · danger, `size` sm · md · lg, `block`, `href`, Slot `icon`                                     |
+| `UiButton`           | Textbutton; `href` = Link, `to` = RouterLink                | `variant` primary · secondary · ghost · danger, `size` sm · md · lg, `block`, `href`, Slot `icon`                                     |
 | `UiCallout`          | Ruhiger Hinweis im Textfluss                                | `type` info · success · warning · danger, `title`, Slot default                                                                       |
 | `UiIconButton`       | Quadratischer Icon-Button                                   | `label` (Pflicht, wird aria-label), `variant`, `size` sm · md, `round`, `pressed` (aria-pressed)                                      |
 | `UiSegmentedControl` | Eine Option aus wenigen, Radiogroup-Muster                  | `v-model`, `options` `{ value, label, disabled? }`, `label`, `size`; Pfeiltasten wechseln                                             |
@@ -95,5 +95,9 @@ file.size, duration: getDuration(file.name) }))` aus `useDurations`, `checked` a
 - Dropzone und Switch folgen mit der weiteren App-Seite.
 - Die App-Seite ist komplett umgestellt: `AppPage`, `AppHeader`, `OnboardingBanner`, `ToolsGrid`,
   `PlaylistConfig`, `PlaylistPreview`, `UndoRedoControls`, `ToastContainer`, `AudioPlayer` und
-  `KeyboardShortcutsPanel`. Landing-, FAQ- und Blog-Seite nutzen denselben `AppHeader`; ihr
-  restlicher Inhalt läuft noch auf den v1-Variablen. Die alte Canvas-Dateiliste ist entfernt.
+  `KeyboardShortcutsPanel`. Landing-, FAQ- und Blog-Seite laufen ebenfalls komplett auf `--ds-*`
+  (AppHeader, UiButton mit `to`, UiCallout). Der Test `views/__tests__/tokensV2.spec.ts` hält diese
+  Dateien frei von v1-Variablen, Gradients, rgba() und `.light-theme`-Regeln.
+- Noch auf v1: die globalen Regeln in `src/assets/main.css` (Buttons, Karten, FAQ, Footer) und die
+  SSI-Partials. Die Seiten umgehen kollidierende globale Klassen (`.container`, `.card-icon`,
+  `.faq-section`, `.section-title`, `.subtitle`) durch eigene Klassennamen.

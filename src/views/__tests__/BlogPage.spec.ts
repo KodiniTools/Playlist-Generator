@@ -25,4 +25,15 @@ describe('BlogPage', () => {
     expect(wrapper.findAll('.blog-content')).toHaveLength(1)
     expect(wrapper.get('h1').text()).toContain('The Ultimate Audio Playlist Generator')
   })
+
+  it('führt am Ende per UiButton zur App', async () => {
+    const wrapper = mountPage(BlogPage)
+    expect(wrapper.get('.conclusion a.ui-button--primary[href="/app"]').text()).toBe(
+      'Jetzt ausprobieren',
+    )
+
+    useTranslation().setLanguage('en')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.get('.conclusion a.ui-button--primary[href="/app"]').text()).toBe('Try it now')
+  })
 })

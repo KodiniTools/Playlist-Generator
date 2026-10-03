@@ -47,6 +47,21 @@ describe('UiButton', () => {
     expect(wrapper.classes()).toContain('ui-button--primary')
   })
 
+  it('rendert mit to als RouterLink im selben Look', () => {
+    const wrapper = mount(UiButton, {
+      props: { to: '/app', variant: 'primary', size: 'lg' },
+      slots: { default: 'Zur App' },
+      global: { stubs: { RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' } } },
+    })
+    expect(wrapper.element.tagName).toBe('A')
+    expect(wrapper.attributes('href')).toBe('/app')
+    expect(wrapper.attributes('type')).toBeUndefined()
+    expect(wrapper.attributes('disabled')).toBeUndefined()
+    expect(wrapper.classes()).toContain('ui-button--primary')
+    expect(wrapper.classes()).toContain('ui-button--lg')
+    expect(wrapper.text()).toBe('Zur App')
+  })
+
   it('versteckt das Icon aus dem icon-Slot vor Screenreadern', () => {
     const wrapper = mount(UiButton, {
       slots: { default: 'Dateien', icon: '<svg data-test="icon"></svg>' },
