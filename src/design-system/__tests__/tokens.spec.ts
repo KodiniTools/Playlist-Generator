@@ -85,7 +85,12 @@ describe('tokens.json ↔ tokens.css', () => {
 describe('main.css', () => {
   it('importiert tokens.css und definiert selbst keine Theme-Variablen mehr', () => {
     expect(mainCss).toContain("@import '../design-system/tokens.css';")
-    expect(mainCss).not.toMatch(/^\s*--accent-color\s*:/m)
+    // Auf :root und .light-theme definiert main.css keine Variablen. Zuweisungen an
+    // die Custom Properties der SSI-Navigation (.global-nav, z. B. --accent-color)
+    // sind erlaubt, weil sie nur deren eigene Variablen auf Tokens legen.
+    const themeBlocks = [...mainCss.matchAll(/(?:^|\n)\s*(:root|\.light-theme)[^{]*\{([^}]*)\}/g)]
+    expect(themeBlocks.length).toBeGreaterThan(0)
+    for (const [, , body] of themeBlocks) expect(body).not.toMatch(/--[a-z]/)
     expect(mainCss).not.toMatch(/^\s*--color-primary\s*:/m)
   })
 })

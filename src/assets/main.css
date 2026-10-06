@@ -2,7 +2,8 @@
    Playlist Generator · Globale Basis-Styles
    --------------------------------------------------------------------------
    Enthält nur, was keiner Komponente gehört: Token-Imports, Schrift, Reset,
-   Body, die Farbangleichung des SSI-Footers, reduzierte Bewegung und Druck.
+   Body, die Farbangleichung von SSI-Navigation und SSI-Footer, reduzierte
+   Bewegung und Druck.
    Alle Regeln laufen auf den v2-Tokens (--ds-*).
 
    tokens.css (v1) bleibt eingebunden, weil die SSI-Partials (nav, footer,
@@ -76,6 +77,74 @@ footer:not(#app *) a,
 footer:not(#app *) a:hover,
 .footer:not(#app *) a:hover {
   color: var(--ds-text) !important;
+}
+
+/* === SSI-Navigation (Partial /partials/nav.html, außerhalb des Repos) ===
+   Das Partial bringt eigene Farben mit (cremefarbene Leiste, Navy-Text, Indigo-
+   Akzent) und setzt im Dark-Mode feste Hintergründe mit !important. Es stylt
+   sich über Custom Properties auf .global-nav; die werden hier auf die Tokens
+   gelegt, dazu die festen Werte überschrieben. So sitzt die Leiste auf derselben
+   Fläche wie der AppHeader darunter und folgt dem Theme (html[data-theme]).
+   Spezifität bewusst über der des Partials ([data-theme='dark'] .global-nav =
+   0,2,0): html[data-theme] body .global-nav = 0,2,2. Die Regel ohne data-theme
+   deckt den Moment vor dem ersten Theme-Setzen ab. */
+html body .global-nav,
+html[data-theme] body .global-nav {
+  --nav-bg: var(--ds-surface-1);
+  --nav-text: var(--ds-text);
+  --nav-text-hover: var(--ds-text);
+  --nav-bg-hover: var(--ds-surface-2);
+  --nav-border: var(--ds-border);
+  --nav-shadow: transparent;
+  --dropdown-bg: var(--ds-surface-1);
+  --dropdown-border: var(--ds-border);
+  --dropdown-shadow: transparent;
+  --accent-color: var(--ds-accent);
+  background: var(--ds-surface-1) !important;
+  border-bottom: var(--ds-border-width) solid var(--ds-border) !important;
+  box-shadow: none !important;
+}
+
+/* Der Dark-Mode des Partials setzt Textfarben direkt (nicht über --nav-text). */
+html body .global-nav .global-nav-brand,
+html body .global-nav .global-nav-link,
+html body .global-nav .global-nav-dropdown-toggle,
+html body .global-nav .global-nav-dropdown-item,
+html body .global-nav .global-nav-theme-toggle,
+html body .global-nav .global-nav-lang-btn {
+  color: var(--ds-text) !important;
+}
+
+/* Aufklappmenüs: feste Fläche mit Rahmen und Overlay-Schatten (Desktop). */
+html body .global-nav .global-nav-dropdown-menu {
+  background: var(--ds-surface-1) !important;
+  border: var(--ds-border-width) solid var(--ds-border) !important;
+  box-shadow: var(--ds-shadow-overlay) !important;
+}
+
+/* Aktive Sprache wie der Primärbutton der App: Gold mit Navy-Text. */
+html body .global-nav .global-nav-lang-btn.active {
+  background: var(--ds-accent) !important;
+  color: var(--ds-on-accent) !important;
+}
+
+html body .global-nav .global-nav-theme-toggle:hover {
+  box-shadow: none !important;
+}
+
+/* Mobil: ausgeklapptes Menü und eingebettete Untermenüs auf Tokens. */
+@media (max-width: 768px) {
+  html body .global-nav .global-nav-links {
+    background: var(--ds-surface-1) !important;
+    border-top: var(--ds-border-width) solid var(--ds-border);
+    box-shadow: var(--ds-shadow-overlay) !important;
+  }
+
+  html body .global-nav .global-nav-dropdown-menu {
+    background: var(--ds-surface-2) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
 }
 
 /* === Reduzierte Bewegung === */
