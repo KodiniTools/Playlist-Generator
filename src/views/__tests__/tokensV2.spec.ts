@@ -100,6 +100,27 @@ describe('main.css als reine Basis', () => {
   it('bindet beide Token-Dateien ein und definiert keine eigenen Variablen', () => {
     expect(mainCss).toContain("@import '../design-system/tokens.css';")
     expect(mainCss).toContain("@import '../design-system/tokens-v2.css';")
-    expect(mainCss).not.toMatch(/^\s*--[a-z]/m)
+    const ownVariables = [...mainCss.matchAll(/^\s*(--[a-z][\w-]*)\s*:/gm)]
+      .map((m) => m[1] ?? '')
+      .filter((name) => !name.startsWith('--nav-') && !name.startsWith('--dropdown-'))
+      .filter((name) => name !== '--accent-color')
+    expect(ownVariables).toEqual([])
+  })
+
+  it('legt die Variablen der SSI-Navigation mit ausreichender Spezifität auf Tokens', () => {
+    // Das Partial setzt [data-theme='dark'] .global-nav (0,2,0) mit !important;
+    // der Override muss darüber liegen und beide Themes abdecken.
+    const rule = mainCss.match(
+      /html body \.global-nav,\s*html\[data-theme\] body \.global-nav \{([^}]*)\}/,
+    )
+    expect(rule).not.toBeNull()
+    const body = rule?.[1] ?? ''
+    expect(body).toContain('--nav-bg: var(--ds-surface-1)')
+    expect(body).toContain('--nav-text: var(--ds-text)')
+    expect(body).toContain('--accent-color: var(--ds-accent)')
+    expect(body).toMatch(/background: var\(--ds-surface-1\) !important/)
+    expect(mainCss).toMatch(
+      /\.global-nav-lang-btn\.active \{[^}]*color: var\(--ds-on-accent\) !important/,
+    )
   })
 })

@@ -85,6 +85,15 @@ src/
 - **ToolsGrid**: Grid mit weiteren Tools
 - **FaqPage** (`src/views/`): Häufig gestellte Fragen
 
+## Globale Navigation und Footer (SSI-Partials)
+
+Navigation, Footer und Cookie-Banner kommen als SSI-Partials vom Server (`/partials/*.html`) und
+liegen nicht im Repo. `src/assets/main.css` gleicht sie an die Tokens an: Die Navigation stylt sich
+über eigene Custom Properties auf `.global-nav` (`--nav-bg`, `--nav-text`, …); diese werden auf
+`--ds-*` gelegt und die festen Dark-Mode-Hintergründe des Partials mit höherer Spezifität
+überschrieben. Die Leiste sitzt so auf derselben Fläche wie der `AppHeader` und folgt dem Theme.
+Eine Kopie des Partials zum Nachlesen liegt im Texteditor-Repo unter `partials/nav.html`.
+
 ## Übergabe an den Kodini Texteditor
 
 Nach **Kopieren** oder **Speichern unter…** bietet ein Dialog an, die Wiedergabeliste im
