@@ -5,6 +5,8 @@ import { createHistory } from '../composables/useHistory'
 import { useDurations } from '../composables/useDurations'
 import { useTrackTags } from '../composables/useTrackTags'
 import { compareByArtist } from '../utils/audioTags'
+import { pickForTarget, type FillMode } from '../utils/targetLength'
+import { estimateSeconds } from '../components/ui/fileListFormat'
 import { probeAudio } from '../utils/probeAudio'
 import { formatPlaylist } from '../utils/playlistFormats'
 import { resolveTrackPaths, type PathMode } from '../utils/trackPath'
@@ -12,6 +14,7 @@ import type { SharedFileRecord } from '../utils/sharedFileRepository'
 
 export type SortOption = 'alphabetical' | 'date' | 'artist' | 'random' | 'manual'
 export type { PathMode } from '../utils/trackPath'
+export type { FillMode } from '../utils/targetLength'
 export type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'cue' | 'csv' | 'json' | 'xspf'
 
 export interface AddFilesResult {
@@ -32,6 +35,7 @@ export type HistoryLabel =
   | 'replace_mode_changed'
   | 'path_mode_changed'
   | 'base_path_changed'
+  | 'target_length_applied'
 
 interface Snapshot {
   files: File[]
@@ -144,6 +148,28 @@ export const usePlaylistStore = defineStore('playlist', () => {
     history.record('selection_changed')
     excludedFiles.value = selected ? new Set<File>() : new Set(files.value)
     generatePlaylist()
+  }
+
+  /**
+   * Setzt die Häkchen so, dass die Auswahl höchstens `targetSeconds` lang ist
+   * (fehlende Dauern werden wie in der Dateiliste aus der Größe geschätzt).
+   * Liefert die Zahl der gewählten Titel; 0 = nichts passt, nichts geändert.
+   */
+  const fitToLength = (targetSeconds: number, mode: FillMode): number => {
+    const entries = files.value.map((file) => ({
+      item: file,
+      seconds: getDuration(file.name) ?? estimateSeconds(file.name, file.size),
+    }))
+    const picked = pickForTarget(entries, targetSeconds, mode)
+    if (picked.size === 0) return 0
+    // Gleiche Auswahl wie bisher: kein zusätzlicher Undo-Schritt.
+    if (files.value.every((file) => picked.has(file) === !excludedFiles.value.has(file))) {
+      return picked.size
+    }
+    history.record('target_length_applied')
+    excludedFiles.value = new Set(files.value.filter((file) => !picked.has(file)))
+    generatePlaylist()
+    return picked.size
   }
 
   const supportedFormats = ['.mp3', '.wav', '.flac']
@@ -524,6 +550,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
     someSelected,
     toggleFileSelected,
     setAllSelected,
+    fitToLength,
     addFiles,
     clearFiles,
     removeFile,
