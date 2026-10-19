@@ -4,6 +4,7 @@ import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPer
 import { createHistory } from '../composables/useHistory'
 import { useDurations } from '../composables/useDurations'
 import { probeAudio } from '../utils/probeAudio'
+import { formatPlaylist } from '../utils/playlistFormats'
 import type { SharedFileRecord } from '../utils/sharedFileRepository'
 
 export type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
@@ -51,7 +52,7 @@ interface SaveFilePickerWindow {
  * überdauern damit jede Komponente, die den Store zuerst benutzt.
  */
 export const usePlaylistStore = defineStore('playlist', () => {
-  const { setDuration } = useDurations()
+  const { known: knownDurations, setDuration, getDuration } = useDurations()
   const files = ref<File[]>([])
   const sortOption = ref<SortOption>('alphabetical')
   const playlistName = ref('meine_wiedergabeliste')
@@ -131,161 +132,10 @@ export const usePlaylistStore = defineStore('playlist', () => {
 
   const supportedFormats = ['.mp3', '.wav', '.flac']
 
-  const escapeXml = (str: string) => {
-    return str.replace(/[<>&'"]/g, (char) => {
-      switch (char) {
-        case '<':
-          return '&lt;'
-        case '>':
-          return '&gt;'
-        case '&':
-          return '&amp;'
-        case "'":
-          return '&apos;'
-        case '"':
-          return '&quot;'
-        default:
-          return char
-      }
-    })
-  }
-
-  const generateM3u = (list: File[]) => {
-    let output = '#EXTM3U\n'
-    list.forEach((file) => {
-      const title = file.name.replace(/\.[^/.]+$/, '')
-      output += `#EXTINF:-1,${title}\n${file.name}\n`
-    })
-    return output
-  }
-
-  // M3U8 is the UTF-8 encoded variant of M3U — identical content, but the
-  // .m3u8 extension signals UTF-8 so titles with umlauts / non-Latin
-  // characters are interpreted correctly by players.
-  const generateM3u8 = (list: File[]) => generateM3u(list)
-
-  const generatePls = (list: File[]) => {
-    let output = '[playlist]\n'
-    list.forEach((file, index) => {
-      const n = index + 1
-      const title = file.name.replace(/\.[^/.]+$/, '')
-      output += `File${n}=${file.name}\n`
-      output += `Title${n}=${title}\n`
-      output += `Length${n}=-1\n`
-    })
-    output += `NumberOfEntries=${list.length}\n`
-    output += 'Version=2\n'
-    return output
-  }
-
-  const generateTxt = (list: File[]) => {
-    return list.map((file) => file.name).join('\n') + '\n'
-  }
-
-  // Map an audio extension to a CUE sheet FILE type. Non-standard types
-  // (e.g. FLAC/OGG) fall back to WAVE, which players accept.
-  const cueFileType = (name: string) => {
-    const ext = (name.split('.').pop() ?? '').toLowerCase()
-    if (ext === 'mp3') return 'MP3'
-    if (ext === 'aiff' || ext === 'aif') return 'AIFF'
-    return 'WAVE'
-  }
-
-  const generateCue = (list: File[]) => {
-    let output = `TITLE "${playlistName.value.replace(/"/g, "'")}"\n`
-    list.forEach((file, index) => {
-      const title = file.name.replace(/\.[^/.]+$/, '').replace(/"/g, "'")
-      const trackNum = String(index + 1).padStart(2, '0')
-      output += `FILE "${file.name.replace(/"/g, "'")}" ${cueFileType(file.name)}\n`
-      output += `  TRACK ${trackNum} AUDIO\n`
-      output += `    TITLE "${title}"\n`
-      output += `    INDEX 01 00:00:00\n`
-    })
-    return output
-  }
-
-  // Escape a value for CSV (RFC 4180): wrap in quotes and double any
-  // embedded quotes when it contains a comma, quote or newline.
-  const escapeCsv = (value: string | number) => {
-    const str = String(value)
-    if (/[",\n\r]/.test(str)) {
-      return `"${str.replace(/"/g, '""')}"`
-    }
-    return str
-  }
-
-  const generateCsv = (list: File[]) => {
-    const header = 'Filename,Title,Size (Bytes)'
-    const rows = list.map((file) => {
-      const title = file.name.replace(/\.[^/.]+$/, '')
-      return [escapeCsv(file.name), escapeCsv(title), escapeCsv(file.size ?? '')].join(',')
-    })
-    return [header, ...rows].join('\r\n') + '\r\n'
-  }
-
-  const generateJson = (list: File[]) => {
-    const playlistData = list.map((file) => ({
-      filename: file.name,
-      title: file.name.replace(/\.[^/.]+$/, ''),
-      size: file.size,
-    }))
-    return JSON.stringify(playlistData, null, 4)
-  }
-
-  const generateXspf = (list: File[]) => {
-    const tracks = list
-      .map((file) => {
-        const title = escapeXml(file.name.replace(/\.[^/.]+$/, ''))
-        const location = escapeXml(file.name)
-        return `    <track>\n      <location>${location}</location>\n      <title>${title}</title>\n    </track>`
-      })
-      .join('\n')
-
-    return `<?xml version="1.0" encoding="UTF-8"?>
-  <playlist version="1" xmlns="http://xspf.org/ns/0/">
-    <title>${escapeXml(playlistName.value)}</title>
-    <trackList>
-  ${tracks}
-    </trackList>
-  </playlist>`
-  }
-
   const generatePlaylist = () => {
     // Only checked tracks are written to the playlist.
-    const list = includedFiles()
-    if (list.length === 0) {
-      playlistContent.value = ''
-      return
-    }
-
-    switch (outputFormat.value) {
-      case 'm3u':
-        playlistContent.value = generateM3u(list)
-        break
-      case 'm3u8':
-        playlistContent.value = generateM3u8(list)
-        break
-      case 'pls':
-        playlistContent.value = generatePls(list)
-        break
-      case 'txt':
-        playlistContent.value = generateTxt(list)
-        break
-      case 'cue':
-        playlistContent.value = generateCue(list)
-        break
-      case 'csv':
-        playlistContent.value = generateCsv(list)
-        break
-      case 'json':
-        playlistContent.value = generateJson(list)
-        break
-      case 'xspf':
-        playlistContent.value = generateXspf(list)
-        break
-      default:
-        playlistContent.value = 'Unsupported format.'
-    }
+    const list = includedFiles().map((file) => ({ file, duration: getDuration(file.name) }))
+    playlistContent.value = formatPlaylist(outputFormat.value, list, playlistName.value)
   }
 
   const addFiles = (fileList: Iterable<File> | ArrayLike<File>): AddFilesResult => {
@@ -572,6 +422,14 @@ export const usePlaylistStore = defineStore('playlist', () => {
       generatePlaylist()
     }
   })
+
+  // Laufzeiten werden asynchron gemessen; sobald sich eine ändert, Export auffrischen.
+  watch(
+    () => [...knownDurations.values()],
+    () => {
+      if (files.value.length > 0) generatePlaylist()
+    },
+  )
 
   watch(playlistName, () => {
     // Only XSPF and CUE embed the playlist name in the output
