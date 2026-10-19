@@ -58,6 +58,19 @@ test.describe('Playlist erstellen', () => {
     expect(lines.filter((line) => line.endsWith('.wav'))).toEqual(['a-song.wav', 'b-song.wav'])
   })
 
+  test('schreibt die gemessenen Laufzeiten in M3U und XSPF', async ({ page }) => {
+    await openWithFiles(page)
+
+    await expect
+      .poll(() => preview(page).allTextContents())
+      .toEqual(expect.arrayContaining(['#EXTINF:3,a-song', '#EXTINF:2,b-song']))
+
+    await page.getByRole('combobox', { name: 'Vorschau-Format' }).selectOption('xspf')
+    const xspf = (await preview(page).allTextContents()).join('\n')
+    expect(xspf).toContain('<duration>3000</duration>')
+    expect(xspf).toContain('<duration>2000</duration>')
+  })
+
   test('wechselt das Format und schreibt PLS und JSON', async ({ page }) => {
     await openWithFiles(page)
     const format = page.getByRole('combobox', { name: 'Vorschau-Format' })
