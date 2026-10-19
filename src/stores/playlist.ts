@@ -3,12 +3,14 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPersistence'
 import { createHistory } from '../composables/useHistory'
 import { useDurations } from '../composables/useDurations'
+import { useTrackTags } from '../composables/useTrackTags'
+import { compareByArtist } from '../utils/audioTags'
 import { probeAudio } from '../utils/probeAudio'
 import { formatPlaylist } from '../utils/playlistFormats'
 import { resolveTrackPaths, type PathMode } from '../utils/trackPath'
 import type { SharedFileRecord } from '../utils/sharedFileRepository'
 
-export type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
+export type SortOption = 'alphabetical' | 'date' | 'artist' | 'random' | 'manual'
 export type { PathMode } from '../utils/trackPath'
 export type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'cue' | 'csv' | 'json' | 'xspf'
 
@@ -59,6 +61,7 @@ interface SaveFilePickerWindow {
  */
 export const usePlaylistStore = defineStore('playlist', () => {
   const { known: knownDurations, setDuration, getDuration } = useDurations()
+  const { revision: tagRevision, getTags, readTags } = useTrackTags()
   const files = ref<File[]>([])
   const sortOption = ref<SortOption>('alphabetical')
   const playlistName = ref('meine_wiedergabeliste')
@@ -153,6 +156,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
       file,
       path: paths[i] ?? file.name,
       duration: getDuration(file.name),
+      tags: getTags(file),
     }))
     playlistContent.value = formatPlaylist(outputFormat.value, list, playlistName.value)
   }
@@ -245,6 +249,11 @@ export const usePlaylistStore = defineStore('playlist', () => {
       files.value.sort((a, b) => a.name.localeCompare(b.name))
     } else if (option === 'date') {
       files.value.sort((a, b) => a.lastModified - b.lastModified)
+    } else if (option === 'artist') {
+      // Dateien ohne (gelesene) Tags landen hinten; sobald Tags eintreffen, wird neu sortiert.
+      files.value.sort((a, b) =>
+        compareByArtist({ name: a.name, tags: getTags(a) }, { name: b.name, tags: getTags(b) }),
+      )
     } else if (option === 'random') {
       for (let i = files.value.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
@@ -464,6 +473,19 @@ export const usePlaylistStore = defineStore('playlist', () => {
       if (files.value.length > 0) generatePlaylist()
     },
   )
+
+  // Tags asynchron lesen, sobald Dateien dazukommen (auch nach dem Wiederherstellen).
+  watch(
+    () => files.value.slice(),
+    (list) => void readTags(list),
+  )
+
+  // Neue Tags ändern Titel im Export und bei „Interpret“ die Reihenfolge.
+  watch(tagRevision, () => {
+    if (files.value.length === 0) return
+    if (sortOption.value === 'artist') sortFiles()
+    else generatePlaylist()
+  })
 
   watch([pathMode, basePath], () => {
     if (files.value.length > 0) generatePlaylist()

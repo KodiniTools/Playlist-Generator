@@ -72,6 +72,7 @@ interface FileListItem {
   name: string
   size: number // Bytes
   duration?: number | null // Sekunden, null = noch unbekannt
+  detail?: string // Zusatz hinter dem Namen, z. B. „Interpret – Titel“
 }
 ```
 

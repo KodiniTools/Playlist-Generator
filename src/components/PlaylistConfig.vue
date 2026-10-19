@@ -172,6 +172,8 @@
   import { useDurations } from '../composables/useDurations'
   import { usePlaylist, type SortOption } from '../composables/usePlaylist'
   import { useTranslation } from '../composables/useTranslation'
+  import { useTrackTags } from '../composables/useTrackTags'
+  import type { AudioTags } from '../utils/audioTags'
   import { setRelativePath } from '../utils/trackPath'
 
   /**
@@ -215,6 +217,11 @@
   const { t, currentLanguage } = useTranslation()
   const { known: knownDurations, measureDurations } = useDurations()
   const { isFileSelected, toggleFileSelected, setAllSelected } = usePlaylist()
+  const { getTags } = useTrackTags()
+
+  /** „Interpret – Titel“ aus den Tags als Zusatz zum Dateinamen. */
+  const detailOf = (tags: AudioTags | null) =>
+    [tags?.artist, tags?.title].filter(Boolean).join(' – ') || undefined
 
   const AUDIO_EXTENSIONS = /\.(mp3|wav|flac|ogg|aac|m4a|wma|opus)$/i
 
@@ -238,6 +245,7 @@
       name: file.name,
       size: file.size,
       duration: knownDurations.get(file.name) ?? null,
+      detail: detailOf(getTags(file)),
     })),
   )
 
@@ -262,6 +270,7 @@
   const sortOptions = computed<SegmentedOption[]>(() => [
     { value: 'alphabetical', label: t.value('sort_alpha') },
     { value: 'date', label: t.value('sort_date') },
+    { value: 'artist', label: t.value('sort_artist') },
     { value: 'random', label: t.value('sort_random') },
     { value: 'manual', label: t.value('sort_manual') },
   ])

@@ -37,3 +37,35 @@ export function wav(seconds: number): Buffer {
 export function audioFile(name: string, seconds = 1) {
   return { name, mimeType: 'audio/wav', buffer: wav(seconds) }
 }
+
+/** WAV mit LIST/INFO-Chunk (INAM Titel, IART Interpret, IPRD Album, ITRK Nummer). */
+export function taggedAudioFile(
+  name: string,
+  tags: { title?: string; artist?: string; album?: string; track?: number },
+  seconds = 1,
+) {
+  const fields: [string, string | number | undefined][] = [
+    ['INAM', tags.title],
+    ['IART', tags.artist],
+    ['IPRD', tags.album],
+    ['ITRK', tags.track],
+  ]
+  const chunks = fields
+    .filter(([, value]) => value !== undefined)
+    .map(([id, value]) => {
+      const text = Buffer.from(`${value}\0`, 'utf8')
+      const data = text.length % 2 ? Buffer.concat([text, Buffer.alloc(1)]) : text
+      const header = Buffer.alloc(8)
+      header.write(id, 0)
+      header.writeUInt32LE(text.length, 4)
+      return Buffer.concat([header, data])
+    })
+  const info = Buffer.concat([Buffer.from('INFO'), ...chunks])
+  const list = Buffer.alloc(8)
+  list.write('LIST', 0)
+  list.writeUInt32LE(info.length, 4)
+  const base = wav(seconds)
+  const buffer = Buffer.concat([base, list, info])
+  buffer.writeUInt32LE(buffer.length - 8, 4) // RIFF-Größe anpassen
+  return { name, mimeType: 'audio/wav', buffer }
+}

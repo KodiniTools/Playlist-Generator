@@ -74,7 +74,10 @@
           @change="toggleItem(item)"
           @click.stop
         />
-        <span class="ui-file-list__name" :title="item.name">
+        <span
+          class="ui-file-list__name"
+          :title="item.detail ? `${item.name} – ${item.detail}` : item.name"
+        >
           <svg
             v-if="isRowPlaying(index)"
             class="ui-file-list__playing"
@@ -86,6 +89,7 @@
             <rect x="11.5" y="8" width="2.5" height="6" rx="1" />
           </svg>
           <span class="ui-file-list__name-text">{{ item.name }}</span>
+          <span v-if="item.detail" class="ui-file-list__detail">{{ item.detail }}</span>
         </span>
         <span class="ui-file-list__chip">{{ extensionOf(item.name) || '–' }}</span>
         <span class="ui-file-list__duration">{{ durationText(item) }}</span>
@@ -445,8 +449,12 @@
 
   .ui-file-list__toolbar-slot {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
     gap: var(--ds-space-2);
+    min-width: 0;
+    max-width: 100%;
     margin-left: auto;
   }
 
@@ -559,6 +567,16 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .ui-file-list__detail {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--ds-text-3);
+    font-weight: var(--ds-weight-regular);
   }
 
   .ui-file-list__playing {

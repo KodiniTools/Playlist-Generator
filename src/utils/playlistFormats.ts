@@ -1,16 +1,26 @@
 import type { OutputFormat } from '../stores/playlist'
+import type { AudioTags } from './audioTags'
 
 /**
  * Ein Eintrag der Playlist: Datei, Verweis für den Export (Dateiname, relativer Pfad
- * oder mit Basis, siehe trackPath.ts) und gemessene Dauer in Sekunden (null = unbekannt).
+ * oder mit Basis, siehe trackPath.ts), gemessene Dauer in Sekunden (null = unbekannt)
+ * und gelesene Tags (null = keine, siehe audioTags.ts).
  */
 export interface PlaylistTrack {
   file: File
   path: string
   duration: number | null
+  tags: AudioTags | null
 }
 
-const titleOf = (file: File) => file.name.replace(/\.[^/.]+$/, '')
+/** Titel aus dem Tag, sonst Dateiname ohne Endung. */
+const titleOf = ({ file, tags }: PlaylistTrack) => tags?.title ?? file.name.replace(/\.[^/.]+$/, '')
+
+/** Anzeigename für M3U/PLS: „Interpret - Titel“, wenn beides im Tag steht. */
+const displayTitleOf = (track: PlaylistTrack) =>
+  track.tags?.artist && track.tags.title
+    ? `${track.tags.artist} - ${track.tags.title}`
+    : titleOf(track)
 
 /** Ganze Sekunden für M3U/PLS/CSV/JSON; -1 bzw. leer steht für „unbekannt“. */
 const seconds = (duration: number | null) => (duration === null ? null : Math.round(duration))
@@ -36,19 +46,19 @@ const escapeXml = (str: string) => {
 
 const generateM3u = (list: PlaylistTrack[]) => {
   let output = '#EXTM3U\n'
-  list.forEach(({ file, path, duration }) => {
-    output += `#EXTINF:${seconds(duration) ?? -1},${titleOf(file)}\n${path}\n`
+  list.forEach((track) => {
+    output += `#EXTINF:${seconds(track.duration) ?? -1},${displayTitleOf(track)}\n${track.path}\n`
   })
   return output
 }
 
 const generatePls = (list: PlaylistTrack[]) => {
   let output = '[playlist]\n'
-  list.forEach(({ file, path, duration }, index) => {
+  list.forEach((track, index) => {
     const n = index + 1
-    output += `File${n}=${path}\n`
-    output += `Title${n}=${titleOf(file)}\n`
-    output += `Length${n}=${seconds(duration) ?? -1}\n`
+    output += `File${n}=${track.path}\n`
+    output += `Title${n}=${displayTitleOf(track)}\n`
+    output += `Length${n}=${seconds(track.duration) ?? -1}\n`
   })
   output += `NumberOfEntries=${list.length}\n`
   output += 'Version=2\n'
@@ -70,12 +80,13 @@ const cueFileType = (name: string) => {
 
 const generateCue = (list: PlaylistTrack[], playlistName: string) => {
   let output = `TITLE "${playlistName.replace(/"/g, "'")}"\n`
-  list.forEach(({ file, path }, index) => {
-    const title = titleOf(file).replace(/"/g, "'")
+  const quote = (text: string) => `"${text.replace(/"/g, "'")}"`
+  list.forEach((track, index) => {
     const trackNum = String(index + 1).padStart(2, '0')
-    output += `FILE "${path.replace(/"/g, "'")}" ${cueFileType(file.name)}\n`
+    output += `FILE ${quote(track.path)} ${cueFileType(track.file.name)}\n`
     output += `  TRACK ${trackNum} AUDIO\n`
-    output += `    TITLE "${title}"\n`
+    output += `    TITLE ${quote(titleOf(track))}\n`
+    if (track.tags?.artist) output += `    PERFORMER ${quote(track.tags.artist)}\n`
     output += `    INDEX 01 00:00:00\n`
   })
   return output
@@ -92,39 +103,53 @@ const escapeCsv = (value: string | number) => {
 }
 
 const generateCsv = (list: PlaylistTrack[]) => {
-  const header = 'Filename,Path,Title,Size (Bytes),Duration (Seconds)'
-  const rows = list.map(({ file, path, duration }) =>
+  const header = 'Filename,Path,Title,Size (Bytes),Duration (Seconds),Artist,Album,Track'
+  const rows = list.map((track) =>
     [
-      escapeCsv(file.name),
-      escapeCsv(path),
-      escapeCsv(titleOf(file)),
-      escapeCsv(file.size ?? ''),
-      escapeCsv(seconds(duration) ?? ''),
+      escapeCsv(track.file.name),
+      escapeCsv(track.path),
+      escapeCsv(titleOf(track)),
+      escapeCsv(track.file.size ?? ''),
+      escapeCsv(seconds(track.duration) ?? ''),
+      escapeCsv(track.tags?.artist ?? ''),
+      escapeCsv(track.tags?.album ?? ''),
+      escapeCsv(track.tags?.track ?? ''),
     ].join(','),
   )
   return [header, ...rows].join('\r\n') + '\r\n'
 }
 
 const generateJson = (list: PlaylistTrack[]) => {
-  const playlistData = list.map(({ file, path, duration }) => ({
-    filename: file.name,
-    path,
-    title: titleOf(file),
-    size: file.size,
-    duration: seconds(duration),
+  const playlistData = list.map((track) => ({
+    filename: track.file.name,
+    path: track.path,
+    title: titleOf(track),
+    size: track.file.size,
+    duration: seconds(track.duration),
+    artist: track.tags?.artist ?? null,
+    album: track.tags?.album ?? null,
+    track: track.tags?.track ?? null,
   }))
   return JSON.stringify(playlistData, null, 4)
 }
 
 const generateXspf = (list: PlaylistTrack[], playlistName: string) => {
   const tracks = list
-    .map(({ file, path, duration }) => {
-      const title = escapeXml(titleOf(file))
-      const location = escapeXml(path)
-      // XSPF: <duration> in Millisekunden, optional.
-      const durationTag =
-        duration === null ? '' : `\n      <duration>${Math.round(duration * 1000)}</duration>`
-      return `    <track>\n      <location>${location}</location>\n      <title>${title}</title>${durationTag}\n    </track>`
+    .map((track) => {
+      // Reihenfolge laut XSPF-Schema: location, title, creator, album, trackNum, duration.
+      const lines = [
+        `<location>${escapeXml(track.path)}</location>`,
+        `<title>${escapeXml(titleOf(track))}</title>`,
+      ]
+      const { artist, album, track: trackNum } = track.tags ?? {}
+      if (artist) lines.push(`<creator>${escapeXml(artist)}</creator>`)
+      if (album) lines.push(`<album>${escapeXml(album)}</album>`)
+      if (trackNum !== undefined) lines.push(`<trackNum>${trackNum}</trackNum>`)
+      // <duration> in Millisekunden, optional.
+      if (track.duration !== null) {
+        lines.push(`<duration>${Math.round(track.duration * 1000)}</duration>`)
+      }
+      return `    <track>\n${lines.map((line) => `      ${line}\n`).join('')}    </track>`
     })
     .join('\n')
 

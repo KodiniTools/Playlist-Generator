@@ -1,10 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import { formatPlaylist, type PlaylistTrack } from '../playlistFormats'
+import type { AudioTags } from '../audioTags'
 
-const track = (name: string, duration: number | null, size = 10, path = name): PlaylistTrack => ({
+const track = (
+  name: string,
+  duration: number | null,
+  size = 10,
+  path = name,
+  tags: AudioTags | null = null,
+): PlaylistTrack => ({
   file: new File(['x'.repeat(size)], name),
   path,
   duration,
+  tags,
 })
 
 const LIST = [track('Rock & Roll.mp3', 221.4), track('unbekannt.flac', null, 3)]
@@ -60,9 +68,9 @@ describe('formatPlaylist', () => {
 
   it('csv ergänzt Path und Duration (Seconds), Dauer leer wenn unbekannt', () => {
     expect(formatPlaylist('csv', LIST, 'x')).toBe(
-      'Filename,Path,Title,Size (Bytes),Duration (Seconds)\r\n' +
-        'Rock & Roll.mp3,Rock & Roll.mp3,Rock & Roll,10,221\r\n' +
-        'unbekannt.flac,unbekannt.flac,unbekannt,3,\r\n',
+      'Filename,Path,Title,Size (Bytes),Duration (Seconds),Artist,Album,Track\r\n' +
+        'Rock & Roll.mp3,Rock & Roll.mp3,Rock & Roll,10,221,,,\r\n' +
+        'unbekannt.flac,unbekannt.flac,unbekannt,3,,,,\r\n',
     )
   })
 
@@ -74,6 +82,9 @@ describe('formatPlaylist', () => {
         title: 'Rock & Roll',
         size: 10,
         duration: 221,
+        artist: null,
+        album: null,
+        track: null,
       },
       {
         filename: 'unbekannt.flac',
@@ -81,6 +92,9 @@ describe('formatPlaylist', () => {
         title: 'unbekannt',
         size: 3,
         duration: null,
+        artist: null,
+        album: null,
+        track: null,
       },
     ])
   })
@@ -109,7 +123,7 @@ describe('formatPlaylist', () => {
       ['txt', 'CD1/01 Intro.mp3\n'],
       ['cue', 'FILE "CD1/01 Intro.mp3" MP3\n'],
       ['xspf', '<location>CD1/01 Intro.mp3</location>'],
-      ['csv', '01 Intro.mp3,CD1/01 Intro.mp3,01 Intro,1,60'],
+      ['csv', '01 Intro.mp3,CD1/01 Intro.mp3,01 Intro,1,60,,,'],
       ['json', '"path": "CD1/01 Intro.mp3"'],
     ] as const)('%s verweist auf den Pfad', (format, expected) => {
       expect(formatPlaylist(format, withPath, 'x')).toContain(expected)
@@ -117,6 +131,59 @@ describe('formatPlaylist', () => {
 
     it('behält den Titel aus dem Dateinamen', () => {
       expect(formatPlaylist('m3u', withPath, 'x')).toContain('#EXTINF:60,01 Intro\n')
+    })
+  })
+
+  describe('mit Tags', () => {
+    const tagged = [
+      track('01.mp3', 200, 1, '01.mp3', {
+        title: 'Hyperballad',
+        artist: 'Björk',
+        album: 'Post',
+        track: 4,
+      }),
+      track('02.mp3', null, 1, '02.mp3', { title: 'Nur Titel' }),
+      track('03.mp3', null, 1, '03.mp3', { artist: 'Nur Interpret' }),
+    ]
+
+    it('m3u und pls schreiben „Interpret - Titel“, sonst Tag-Titel oder Dateiname', () => {
+      expect(formatPlaylist('m3u', tagged, 'x')).toBe(
+        '#EXTM3U\n#EXTINF:200,Björk - Hyperballad\n01.mp3\n' +
+          '#EXTINF:-1,Nur Titel\n02.mp3\n#EXTINF:-1,03\n03.mp3\n',
+      )
+      expect(formatPlaylist('pls', tagged, 'x')).toContain('Title1=Björk - Hyperballad\n')
+    })
+
+    it('cue schreibt TITLE und PERFORMER', () => {
+      expect(formatPlaylist('cue', tagged.slice(0, 1), 'x')).toContain(
+        '    TITLE "Hyperballad"\n    PERFORMER "Björk"\n    INDEX 01 00:00:00\n',
+      )
+    })
+
+    it('xspf schreibt creator, album und trackNum in Schema-Reihenfolge', () => {
+      const xml = formatPlaylist('xspf', tagged.slice(0, 1), 'x')
+      expect(xml).toContain(
+        '<title>Hyperballad</title>\n      <creator>Björk</creator>\n' +
+          '      <album>Post</album>\n      <trackNum>4</trackNum>\n      <duration>200000</duration>',
+      )
+    })
+
+    it('csv und json ergänzen Interpret, Album und Nummer', () => {
+      expect(formatPlaylist('csv', tagged.slice(0, 1), 'x')).toContain(
+        '01.mp3,01.mp3,Hyperballad,1,200,Björk,Post,4\r\n',
+      )
+      expect(JSON.parse(formatPlaylist('json', tagged.slice(0, 1), 'x'))).toEqual([
+        {
+          filename: '01.mp3',
+          path: '01.mp3',
+          title: 'Hyperballad',
+          size: 1,
+          duration: 200,
+          artist: 'Björk',
+          album: 'Post',
+          track: 4,
+        },
+      ])
     })
   })
 })
