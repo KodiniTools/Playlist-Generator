@@ -1,8 +1,15 @@
 import { test, expect } from '@playwright/test'
 
-// See here how to get started:
-// https://playwright.dev/docs/intro
-test('visits the app root url', async ({ page }) => {
-  await page.goto('/')
-  await expect(page.locator('h1')).toHaveText('You did it!')
+test.describe('Landing page', () => {
+  test('shows the German hero title', async ({ page }) => {
+    await page.context().addInitScript(() => localStorage.setItem('locale', 'de'))
+    await page.goto('./')
+    await expect(page.locator('h1')).toHaveText('Audio Wiedergabeliste Generator')
+  })
+
+  test('shows the English hero title', async ({ page }) => {
+    await page.context().addInitScript(() => localStorage.setItem('locale', 'en'))
+    await page.goto('./')
+    await expect(page.locator('h1')).toHaveText('Audio Playlist Generator')
+  })
 })
