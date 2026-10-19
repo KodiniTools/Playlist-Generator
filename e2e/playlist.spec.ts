@@ -318,3 +318,31 @@ test('liest Interpret und Titel aus den Tags und sortiert nach Interpret', async
   expect(xspf).toContain('<album>X</album>')
   expect(xspf).toContain('<trackNum>1</trackNum>')
 })
+
+test('wählt Titel bis zur Ziel-Länge aus', async ({ page }) => {
+  await prepare(page, 'de')
+  await page.goto('./app')
+  await page
+    .locator('#fileInput')
+    .setInputFiles([audioFile('a.wav', 25), audioFile('b.wav', 25), audioFile('c.wav', 25)])
+  const rows = page.getByRole('list', { name: 'Dateiliste' }).getByRole('listitem')
+  await expect(rows).toHaveCount(3)
+  await expect(rows.nth(2)).toContainText('0:25')
+
+  await page.getByRole('textbox', { name: 'Ziel-Länge in Minuten' }).fill('1')
+  await page.getByRole('button', { name: 'Auswahl anpassen' }).click()
+
+  const tracks = async () =>
+    (await preview(page).allTextContents()).filter((line) => line.endsWith('.wav'))
+  await expect.poll(tracks).toEqual(['a.wav', 'b.wav'])
+  await expect(
+    page.getByRole('checkbox', { name: 'In Wiedergabeliste aufnehmen: c.wav' }),
+  ).not.toBeChecked()
+
+  await page.getByRole('textbox', { name: 'Ziel-Länge in Minuten' }).fill('0')
+  await page.getByRole('button', { name: 'Auswahl anpassen' }).click()
+  await expect(page.getByText('Bitte eine ganze Zahl von 1 bis 1440 eingeben.')).toBeVisible()
+
+  await page.getByRole('button', { name: /^Rückgängig: / }).click()
+  await expect.poll(tracks).toEqual(['a.wav', 'b.wav', 'c.wav'])
+})

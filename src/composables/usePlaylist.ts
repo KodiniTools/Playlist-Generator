@@ -3,6 +3,7 @@ import { usePlaylistStore } from '../stores/playlist'
 
 export type {
   AddFilesResult,
+  FillMode,
   HistoryLabel,
   OutputFormat,
   PathMode,
@@ -52,6 +53,7 @@ export function usePlaylist() {
     someSelected,
     toggleFileSelected: store.toggleFileSelected,
     setAllSelected: store.setAllSelected,
+    fitToLength: store.fitToLength,
     addFiles: store.addFiles,
     clearFiles: store.clearFiles,
     removeFile: store.removeFile,
