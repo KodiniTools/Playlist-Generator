@@ -16,6 +16,7 @@ Eine moderne Vue 3-Anwendung zum Erstellen von Audio-Playlists in verschiedenen 
 
 - **Vue 3** mit Composition API
 - **Vite** als Build-Tool
+- **Tailwind CSS v4** (nur Utilities mit `tw:`-Präfix, Theme aus den `--ds-*`-Tokens)
 - **Canvas API** für die Dateiliste
 - **File System Access API** für das Speichern
 
@@ -96,6 +97,23 @@ liegen nicht im Repo. `src/assets/main.css` gleicht sie an die Tokens an: Die Na
 `--ds-*` gelegt und die festen Dark-Mode-Hintergründe des Partials mit höherer Spezifität
 überschrieben. Die Leiste sitzt so auf derselben Fläche wie der `AppHeader` und folgt dem Theme.
 Eine Kopie des Partials zum Nachlesen liegt im Texteditor-Repo unter `partials/nav.html`.
+
+## Styling mit Tailwind
+
+`src/assets/tailwind.css` bindet Tailwind v4 ein, mit drei Einschränkungen:
+
+- **Kein Preflight.** Der Reset bleibt in `main.css` (`@layer base`). Preflight würde die SSI-Navigation
+  und den SSI-Footer verändern.
+- **Nur Token-Werte.** Das Default-Theme ist geleert; jede Utility zeigt per `var(--ds-*)` auf
+  `tokens-v2.css`, Hell/Dunkel funktioniert also ohne `dark:`-Varianten. Beispiele: `tw:bg-surface-1`,
+  `tw:text-text-2`, `tw:p-4` (= `--ds-space-4`), `tw:rounded-md`, `tw:h-control-md`, `tw:max-tablet:hidden`.
+  Werte außerhalb der Tokens (`tw:p-7`, `tw:bg-red-500`) erzeugen nichts.
+- **Präfix `tw:`.** Bestehende Klassennamen wie `.hidden` oder `.container` bleiben unberührt.
+
+Utilities liegen in `@layer utilities` und verlieren gegen ungelayerte scoped Styles. Beim Umstellen einer
+Komponente deshalb die scoped Regel für dieselbe Eigenschaft entfernen. Neue Komponenten nutzen
+Utilities, bestehende werden bei Bedarf umgestellt (Pilot: `LandingCta.vue`).
+`src/assets/__tests__/tailwind.spec.ts` sichert diese Regeln ab.
 
 ## Übergabe an den Kodini Texteditor
 

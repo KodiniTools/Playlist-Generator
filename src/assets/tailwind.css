@@ -1,0 +1,98 @@
+/* ==========================================================================
+   Tailwind v4 · nur Utilities, Theme = --ds-* Tokens
+   --------------------------------------------------------------------------
+   - Kein Preflight: Der Reset bleibt in main.css (@layer base). Preflight
+     würde die SSI-Navigation und den SSI-Footer verändern.
+   - Kein Default-Theme (--*: initial): Es gibt nur Utilities für Werte aus
+     tokens-v2.css, z. B. bg-surface-1, text-text-2, p-4, rounded-md.
+     Hell/Dunkel läuft weiter über tokens-v2.css, weil `inline` die
+     var(--ds-*) direkt in die Utility schreibt.
+   - Utilities liegen in @layer utilities. Ungelayerte scoped Styles der
+     Komponenten gewinnen daher immer; beim Umstellen einer Komponente
+     deren scoped Regel für dieselbe Eigenschaft entfernen.
+   ========================================================================== */
+
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/utilities.css' layer(utilities) source('../');
+
+@theme inline reference prefix(tw) {
+  --*: initial;
+
+  /* Breakpoints (layout.breakpoint) */
+  --breakpoint-phone: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+
+  /* Farben */
+  --color-surface-0: var(--ds-surface-0);
+  --color-surface-1: var(--ds-surface-1);
+  --color-surface-2: var(--ds-surface-2);
+  --color-surface-3: var(--ds-surface-3);
+  --color-border: var(--ds-border);
+  --color-border-strong: var(--ds-border-strong);
+  --color-text: var(--ds-text);
+  --color-text-2: var(--ds-text-2);
+  --color-text-3: var(--ds-text-3);
+  --color-accent: var(--ds-accent);
+  --color-accent-hover: var(--ds-accent-hover);
+  --color-accent-soft: var(--ds-accent-soft);
+  --color-on-accent: var(--ds-on-accent);
+  --color-link: var(--ds-link);
+  --color-success: var(--ds-success);
+  --color-warning: var(--ds-warning);
+  --color-danger: var(--ds-danger);
+  --color-info: var(--ds-info);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Typografie */
+  --font-sans: var(--ds-font-sans);
+  --font-mono: var(--ds-font-mono);
+  --text-xs: var(--ds-text-xs);
+  --text-sm: var(--ds-text-sm);
+  --text-md: var(--ds-text-md);
+  --text-lg: var(--ds-text-lg);
+  --text-xl: var(--ds-text-xl);
+  --text-2xl: var(--ds-text-2xl);
+  --text-3xl: var(--ds-text-3xl);
+  --font-weight-regular: var(--ds-weight-regular);
+  --font-weight-medium: var(--ds-weight-medium);
+  --font-weight-semibold: var(--ds-weight-semibold);
+  --font-weight-bold: var(--ds-weight-bold);
+  --leading-normal: var(--ds-leading);
+  --leading-tight: var(--ds-leading-tight);
+  --tracking-tight: var(--ds-tracking-tight);
+
+  /* Abstände (4er-Raster) und feste Größen */
+  --spacing-1: var(--ds-space-1);
+  --spacing-2: var(--ds-space-2);
+  --spacing-3: var(--ds-space-3);
+  --spacing-4: var(--ds-space-4);
+  --spacing-5: var(--ds-space-5);
+  --spacing-6: var(--ds-space-6);
+  --spacing-8: var(--ds-space-8);
+  --spacing-10: var(--ds-space-10);
+  --spacing-12: var(--ds-space-12);
+  --spacing-16: var(--ds-space-16);
+  --spacing-gap: var(--ds-gap);
+  --spacing-gutter: var(--ds-gutter);
+  --spacing-control-sm: var(--ds-control-sm);
+  --spacing-control-md: var(--ds-control-md);
+  --spacing-control-lg: var(--ds-control-lg);
+  --spacing-row: var(--ds-row-height);
+  --spacing-topbar: var(--ds-topbar-height);
+  --spacing-player: var(--ds-player-height);
+  --spacing-icon-sm: var(--ds-icon-sm);
+  --spacing-icon-md: var(--ds-icon-md);
+  --container-page: var(--ds-container);
+
+  /* Form und Effekte */
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-md);
+  --radius-lg: var(--ds-radius-lg);
+  --radius-full: var(--ds-radius-full);
+  --shadow-overlay: var(--ds-shadow-overlay);
+  --shadow-focus: var(--ds-focus-ring);
+  --ease-standard: var(--ds-ease);
+}

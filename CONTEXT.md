@@ -8,12 +8,13 @@ Diese Datei dokumentiert den technischen Kontext des Playlist-Generator-Projekts
 
 ### Core Framework & Build Tools
 
-| Technologie    | Version                 | Beschreibung                              |
-| -------------- | ----------------------- | ----------------------------------------- |
-| **Vue 3**      | ^3.5.22                 | Frontend UI Framework mit Composition API |
-| **Vite**       | ^7.1.7                  | Moderner Build-Tool und Dev-Server        |
-| **TypeScript** | ~5.9.0                  | Typsicheres JavaScript                    |
-| **Node.js**    | ^20.19.0 \|\| >=22.12.0 | Runtime-Umgebung                          |
+| Technologie    | Version                 | Beschreibung                               |
+| -------------- | ----------------------- | ------------------------------------------ |
+| **Vue 3**      | ^3.5.22                 | Frontend UI Framework mit Composition API  |
+| **Vite**       | ^7.1.7                  | Moderner Build-Tool und Dev-Server         |
+| **TypeScript** | ~5.9.0                  | Typsicheres JavaScript                     |
+| **Tailwind**   | ^4.3.3                  | Utilities (`tw:`), Theme = `--ds-*`-Tokens |
+| **Node.js**    | ^20.19.0 \|\| >=22.12.0 | Runtime-Umgebung                           |
 
 ### State Management & Routing
 
