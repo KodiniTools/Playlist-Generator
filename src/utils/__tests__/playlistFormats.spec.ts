@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { formatPlaylist, type PlaylistTrack } from '../playlistFormats'
 
-const track = (name: string, duration: number | null, size = 10): PlaylistTrack => ({
+const track = (name: string, duration: number | null, size = 10, path = name): PlaylistTrack => ({
   file: new File(['x'.repeat(size)], name),
+  path,
   duration,
 })
 
@@ -57,18 +58,30 @@ describe('formatPlaylist', () => {
     )
   })
 
-  it('csv ergänzt die Spalte Duration (Seconds), leer wenn unbekannt', () => {
+  it('csv ergänzt Path und Duration (Seconds), Dauer leer wenn unbekannt', () => {
     expect(formatPlaylist('csv', LIST, 'x')).toBe(
-      'Filename,Title,Size (Bytes),Duration (Seconds)\r\n' +
-        'Rock & Roll.mp3,Rock & Roll,10,221\r\n' +
-        'unbekannt.flac,unbekannt,3,\r\n',
+      'Filename,Path,Title,Size (Bytes),Duration (Seconds)\r\n' +
+        'Rock & Roll.mp3,Rock & Roll.mp3,Rock & Roll,10,221\r\n' +
+        'unbekannt.flac,unbekannt.flac,unbekannt,3,\r\n',
     )
   })
 
   it('json ergänzt duration in Sekunden, null wenn unbekannt', () => {
     expect(JSON.parse(formatPlaylist('json', LIST, 'x'))).toEqual([
-      { filename: 'Rock & Roll.mp3', title: 'Rock & Roll', size: 10, duration: 221 },
-      { filename: 'unbekannt.flac', title: 'unbekannt', size: 3, duration: null },
+      {
+        filename: 'Rock & Roll.mp3',
+        path: 'Rock & Roll.mp3',
+        title: 'Rock & Roll',
+        size: 10,
+        duration: 221,
+      },
+      {
+        filename: 'unbekannt.flac',
+        path: 'unbekannt.flac',
+        title: 'unbekannt',
+        size: 3,
+        duration: null,
+      },
     ])
   })
 
@@ -85,5 +98,25 @@ describe('formatPlaylist', () => {
     expect(
       new DOMParser().parseFromString(xml, 'application/xml').querySelector('parsererror'),
     ).toBeNull()
+  })
+
+  describe('mit Pfad statt Dateiname', () => {
+    const withPath = [track('01 Intro.mp3', 60, 1, 'CD1/01 Intro.mp3')]
+
+    it.each([
+      ['m3u', '\nCD1/01 Intro.mp3\n'],
+      ['pls', 'File1=CD1/01 Intro.mp3\n'],
+      ['txt', 'CD1/01 Intro.mp3\n'],
+      ['cue', 'FILE "CD1/01 Intro.mp3" MP3\n'],
+      ['xspf', '<location>CD1/01 Intro.mp3</location>'],
+      ['csv', '01 Intro.mp3,CD1/01 Intro.mp3,01 Intro,1,60'],
+      ['json', '"path": "CD1/01 Intro.mp3"'],
+    ] as const)('%s verweist auf den Pfad', (format, expected) => {
+      expect(formatPlaylist(format, withPath, 'x')).toContain(expected)
+    })
+
+    it('behält den Titel aus dem Dateinamen', () => {
+      expect(formatPlaylist('m3u', withPath, 'x')).toContain('#EXTINF:60,01 Intro\n')
+    })
   })
 })

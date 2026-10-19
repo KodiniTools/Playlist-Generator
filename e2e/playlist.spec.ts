@@ -212,3 +212,78 @@ test('übernimmt geteilte Dateien aus dem Audio-Konverter und verwirft unlesbare
   await expect(rows.nth(0)).toContainText('good.wav')
   await expect(rows.nth(0)).toContainText('0:02')
 })
+
+test('schreibt relative Pfade und Basis-URL für einen gezogenen Ordner', async ({ page }) => {
+  await prepare(page, 'de')
+  await page.goto('./app')
+
+  // Drop eines Ordners "Musik" mit CD1/CD2 über die File-and-Directory-Entries-API,
+  // so wie der Browser sie beim Ziehen aus dem Dateimanager liefert.
+  const dropzone = page.locator('.playlist-config__dropzone')
+  await expect(dropzone).toBeVisible()
+  await dropzone.evaluate((element) => {
+    type Entry = Record<string, unknown>
+    const fileEntry = (fullPath: string): Entry => ({
+      isFile: true,
+      isDirectory: false,
+      fullPath,
+      file: (done: (file: File) => void) =>
+        done(new File(['x'], fullPath.split('/').pop() ?? '', { type: 'audio/wav' })),
+    })
+    const dirEntry = (fullPath: string, children: Entry[]): Entry => ({
+      isFile: false,
+      isDirectory: true,
+      fullPath,
+      createReader: () => {
+        let read = false
+        return {
+          readEntries: (done: (entries: Entry[]) => void) => {
+            done(read ? [] : children)
+            read = true
+          },
+        }
+      },
+    })
+    const root = dirEntry('/Musik', [
+      dirEntry('/Musik/CD1', [fileEntry('/Musik/CD1/a song.wav')]),
+      dirEntry('/Musik/CD2', [fileEntry('/Musik/CD2/b-song.wav')]),
+    ])
+    const drop = new Event('drop', { bubbles: true, cancelable: true })
+    Object.defineProperty(drop, 'dataTransfer', {
+      value: { items: [{ webkitGetAsEntry: () => root, getAsFile: () => null }] },
+    })
+    element.dispatchEvent(drop)
+  })
+  await expect(page.getByRole('list', { name: 'Dateiliste' }).getByRole('listitem')).toHaveCount(2)
+
+  await page.getByRole('radio', { name: 'Relativer Pfad' }).click()
+  await expect
+    .poll(() => preview(page).allTextContents())
+    .toEqual(expect.arrayContaining(['CD1/a song.wav', 'CD2/b-song.wav']))
+  await expect(page.getByText('Pfade beginnen beim gemeinsamen Ordner')).toBeVisible()
+
+  await page
+    .getByRole('textbox', { name: 'Basis-Pfad oder URL (optional)' })
+    .fill('https://example.com/musik')
+  await expect
+    .poll(() => preview(page).allTextContents())
+    .toEqual(expect.arrayContaining(['https://example.com/musik/CD1/a%20song.wav']))
+
+  // Eine lose Datei dazu: Es gibt keinen gemeinsamen Ordner mehr, "Musik/" bleibt im Pfad.
+  await page.locator('#fileInput').setInputFiles([audioFile('c.wav')])
+  await expect
+    .poll(() => preview(page).allTextContents())
+    .toEqual(
+      expect.arrayContaining([
+        'https://example.com/musik/Musik/CD1/a%20song.wav',
+        'https://example.com/musik/c.wav',
+      ]),
+    )
+
+  // Pfade und Einstellungen überstehen das Neuladen.
+  await expect.poll(() => persisted(page)).toMatchObject({ files: 3 })
+  await page.reload()
+  await expect
+    .poll(() => preview(page).allTextContents())
+    .toEqual(expect.arrayContaining(['https://example.com/musik/Musik/CD2/b-song.wav']))
+})

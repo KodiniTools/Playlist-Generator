@@ -9,6 +9,8 @@
  *   - meta:  a single record        { key, sortOption, playlistName, ... }
  */
 
+import { relativePathOf, setRelativePath } from './trackPath'
+
 const DB_NAME = 'kodinitools-playlist-generator'
 const FILES_STORE = 'files'
 const META_STORE = 'meta'
@@ -21,6 +23,8 @@ export interface PersistedMeta {
   playlistName: string
   outputFormat: string
   replaceMode: boolean
+  pathMode: string
+  basePath: string
   excludedNames: string[]
 }
 
@@ -33,6 +37,8 @@ interface FileRecord {
   name: string
   blob: Blob
   lastModified?: number
+  /** Pfad ab dem gewählten Ordner, nur wenn er vom Dateinamen abweicht. */
+  relativePath?: string
 }
 
 function hasIndexedDB() {
@@ -87,7 +93,15 @@ export async function saveFiles(files: File[]): Promise<void> {
     await runTx(db, FILES_STORE, 'readwrite', (store) => {
       store.clear()
       files.forEach((file, idx) => {
-        store.put({ idx, name: file.name, blob: file, lastModified: file.lastModified })
+        const record: FileRecord = {
+          idx,
+          name: file.name,
+          blob: file,
+          lastModified: file.lastModified,
+        }
+        const relativePath = relativePathOf(file)
+        if (relativePath !== file.name) record.relativePath = relativePath
+        store.put(record)
       })
     })
   } finally {
@@ -119,9 +133,11 @@ export async function loadState(): Promise<{ meta: MetaRecord | null; files: Fil
     ])
     const meta = metaRecs.find((m) => m.key === META_KEY) || null
     fileRecs.sort((a, b) => a.idx - b.idx)
-    const files = fileRecs.map(
-      (r) => new File([r.blob], r.name, { lastModified: r.lastModified || Date.now() }),
-    )
+    const files = fileRecs.map((r) => {
+      const file = new File([r.blob], r.name, { lastModified: r.lastModified || Date.now() })
+      if (r.relativePath) setRelativePath(file, r.relativePath)
+      return file
+    })
     return { meta, files }
   } finally {
     db.close()
