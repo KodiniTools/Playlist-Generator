@@ -63,6 +63,10 @@ Playlist-Generator/
 │   │
 │   ├── composables/              # Vue Composition API Logik
 │   │   ├── usePlaylist.js        # Kern-Playlist-Logik
+│   │   ├── useHistory.js         # Snapshot-Historie (Undo/Redo)
+│   │   ├── useUndoRedo.js        # Undo/Redo-Anbindung an die UI
+│   │   ├── useAudioPlayer.js     # Vorschau-Player
+│   │   ├── useDurations.js       # Laufzeit-Messung der Tracks
 │   │   ├── useTheme.js           # Theme-Verwaltung
 │   │   ├── useToast.js           # Toast-Benachrichtigungen
 │   │   └── useTranslation.js     # Internationalisierung (DE/EN)
@@ -76,7 +80,8 @@ Playlist-Generator/
 │   ├── router/                   # Vue Router Konfiguration
 │   │   └── index.ts              # Routen-Definitionen
 │   │
-│   │   └── counter.ts            # Beispiel-Store
+│   ├── utils/                    # IndexedDB-Persistenz, Datei-Übergabe, Texteditor-Handoff
+│   ├── design-system/            # Design-Tokens v1/v2 (CSS, JSON, TS)
 │   │
 │   ├── assets/                   # Statische Assets
 │   │   ├── main.css              # Globale Basis-Styles (Reset, Body, SSI-Footer) auf Tokens v2
@@ -87,13 +92,13 @@ Playlist-Generator/
 │   └── env.d.ts                  # TypeScript Umgebungsdefinitionen
 │
 ├── e2e/                          # End-to-End Tests
-│   ├── vue.spec.ts               # Playwright E2E Test Suite
+│   ├── vue.spec.ts               # Playwright E2E Smoke-Test (Landing DE/EN)
 │   └── tsconfig.json             # E2E Test TypeScript Config
 │
 ├── .vscode/                      # VS Code Konfiguration
 │
 ├── Konfigurationsdateien
-│   ├── vite.config.ts            # Vite Konfiguration
+│   ├── vite.config.ts            # Vite Konfiguration (einzige, base /playlist_generator/)
 │   ├── vitest.config.ts          # Vitest Konfiguration
 │   ├── tsconfig.json             # Root TypeScript Config
 │   ├── tsconfig.app.json         # App-spezifische TS Config
@@ -107,7 +112,7 @@ Playlist-Generator/
 │   ├── README.md                 # Projekt-Dokumentation
 │   ├── BLOG.md                   # Blog-Inhalte
 │   ├── LICENSE                   # MIT Lizenz
-│   └── deploy.ps1                # PowerShell Deployment-Skript
+│   └── deploy.sh                 # Deployment auf dem Server (build + rsync)
 │
 └── node_modules/                 # Installierte Dependencies
 ```

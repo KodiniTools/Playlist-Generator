@@ -73,9 +73,7 @@ export function useDurations() {
         }
       }
     }
-    await Promise.all(
-      Array.from({ length: Math.min(CONCURRENCY, pending.length) }, worker),
-    )
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, pending.length) }, worker))
   }
 
   return { known, setDuration, getDuration, measureDurations }

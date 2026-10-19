@@ -91,7 +91,10 @@ export async function loadState() {
   if (!hasIndexedDB()) return { meta: null, files: [] }
   const db = await openDB()
   try {
-    const [metaRecs, fileRecs] = await Promise.all([getAll(db, META_STORE), getAll(db, FILES_STORE)])
+    const [metaRecs, fileRecs] = await Promise.all([
+      getAll(db, META_STORE),
+      getAll(db, FILES_STORE),
+    ])
     const meta = metaRecs.find((m) => m.key === META_KEY) || null
     fileRecs.sort((a, b) => a.idx - b.idx)
     const files = fileRecs.map(
