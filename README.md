@@ -34,6 +34,22 @@ npm run dev
 
 Die Anwendung läuft dann auf [http://localhost:5173](http://localhost:5173)
 
+## Tests
+
+```bash
+npm run test:unit                          # Vitest
+npm run build && CI=1 npm run test:e2e -- --project=chromium   # Playwright gegen den Preview-Build
+```
+
+Die E2E-Tests in `e2e/` decken zwei Bereiche ab:
+
+- `pages.spec.ts`: Jede Seite (Start, App, FAQ, Blog) in DE/EN und hell/dunkel. Geprüft werden Überschrift,
+  `data-theme` und die Body-Farben aus `tokens-v2.json`; ein Screenshot hängt am Playwright-Report.
+- `playlist.spec.ts`: Dateien hinzufügen, Formate (M3U, PLS, JSON), Abwahl, Entfernen mit Rückgängig,
+  Speichern (mit gestubbtem `showSaveFilePicker`), Kopieren und Wiederherstellen nach dem Neuladen.
+
+Ohne `CI=1` startet Playwright den Dev-Server auf Port 5173.
+
 ## Build für Production
 
 ```bash
