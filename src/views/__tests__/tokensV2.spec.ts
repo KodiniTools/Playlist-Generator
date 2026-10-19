@@ -7,6 +7,7 @@ const SRC_DIR = resolve(__dirname, '../..')
 /** Dateien, die vollständig auf Tokens v2 (--ds-*) laufen; neue Umstellungen hier ergänzen. */
 const MIGRATED = [
   'assets/main.css',
+  'assets/tailwind.css',
   'views/AppPage.vue',
   'views/LandingPage.vue',
   'views/FaqPage.vue',
@@ -18,7 +19,6 @@ const MIGRATED = [
   'components/landing/LandingFeatureCards.vue',
   'components/landing/LandingDetails.vue',
   'components/landing/LandingTools.vue',
-  'components/landing/LandingCta.vue',
   'components/blog/blogArticle.css',
 ]
 
