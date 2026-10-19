@@ -5,9 +5,11 @@ import { createHistory } from '../composables/useHistory'
 import { useDurations } from '../composables/useDurations'
 import { probeAudio } from '../utils/probeAudio'
 import { formatPlaylist } from '../utils/playlistFormats'
+import { resolveTrackPaths, type PathMode } from '../utils/trackPath'
 import type { SharedFileRecord } from '../utils/sharedFileRepository'
 
 export type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
+export type { PathMode } from '../utils/trackPath'
 export type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'cue' | 'csv' | 'json' | 'xspf'
 
 export interface AddFilesResult {
@@ -26,6 +28,8 @@ export type HistoryLabel =
   | 'name_changed'
   | 'format_changed'
   | 'replace_mode_changed'
+  | 'path_mode_changed'
+  | 'base_path_changed'
 
 interface Snapshot {
   files: File[]
@@ -34,6 +38,8 @@ interface Snapshot {
   playlistName: string
   outputFormat: OutputFormat
   replaceMode: boolean
+  pathMode: PathMode
+  basePath: string
 }
 
 // File System Access API (Chrome/Edge); not part of the standard DOM typings.
@@ -59,6 +65,9 @@ export const usePlaylistStore = defineStore('playlist', () => {
   const outputFormat = ref<OutputFormat>('m3u')
   const playlistContent = ref('')
   const replaceMode = ref(false)
+  // Wie der Export auf Dateien verweist; siehe utils/trackPath.ts.
+  const pathMode = ref<PathMode>('name')
+  const basePath = ref('')
   const selectedFileIndex = ref(-1)
   // Files that are UNCHECKED (excluded from the generated playlist). Tracked by
   // File reference. Default = empty → every file is checked/included.
@@ -75,6 +84,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
     playlistName: playlistName.value,
     outputFormat: outputFormat.value,
     replaceMode: replaceMode.value,
+    pathMode: pathMode.value,
+    basePath: basePath.value,
   })
 
   const restoreSnapshot = (snapshot: Snapshot) => {
@@ -84,6 +95,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
     playlistName.value = snapshot.playlistName
     outputFormat.value = snapshot.outputFormat
     replaceMode.value = snapshot.replaceMode
+    pathMode.value = snapshot.pathMode
+    basePath.value = snapshot.basePath
     // Keep the UI selection inside the (possibly shorter) list.
     if (selectedFileIndex.value >= files.value.length) {
       selectedFileIndex.value = files.value.length - 1
@@ -134,7 +147,13 @@ export const usePlaylistStore = defineStore('playlist', () => {
 
   const generatePlaylist = () => {
     // Only checked tracks are written to the playlist.
-    const list = includedFiles().map((file) => ({ file, duration: getDuration(file.name) }))
+    const included = includedFiles()
+    const paths = resolveTrackPaths(included, pathMode.value, basePath.value)
+    const list = included.map((file, i) => ({
+      file,
+      path: paths[i] ?? file.name,
+      duration: getDuration(file.name),
+    }))
     playlistContent.value = formatPlaylist(outputFormat.value, list, playlistName.value)
   }
 
@@ -260,6 +279,17 @@ export const usePlaylistStore = defineStore('playlist', () => {
     history.record('replace_mode_changed')
     replaceMode.value = enabled
   }
+  const setPathMode = (mode: PathMode) => {
+    if (mode === pathMode.value) return
+    history.record('path_mode_changed')
+    pathMode.value = mode
+  }
+
+  const setBasePath = (base: string) => {
+    if (base === basePath.value) return
+    history.record('base_path_changed', { coalesceKey: 'basePath' })
+    basePath.value = base
+  }
 
   const handleSharedFiles = async (sharedRecords: SharedFileRecord[]) => {
     let processed = 0
@@ -365,6 +395,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
         playlistName: playlistName.value,
         outputFormat: outputFormat.value,
         replaceMode: replaceMode.value,
+        pathMode: pathMode.value,
+        basePath: basePath.value,
         excludedNames: excludedNamesOf(),
       }).catch((e) => console.warn('Could not persist playlist settings:', e))
     }, 400)
@@ -397,6 +429,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
         if (typeof meta.playlistName === 'string') playlistName.value = meta.playlistName
         if (meta.outputFormat) outputFormat.value = meta.outputFormat as OutputFormat
         if (typeof meta.replaceMode === 'boolean') replaceMode.value = meta.replaceMode
+        if (meta.pathMode === 'name' || meta.pathMode === 'relative') pathMode.value = meta.pathMode
+        if (typeof meta.basePath === 'string') basePath.value = meta.basePath
       }
       if (savedFiles && savedFiles.length) {
         files.value = savedFiles
@@ -431,6 +465,10 @@ export const usePlaylistStore = defineStore('playlist', () => {
     },
   )
 
+  watch([pathMode, basePath], () => {
+    if (files.value.length > 0) generatePlaylist()
+  })
+
   watch(playlistName, () => {
     // Only XSPF and CUE embed the playlist name in the output
     if (files.value.length > 0 && (outputFormat.value === 'xspf' || outputFormat.value === 'cue')) {
@@ -441,7 +479,10 @@ export const usePlaylistStore = defineStore('playlist', () => {
   // Persist on change. Files (heavy) only when the list itself changes;
   // settings + selection (cheap) on their own.
   watch(files, scheduleFilesSave, { deep: true })
-  watch([sortOption, playlistName, outputFormat, replaceMode, excludedFiles], scheduleMetaSave)
+  watch(
+    [sortOption, playlistName, outputFormat, replaceMode, pathMode, basePath, excludedFiles],
+    scheduleMetaSave,
+  )
 
   // Restore any previously persisted playlist as soon as the app uses the store.
   void restorePersistedState()
@@ -470,6 +511,10 @@ export const usePlaylistStore = defineStore('playlist', () => {
     setPlaylistName,
     setOutputFormat,
     setReplaceMode,
+    pathMode,
+    basePath,
+    setPathMode,
+    setBasePath,
     generatePlaylist,
     // Undo / Redo
     undo: history.undo,

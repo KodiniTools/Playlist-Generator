@@ -16,7 +16,31 @@
         {{ t(`format_desc_${localFormat}`) }}
       </p>
 
-      <UiCallout v-if="showPathNotice" type="info">{{ t('notice_m3u') }}</UiCallout>
+      <div class="tw:flex tw:flex-wrap tw:items-end tw:gap-4">
+        <div class="tw:flex tw:flex-col tw:gap-1">
+          <span class="tw:text-sm tw:font-medium tw:text-text-2" aria-hidden="true">
+            {{ t('label_path_mode') }}
+          </span>
+          <UiSegmentedControl
+            :model-value="pathMode"
+            :options="pathModes"
+            :label="t('label_path_mode')"
+            size="sm"
+            @update:model-value="(value) => emit('update:pathMode', value as PathMode)"
+          />
+        </div>
+        <UiTextField
+          class="tw:min-w-0 tw:flex-1 tw:basis-64"
+          :model-value="basePath"
+          :label="t('label_base_path')"
+          :placeholder="t('placeholder_base_path')"
+          spellcheck="false"
+          autocomplete="off"
+          @update:model-value="(value) => emit('update:basePath', value)"
+        />
+      </div>
+
+      <UiCallout v-if="pathNotice" type="info">{{ t(pathNotice) }}</UiCallout>
 
       <div class="playlist-preview__code">
         <div class="playlist-preview__code-header">
@@ -108,9 +132,17 @@
 
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
-  import { UiButton, UiCallout, UiEmptyState, UiPanel, UiSelect } from './ui'
-  import type { SelectOption } from './ui'
-  import type { OutputFormat } from '../composables/usePlaylist'
+  import {
+    UiButton,
+    UiCallout,
+    UiEmptyState,
+    UiPanel,
+    UiSegmentedControl,
+    UiSelect,
+    UiTextField,
+  } from './ui'
+  import type { SegmentedOption, SelectOption } from './ui'
+  import type { OutputFormat, PathMode } from '../composables/usePlaylist'
   import { useToast } from '../composables/useToast'
   import { useTranslation } from '../composables/useTranslation'
 
@@ -124,12 +156,16 @@
       outputFormat?: OutputFormat
       playlistContent?: string
       playlistName?: string
+      pathMode?: PathMode
+      basePath?: string
     }>(),
-    { outputFormat: 'm3u', playlistContent: '', playlistName: '' },
+    { outputFormat: 'm3u', playlistContent: '', playlistName: '', pathMode: 'name', basePath: '' },
   )
 
   const emit = defineEmits<{
     'update:outputFormat': [format: OutputFormat]
+    'update:pathMode': [mode: PathMode]
+    'update:basePath': [base: string]
     save: []
     /** Nach erfolgreichem Kopieren; die AppPage bietet daraufhin den Texteditor an. */
     copied: []
@@ -169,7 +205,16 @@
   const hasContent = computed(() => props.playlistContent.length > 0)
   const lines = computed(() => (hasContent.value ? props.playlistContent.split('\n') : []))
   const lineCount = computed(() => lines.value.length)
-  const showPathNotice = computed(() => !formatsWithoutPaths.includes(localFormat.value))
+  const pathModes = computed<SegmentedOption[]>(() => [
+    { value: 'name', label: t.value('path_mode_name') },
+    { value: 'relative', label: t.value('path_mode_relative') },
+  ])
+
+  // Mit Basis-Pfad/URL sind die Verweise absolut, ein Ablage-Hinweis entfällt.
+  const pathNotice = computed(() => {
+    if (formatsWithoutPaths.includes(localFormat.value) || props.basePath.trim()) return null
+    return props.pathMode === 'relative' ? 'notice_paths_relative' : 'notice_m3u'
+  })
   const fileName = computed(() => `${props.playlistName.trim() || 'playlist'}.${localFormat.value}`)
 
   const isDirective = (line: string) => line.startsWith('#')

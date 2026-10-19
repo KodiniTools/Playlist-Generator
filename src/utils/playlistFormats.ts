@@ -1,8 +1,12 @@
 import type { OutputFormat } from '../stores/playlist'
 
-/** Ein Eintrag der Playlist: Datei plus gemessene Dauer in Sekunden (null = unbekannt). */
+/**
+ * Ein Eintrag der Playlist: Datei, Verweis für den Export (Dateiname, relativer Pfad
+ * oder mit Basis, siehe trackPath.ts) und gemessene Dauer in Sekunden (null = unbekannt).
+ */
 export interface PlaylistTrack {
   file: File
+  path: string
   duration: number | null
 }
 
@@ -32,17 +36,17 @@ const escapeXml = (str: string) => {
 
 const generateM3u = (list: PlaylistTrack[]) => {
   let output = '#EXTM3U\n'
-  list.forEach(({ file, duration }) => {
-    output += `#EXTINF:${seconds(duration) ?? -1},${titleOf(file)}\n${file.name}\n`
+  list.forEach(({ file, path, duration }) => {
+    output += `#EXTINF:${seconds(duration) ?? -1},${titleOf(file)}\n${path}\n`
   })
   return output
 }
 
 const generatePls = (list: PlaylistTrack[]) => {
   let output = '[playlist]\n'
-  list.forEach(({ file, duration }, index) => {
+  list.forEach(({ file, path, duration }, index) => {
     const n = index + 1
-    output += `File${n}=${file.name}\n`
+    output += `File${n}=${path}\n`
     output += `Title${n}=${titleOf(file)}\n`
     output += `Length${n}=${seconds(duration) ?? -1}\n`
   })
@@ -52,7 +56,7 @@ const generatePls = (list: PlaylistTrack[]) => {
 }
 
 const generateTxt = (list: PlaylistTrack[]) => {
-  return list.map(({ file }) => file.name).join('\n') + '\n'
+  return list.map(({ path }) => path).join('\n') + '\n'
 }
 
 // Map an audio extension to a CUE sheet FILE type. Non-standard types
@@ -66,10 +70,10 @@ const cueFileType = (name: string) => {
 
 const generateCue = (list: PlaylistTrack[], playlistName: string) => {
   let output = `TITLE "${playlistName.replace(/"/g, "'")}"\n`
-  list.forEach(({ file }, index) => {
+  list.forEach(({ file, path }, index) => {
     const title = titleOf(file).replace(/"/g, "'")
     const trackNum = String(index + 1).padStart(2, '0')
-    output += `FILE "${file.name.replace(/"/g, "'")}" ${cueFileType(file.name)}\n`
+    output += `FILE "${path.replace(/"/g, "'")}" ${cueFileType(file.name)}\n`
     output += `  TRACK ${trackNum} AUDIO\n`
     output += `    TITLE "${title}"\n`
     output += `    INDEX 01 00:00:00\n`
@@ -88,10 +92,11 @@ const escapeCsv = (value: string | number) => {
 }
 
 const generateCsv = (list: PlaylistTrack[]) => {
-  const header = 'Filename,Title,Size (Bytes),Duration (Seconds)'
-  const rows = list.map(({ file, duration }) =>
+  const header = 'Filename,Path,Title,Size (Bytes),Duration (Seconds)'
+  const rows = list.map(({ file, path, duration }) =>
     [
       escapeCsv(file.name),
+      escapeCsv(path),
       escapeCsv(titleOf(file)),
       escapeCsv(file.size ?? ''),
       escapeCsv(seconds(duration) ?? ''),
@@ -101,8 +106,9 @@ const generateCsv = (list: PlaylistTrack[]) => {
 }
 
 const generateJson = (list: PlaylistTrack[]) => {
-  const playlistData = list.map(({ file, duration }) => ({
+  const playlistData = list.map(({ file, path, duration }) => ({
     filename: file.name,
+    path,
     title: titleOf(file),
     size: file.size,
     duration: seconds(duration),
@@ -112,9 +118,9 @@ const generateJson = (list: PlaylistTrack[]) => {
 
 const generateXspf = (list: PlaylistTrack[], playlistName: string) => {
   const tracks = list
-    .map(({ file, duration }) => {
+    .map(({ file, path, duration }) => {
       const title = escapeXml(titleOf(file))
-      const location = escapeXml(file.name)
+      const location = escapeXml(path)
       // XSPF: <duration> in Millisekunden, optional.
       const durationTag =
         duration === null ? '' : `\n      <duration>${Math.round(duration * 1000)}</duration>`

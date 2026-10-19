@@ -1,7 +1,13 @@
 import { storeToRefs } from 'pinia'
 import { usePlaylistStore } from '../stores/playlist'
 
-export type { AddFilesResult, HistoryLabel, OutputFormat, SortOption } from '../stores/playlist'
+export type {
+  AddFilesResult,
+  HistoryLabel,
+  OutputFormat,
+  PathMode,
+  SortOption,
+} from '../stores/playlist'
 
 /**
  * Zugriff auf den Playlist-Store mit Refs statt entpackter Werte, damit
@@ -16,6 +22,8 @@ export function usePlaylist() {
     outputFormat,
     playlistContent,
     replaceMode,
+    pathMode,
+    basePath,
     selectedFileIndex,
     excludedFiles,
     selectedCount,
@@ -34,6 +42,8 @@ export function usePlaylist() {
     outputFormat,
     playlistContent,
     replaceMode,
+    pathMode,
+    basePath,
     selectedFileIndex,
     excludedFiles,
     isFileSelected: store.isFileSelected,
@@ -51,6 +61,8 @@ export function usePlaylist() {
     setPlaylistName: store.setPlaylistName,
     setOutputFormat: store.setOutputFormat,
     setReplaceMode: store.setReplaceMode,
+    setPathMode: store.setPathMode,
+    setBasePath: store.setBasePath,
     generatePlaylist: store.generatePlaylist,
     // Undo / Redo
     undo: store.undo,

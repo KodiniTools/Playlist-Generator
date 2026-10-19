@@ -43,7 +43,11 @@
           :output-format="outputFormat"
           :playlist-content="playlistContent"
           :playlist-name="playlistName"
+          :path-mode="pathMode"
+          :base-path="basePath"
           @update:output-format="handleFormatChange"
+          @update:path-mode="setPathMode"
+          @update:base-path="setBasePath"
           @save="handleSave"
           @copied="offerTextEditor('copied')"
         />
@@ -151,6 +155,8 @@
     outputFormat,
     playlistContent,
     replaceMode,
+    pathMode,
+    basePath,
     selectedFileIndex,
     addFiles,
     clearFiles,
@@ -160,6 +166,8 @@
     setPlaylistName,
     setOutputFormat,
     setReplaceMode,
+    setPathMode,
+    setBasePath,
     savePlaylist,
     handleSharedFiles,
   } = usePlaylist()

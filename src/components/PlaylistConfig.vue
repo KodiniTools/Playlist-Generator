@@ -172,6 +172,7 @@
   import { useDurations } from '../composables/useDurations'
   import { usePlaylist, type SortOption } from '../composables/usePlaylist'
   import { useTranslation } from '../composables/useTranslation'
+  import { setRelativePath } from '../utils/trackPath'
 
   /**
    * Linkes Panel der App-Seite: Dateien hinzufügen (Dialog, Ordner, Drag & Drop),
@@ -363,6 +364,7 @@
                   ;(entry as FileSystemFileEntry).file(
                     (file) => {
                       if (AUDIO_EXTENSIONS.test(file.name)) {
+                        setRelativePath(file, entry.fullPath)
                         results.push(file)
                         onProgress?.(results.length)
                       }
@@ -417,7 +419,10 @@
         return new Promise<void>((done) => {
           ;(entry as FileSystemFileEntry).file(
             (file) => {
-              if (AUDIO_EXTENSIONS.test(file.name)) collected.push(file)
+              if (AUDIO_EXTENSIONS.test(file.name)) {
+                setRelativePath(file, entry.fullPath)
+                collected.push(file)
+              }
               done()
             },
             () => done(),
