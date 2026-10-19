@@ -346,3 +346,46 @@ test('wählt Titel bis zur Ziel-Länge aus', async ({ page }) => {
   await page.getByRole('button', { name: /^Rückgängig: / }).click()
   await expect.poll(tracks).toEqual(['a.wav', 'b.wav', 'c.wav'])
 })
+
+test('öffnet eine bestehende Playlist und übernimmt Reihenfolge und Auswahl', async ({ page }) => {
+  await prepare(page, 'de')
+  await page.goto('./app')
+  const m3u = Buffer.from('#EXTM3U\n#EXTINF:1,C\nMusik/c.wav\nfehlt.wav\na.wav\n', 'utf8')
+  // Audiodateien und Playlist in einem Schritt, wie aus dem Dateidialog.
+  await page
+    .locator('#fileInput')
+    .setInputFiles([
+      audioFile('a.wav'),
+      audioFile('b.wav'),
+      audioFile('c.wav'),
+      { name: 'roadtrip.m3u', mimeType: 'audio/x-mpegurl', buffer: m3u },
+    ])
+
+  await expect(page.getByText('„roadtrip“ geöffnet: 2 von 3 Titeln gefunden.')).toBeVisible()
+  const rows = page.getByRole('list', { name: 'Dateiliste' }).getByRole('listitem')
+  await expect(rows.nth(0)).toContainText('c.wav')
+  await expect(rows.nth(1)).toContainText('a.wav')
+  await expect(
+    page.getByRole('checkbox', { name: 'In Wiedergabeliste aufnehmen: b.wav' }),
+  ).not.toBeChecked()
+  await expect(page.getByRole('textbox', { name: 'Wiedergabeliste benennen' })).toHaveValue(
+    'roadtrip',
+  )
+
+  // Danach über den eigenen Knopf eine XSPF mit anderer Reihenfolge öffnen.
+  const xspf = Buffer.from(
+    '<?xml version="1.0"?><playlist version="1" xmlns="http://xspf.org/ns/0/"><trackList>' +
+      '<track><location>b.wav</location></track><track><location>c.wav</location></track>' +
+      '</trackList></playlist>',
+  )
+  await page
+    .locator('#playlistInput')
+    .setInputFiles({ name: 'zwei.xspf', mimeType: 'application/xspf+xml', buffer: xspf })
+  await expect(page.getByText('„zwei“ geöffnet: 2 von 2 Titeln gefunden.')).toBeVisible()
+  await expect(page.getByRole('combobox', { name: 'Vorschau-Format' })).toHaveValue('xspf')
+  const xml = (await preview(page).allTextContents()).join('\n')
+  expect(xml.indexOf('<location>b.wav</location>')).toBeLessThan(
+    xml.indexOf('<location>c.wav</location>'),
+  )
+  expect(xml).not.toContain('a.wav')
+})

@@ -136,6 +136,13 @@
   import { useUndoRedo } from '../composables/useUndoRedo'
   import { clearSharedFiles, getSharedFiles } from '../utils/sharedFileRepository'
   import { FORMAT_MIME, openInTextEditor } from '../utils/textEditorHandoff'
+  import {
+    isPlaylistFile,
+    parsePlaylistEntries,
+    playlistFormatOf,
+    playlistNameOf,
+    readPlaylistText,
+  } from '../utils/playlistImport'
 
   type BannerType = 'success' | 'error' | 'warning' | 'info'
 
@@ -159,6 +166,7 @@
     basePath,
     selectedFileIndex,
     addFiles,
+    openPlaylist,
     clearFiles,
     removeFile,
     moveFile,
@@ -318,14 +326,42 @@
     )
   }
 
-  const handleAddFiles = (fileList: File[] | FileList) => {
-    const { added, skipped } = addFiles(fileList)
+  /** Audiodateien hinzufügen; eine mitgegebene Playlist danach öffnen (Reihenfolge, Auswahl). */
+  const handleAddFiles = async (fileList: File[] | FileList) => {
+    const all = Array.from(fileList)
+    const playlist = all.find((file) => isPlaylistFile(file.name))
+    const { added, skipped } = addFiles(all.filter((file) => !isPlaylistFile(file.name)))
     if (added > 0) {
       toast.info(t.value('toast_files_added').replace('{count}', String(added)))
     }
     if (skipped > 0) {
       toast.info(t.value('toast_duplicates_skipped').replace('{count}', String(skipped)))
     }
+    if (playlist) await handleOpenPlaylist(playlist)
+  }
+
+  const handleOpenPlaylist = async (file: File) => {
+    const format = playlistFormatOf(file.name)
+    if (!format) return
+    const name = playlistNameOf(file.name)
+    let entries: string[] = []
+    try {
+      entries = parsePlaylistEntries(await readPlaylistText(file), format)
+    } catch (err) {
+      console.warn('Could not read playlist:', file.name, err)
+    }
+    const fill = (key: TranslationKey, values: Record<string, number> = {}) =>
+      Object.entries({ ...values, name }).reduce(
+        (text, [k, v]) => text.replace(`{${k}}`, String(v)),
+        t.value(key),
+      )
+    if (entries.length === 0) {
+      toast.error(fill('toast_playlist_empty'))
+      return
+    }
+    const { matched, total } = openPlaylist(entries, name, format)
+    if (matched === 0) toast.error(fill('toast_playlist_no_match', { total }))
+    else toast.success(fill('toast_playlist_opened', { matched, total }))
   }
 
   const handleFormatChange = (format: OutputFormat) => {
@@ -507,10 +543,12 @@
   const handlePaste = (event: ClipboardEvent) => {
     const items = event.clipboardData?.files
     if (!items || items.length === 0) return
-    const audioFiles = Array.from(items).filter((file) => AUDIO_EXTENSIONS.test(file.name))
-    if (audioFiles.length > 0) {
+    const usable = Array.from(items).filter(
+      (file) => AUDIO_EXTENSIONS.test(file.name) || isPlaylistFile(file.name),
+    )
+    if (usable.length > 0) {
       event.preventDefault()
-      handleAddFiles(audioFiles)
+      void handleAddFiles(usable)
     }
   }
 

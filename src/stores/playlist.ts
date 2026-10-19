@@ -17,6 +17,13 @@ export type { PathMode } from '../utils/trackPath'
 export type { FillMode } from '../utils/targetLength'
 export type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'cue' | 'csv' | 'json' | 'xspf'
 
+export interface OpenPlaylistResult {
+  /** Einträge der Playlist, zu denen es eine Datei in der Liste gibt. */
+  matched: number
+  /** Alle Einträge der Playlist. */
+  total: number
+}
+
 export interface AddFilesResult {
   added: number
   skipped: number
@@ -36,6 +43,7 @@ export type HistoryLabel =
   | 'path_mode_changed'
   | 'base_path_changed'
   | 'target_length_applied'
+  | 'playlist_opened'
 
 interface Snapshot {
   files: File[]
@@ -170,6 +178,38 @@ export const usePlaylistStore = defineStore('playlist', () => {
     excludedFiles.value = new Set(files.value.filter((file) => !picked.has(file)))
     generatePlaylist()
     return picked.size
+  }
+
+  /**
+   * Übernimmt eine geöffnete Playlist: gefundene Titel kommen in ihrer Reihenfolge
+   * nach vorn und sind angehakt, alle übrigen hinten und abgewählt. Name und Format
+   * werden übernommen. Zugeordnet wird über den Dateinamen (wie bei Duplikaten).
+   * Ohne einen einzigen Treffer bleibt alles unverändert.
+   */
+  const openPlaylist = (
+    entryNames: string[],
+    name: string,
+    format: OutputFormat,
+  ): OpenPlaylistResult => {
+    const byName = new Map(files.value.map((file) => [file.name.toLowerCase(), file]))
+    const ordered: File[] = []
+    for (const entry of entryNames) {
+      const file = byName.get(entry.toLowerCase())
+      if (file && !ordered.includes(file)) ordered.push(file)
+    }
+    const result = { matched: ordered.length, total: entryNames.length }
+    if (ordered.length === 0) return result
+
+    history.record('playlist_opened')
+    const picked = new Set(ordered)
+    const rest = files.value.filter((file) => !picked.has(file))
+    files.value = [...ordered, ...rest]
+    excludedFiles.value = new Set(rest)
+    sortOption.value = 'manual'
+    if (name) playlistName.value = name
+    outputFormat.value = format
+    generatePlaylist()
+    return result
   }
 
   const supportedFormats = ['.mp3', '.wav', '.flac']
@@ -551,6 +591,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
     toggleFileSelected,
     setAllSelected,
     fitToLength,
+    openPlaylist,
     addFiles,
     clearFiles,
     removeFile,
