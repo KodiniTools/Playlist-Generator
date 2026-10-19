@@ -44,7 +44,16 @@
         type="file"
         class="playlist-config__input"
         multiple
-        accept=".mp3,.wav,.flac,.ogg,.aac,.m4a,.wma,.opus"
+        accept=".mp3,.wav,.flac,.ogg,.aac,.m4a,.wma,.opus,.m3u,.m3u8,.pls,.xspf"
+        tabindex="-1"
+        @change="handleFileChange"
+      />
+      <input
+        id="playlistInput"
+        ref="playlistInputRef"
+        type="file"
+        class="playlist-config__input"
+        accept=".m3u,.m3u8,.pls,.xspf"
         tabindex="-1"
         @change="handleFileChange"
       />
@@ -131,6 +140,31 @@
             size="sm"
             @update:model-value="handleSortClick"
           />
+          <UiButton
+            variant="ghost"
+            size="sm"
+            :title="t('title_open_playlist')"
+            @click="playlistInputRef?.click()"
+          >
+            <template #icon>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+            </template>
+            {{ t('button_open_playlist') }}
+          </UiButton>
           <UiButton variant="ghost" size="sm" @click="handleClear">
             <template #icon>
               <svg
@@ -214,6 +248,7 @@
   import { useTrackTags } from '../composables/useTrackTags'
   import type { AudioTags } from '../utils/audioTags'
   import { setRelativePath } from '../utils/trackPath'
+  import { isPlaylistFile } from '../utils/playlistImport'
 
   /**
    * Linkes Panel der App-Seite: Dateien hinzufügen (Dialog, Ordner, Drag & Drop),
@@ -379,6 +414,7 @@
 
   const fileInputRef = ref<HTMLInputElement | null>(null)
   const folderInputRef = ref<HTMLInputElement | null>(null)
+  const playlistInputRef = ref<HTMLInputElement | null>(null)
   const isDragging = ref(false)
   const isScanning = ref(false)
   const scanCount = ref(0)
@@ -485,7 +521,9 @@
       const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null
       if (!entry) {
         const file = item.getAsFile()
-        if (file && AUDIO_EXTENSIONS.test(file.name)) collected.push(file)
+        if (file && (AUDIO_EXTENSIONS.test(file.name) || isPlaylistFile(file.name))) {
+          collected.push(file)
+        }
         return Promise.resolve()
       }
 
@@ -495,6 +533,9 @@
             (file) => {
               if (AUDIO_EXTENSIONS.test(file.name)) {
                 setRelativePath(file, entry.fullPath)
+                collected.push(file)
+              } else if (isPlaylistFile(file.name)) {
+                // Nur direkt gezogene Playlists öffnen, nicht solche aus Ordnern.
                 collected.push(file)
               }
               done()
