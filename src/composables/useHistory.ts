@@ -15,24 +15,24 @@ export interface RecordOptions {
   coalesceKey?: string | null
 }
 
-export interface History {
+export interface History<L extends string = string> {
   canUndo: ComputedRef<boolean>
   canRedo: ComputedRef<boolean>
-  undoLabel: ComputedRef<string | null>
-  redoLabel: ComputedRef<string | null>
+  undoLabel: ComputedRef<L | null>
+  redoLabel: ComputedRef<L | null>
   /** Vor der Mutation aufrufen; verwirft alle Redo-Schritte. Während `restore` läuft, wird nichts aufgezeichnet. */
-  record(label: string, options?: RecordOptions): void
+  record(label: L, options?: RecordOptions): void
   /** Label des rückgängig gemachten Schritts, sonst null. */
-  undo(): string | null
+  undo(): L | null
   /** Label des wiederholten Schritts, sonst null. */
-  redo(): string | null
+  redo(): L | null
   clear(): void
   /** True, solange ein Schnappschuss wiederhergestellt wird. */
   isApplying(): boolean
 }
 
-interface Entry<S> {
-  label: string
+interface Entry<S, L extends string> {
+  label: L
   coalesceKey: string | null
   snapshot: S
   at: number
@@ -51,18 +51,18 @@ interface Entry<S> {
  *
  * Throws a TypeError when `capture` or `restore` is missing.
  */
-export function createHistory<S>({
+export function createHistory<S, L extends string = string>({
   capture,
   restore,
   limit = 50,
   coalesceWindow = 1000,
-}: HistoryOptions<S>): History {
+}: HistoryOptions<S>): History<L> {
   if (typeof capture !== 'function' || typeof restore !== 'function') {
     throw new TypeError('createHistory: capture and restore must be functions')
   }
 
-  const past = shallowRef<Entry<S>[]>([])
-  const future = shallowRef<Entry<S>[]>([])
+  const past = shallowRef<Entry<S, L>[]>([])
+  const future = shallowRef<Entry<S, L>[]>([])
   let applying = false
 
   const canUndo = computed(() => past.value.length > 0)
@@ -74,7 +74,7 @@ export function createHistory<S>({
    * Record the current state as the "before" of an action. Must be called
    * before the mutation. Any redo steps are discarded.
    */
-  const record = (label: string, { coalesceKey = null }: RecordOptions = {}) => {
+  const record = (label: L, { coalesceKey = null }: RecordOptions = {}) => {
     if (applying) return
     const now = Date.now()
     const top = past.value[past.value.length - 1]
@@ -90,7 +90,7 @@ export function createHistory<S>({
     if (future.value.length) future.value = []
   }
 
-  const move = (from: ShallowRef<Entry<S>[]>, to: ShallowRef<Entry<S>[]>): string | null => {
+  const move = (from: ShallowRef<Entry<S, L>[]>, to: ShallowRef<Entry<S, L>[]>): L | null => {
     const entry = from.value[from.value.length - 1]
     if (!entry) return null
 

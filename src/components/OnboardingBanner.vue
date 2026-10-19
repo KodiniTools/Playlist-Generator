@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
   import { computed } from 'vue'
-  import { useTranslation } from '../composables/useTranslation'
+  import { useTranslation, type TranslationKey } from '../composables/useTranslation'
 
   /** Dreischrittige Kurzanleitung, sichtbar bis die erste Datei in der Liste liegt. */
   const props = defineProps<{ hasFiles: boolean }>()
@@ -75,7 +75,7 @@
 
   const visible = computed(() => !props.hasFiles)
 
-  const steps: ReadonlyArray<{ icon: 'upload' | 'order' | 'save'; labelKey: string }> = [
+  const steps: ReadonlyArray<{ icon: 'upload' | 'order' | 'save'; labelKey: TranslationKey }> = [
     { icon: 'upload', labelKey: 'onboarding_step1' },
     { icon: 'order', labelKey: 'onboarding_step2' },
     { icon: 'save', labelKey: 'onboarding_step3' },

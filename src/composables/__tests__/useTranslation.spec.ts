@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { translations, useTranslation } from '../useTranslation'
+import { translations, useTranslation, type TranslationKey } from '../useTranslation'
 
 const SRC_DIR = resolve(__dirname, '../..')
 const SOURCE_EXT = /\.(vue|ts|js)$/
@@ -45,8 +45,8 @@ describe('useTranslation', () => {
   })
 
   it('de und en haben denselben Schlüsselsatz mit nicht leeren Werten', () => {
-    const de = Object.keys(translations.de).sort()
-    const en = Object.keys(translations.en).sort()
+    const de = (Object.keys(translations.de) as TranslationKey[]).sort()
+    const en = (Object.keys(translations.en) as TranslationKey[]).sort()
     expect(en).toEqual(de)
 
     const empty = de.filter(
@@ -65,9 +65,26 @@ describe('useTranslation', () => {
     expect(missing).toEqual([])
   })
 
+  it('jeder Schlüssel wird im Code verwendet (kein toter Übersetzungstext)', () => {
+    const source = sourceFiles(SRC_DIR)
+      .map((file) => readFileSync(file, 'utf8'))
+      .join('\n')
+    const quoted = (key: string) => new RegExp(`['"\`]${key}['"\`]`).test(source)
+    // Dynamisch zusammengesetzte Schlüssel: t(`${key}_title`), t(`format_desc_${…}`), t(`history_${…}`).
+    const isUsed = (key: string) =>
+      quoted(key) ||
+      quoted(key.replace(/_(title|text)$/, '')) ||
+      /^(format_desc|history)_/.test(key)
+
+    const unused = Object.keys(translations.de).filter((key) => !isUsed(key))
+    expect(unused).toEqual([])
+  })
+
   it('gibt unbekannte Schlüssel unverändert zurück und wechselt die Sprache', () => {
     const { t, setLanguage } = useTranslation()
-    expect(t.value('kein_solcher_schluessel')).toBe('kein_solcher_schluessel')
+    // Laufzeit-Fallback für Schlüssel, die der Typ nicht kennt (z. B. aus alten Daten).
+    const unknownKey = 'kein_solcher_schluessel' as TranslationKey
+    expect(t.value(unknownKey)).toBe('kein_solcher_schluessel')
     expect(t.value('nav_home')).toBe('Start')
 
     setLanguage('en')

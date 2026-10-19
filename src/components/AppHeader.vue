@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
   import { RouterLink } from 'vue-router'
-  import { useTranslation } from '../composables/useTranslation'
+  import { useTranslation, type TranslationKey } from '../composables/useTranslation'
 
   /**
    * Gemeinsame Seitennavigation aller Vue-Seiten unterhalb der externen SSI-Navigation.
@@ -30,7 +30,7 @@
    */
   const { t } = useTranslation()
 
-  const items: ReadonlyArray<{ to: string; labelKey: string }> = [
+  const items: ReadonlyArray<{ to: string; labelKey: TranslationKey }> = [
     { to: '/', labelKey: 'nav_home' },
     { to: '/app', labelKey: 'nav_app' },
     { to: '/faq', labelKey: 'nav_faq' },

@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { usePlaylist } from './usePlaylist'
+import { usePlaylist, type HistoryLabel } from './usePlaylist'
 import { useToast } from './useToast'
 import { useTranslation } from './useTranslation'
 
@@ -12,7 +12,7 @@ export function useUndoRedo() {
   const toast = useToast()
   const { t } = useTranslation()
 
-  const actionText = (label: string | null) => (label ? t.value(`history_${label}`) : '')
+  const actionText = (label: HistoryLabel | null) => (label ? t.value(`history_${label}`) : '')
 
   const undoTitle = computed(() =>
     canUndo.value
