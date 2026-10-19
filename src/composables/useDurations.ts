@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import { probeAudio } from '../utils/probeAudio'
 
 // Module-level singleton: filename → duration in seconds (real, from audio metadata)
 const known = reactive(new Map<string, number>())
@@ -6,38 +7,17 @@ const known = reactive(new Map<string, number>())
 // Names currently being probed, so overlapping calls don't measure twice.
 const measuring = new Set<string>()
 
-// Read the real duration of a single File from its audio metadata. Only the
-// metadata (header) is loaded, never the whole file, so this is fast and works
-// fully offline. Resolves regardless of success — failures just leave the file
-// without a known duration (an estimate is used instead).
-const measureFile = (file: File) =>
-  new Promise<void>((resolve) => {
-    const audio = new Audio()
-    const url = URL.createObjectURL(file)
-
-    const cleanup = () => {
-      audio.removeEventListener('loadedmetadata', onLoaded)
-      audio.removeEventListener('error', onError)
-      URL.revokeObjectURL(url)
-      audio.removeAttribute('src')
-    }
-
-    const onLoaded = () => {
-      const seconds = audio.duration
-      if (isFinite(seconds) && seconds > 0) known.set(file.name, seconds)
-      cleanup()
-      resolve()
-    }
-    const onError = () => {
-      cleanup()
-      resolve()
-    }
-
-    audio.addEventListener('loadedmetadata', onLoaded)
-    audio.addEventListener('error', onError)
-    audio.preload = 'metadata'
-    audio.src = url
-  })
+// Read the real duration of a single File from its audio metadata (see
+// probeAudio). Never throws — failures just leave the file without a known
+// duration (an estimate is used instead).
+const measureFile = async (file: File) => {
+  try {
+    const seconds = await probeAudio(file)
+    if (seconds !== null) known.set(file.name, seconds)
+  } catch {
+    // Nicht lesbar: Schätzung bleibt.
+  }
+}
 
 /** Dauern aus Audio-Metadaten, Singleton-Map. */
 export function useDurations() {

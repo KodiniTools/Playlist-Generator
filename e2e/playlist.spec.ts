@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { audioFile, prepare } from './helpers'
+import { audioFile, prepare, wav } from './helpers'
 
 /** Zeilentext der Vorschau, ohne die aria-hidden Zeilennummern. */
 const preview = (page: Page) =>
@@ -151,4 +151,51 @@ test.describe('Playlist erstellen', () => {
     )
     await expect(page.getByRole('combobox', { name: 'Vorschau-Format' })).toHaveValue('txt')
   })
+})
+
+test('übernimmt geteilte Dateien aus dem Audio-Konverter und verwirft unlesbare', async ({
+  page,
+}) => {
+  await prepare(page, 'de')
+  await page.goto('./faq')
+  // So legt der Audio-Konverter Dateien ab (src/utils/sharedFileRepository.ts).
+  await page.evaluate(
+    async ([good]) => {
+      await new Promise<void>((resolve, reject) => {
+        const request = indexedDB.open('kodinitools-shared-files', 1)
+        request.onupgradeneeded = () =>
+          request.result.createObjectStore('audio-files', { keyPath: 'id', autoIncrement: true })
+        request.onerror = () => reject(request.error)
+        request.onsuccess = () => {
+          const db = request.result
+          const tx = db.transaction('audio-files', 'readwrite')
+          const store = tx.objectStore('audio-files')
+          store.put({
+            name: 'good.wav',
+            blob: new Blob([new Uint8Array(good)], { type: 'audio/wav' }),
+            mimeType: 'audio/wav',
+          })
+          store.put({
+            name: 'broken.wav',
+            blob: new Blob(['kein audio'], { type: 'audio/wav' }),
+            mimeType: 'audio/wav',
+          })
+          tx.oncomplete = () => {
+            db.close()
+            resolve()
+          }
+          tx.onerror = () => reject(tx.error)
+        }
+      })
+    },
+    [[...wav(2)]] as const,
+  )
+
+  await page.goto('./app?source=audiokonverter')
+
+  await expect(page.getByText('1 Datei(en) erfolgreich importiert')).toBeVisible()
+  const rows = page.getByRole('list', { name: 'Dateiliste' }).getByRole('listitem')
+  await expect(rows).toHaveCount(1)
+  await expect(rows.nth(0)).toContainText('good.wav')
+  await expect(rows.nth(0)).toContainText('0:02')
 })

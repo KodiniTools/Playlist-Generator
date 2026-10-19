@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed, watch, nextTick } from 'vue'
 import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPersistence'
 import { createHistory } from '../composables/useHistory'
+import { useDurations } from '../composables/useDurations'
+import { probeAudio } from '../utils/probeAudio'
 import type { SharedFileRecord } from '../utils/sharedFileRepository'
 
 export type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
@@ -49,6 +51,7 @@ interface SaveFilePickerWindow {
  * überdauern damit jede Komponente, die den Store zuerst benutzt.
  */
 export const usePlaylistStore = defineStore('playlist', () => {
+  const { setDuration } = useDurations()
   const files = ref<File[]>([])
   const sortOption = ref<SortOption>('alphabetical')
   const playlistName = ref('meine_wiedergabeliste')
@@ -408,30 +411,6 @@ export const usePlaylistStore = defineStore('playlist', () => {
     replaceMode.value = enabled
   }
 
-  const analyzeBlob = async (blob: Blob, name: string) => {
-    const arrayBuffer = await blob.arrayBuffer()
-    const AudioContextCtor =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-    const audioContext = new AudioContextCtor()
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
-    audioContext.close()
-
-    // Create a File object from the Blob so it integrates with the existing playlist system
-    const file = new File([blob], name, {
-      type: blob.type || 'audio/wav',
-      lastModified: Date.now(),
-    })
-
-    return {
-      file,
-      name,
-      duration: audioBuffer.duration,
-      sampleRate: audioBuffer.sampleRate,
-      channels: audioBuffer.numberOfChannels,
-    }
-  }
-
   const handleSharedFiles = async (sharedRecords: SharedFileRecord[]) => {
     let processed = 0
 
@@ -444,13 +423,20 @@ export const usePlaylistStore = defineStore('playlist', () => {
       if (blob.size === 0) continue
 
       try {
-        const result = await analyzeBlob(blob, record.name)
+        // Nur Metadaten lesen: prüft, dass der Browser die Datei abspielen kann,
+        // ohne sie komplett zu dekodieren.
+        const duration = await probeAudio(blob)
+        const file = new File([blob], record.name, {
+          type: blob.type || 'audio/wav',
+          lastModified: Date.now(),
+        })
         // Check for duplicates
         const existingNames = new Set(files.value.map((f) => f.name.toLowerCase()))
-        if (!existingNames.has(result.file.name.toLowerCase())) {
+        if (!existingNames.has(file.name.toLowerCase())) {
           // All shared files of one import form a single undo step.
           if (processed === 0) history.record('files_added')
-          files.value = [...files.value, result.file]
+          files.value = [...files.value, file]
+          if (duration !== null) setDuration(file.name, duration)
           processed++
         }
       } catch (err) {
@@ -636,7 +622,6 @@ export const usePlaylistStore = defineStore('playlist', () => {
     redoLabel: history.redoLabel,
     clearHistory: history.clear,
     savePlaylist,
-    analyzeBlob,
     handleSharedFiles,
   }
 })
