@@ -76,15 +76,27 @@
   const panel = ref<HTMLElement | null>(null)
   let previouslyFocused: HTMLElement | null = null
 
+  // Escape auch dann, wenn der Fokus den Dialog verlassen hat (z. B. weil der
+  // fokussierte Button aus dem Dialog entfernt wurde). Innerhalb des Panels
+  // greift bereits @keydown.esc.
+  const onDocumentKeydown = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape') return
+    if (event.target instanceof Node && panel.value?.contains(event.target)) return
+    event.preventDefault()
+    emit('close')
+  }
+
   watch(
     () => props.open,
     async (open) => {
       if (open) {
+        document.addEventListener('keydown', onDocumentKeydown)
         previouslyFocused =
           document.activeElement instanceof HTMLElement ? document.activeElement : null
         await nextTick()
         panel.value?.focus()
       } else {
+        document.removeEventListener('keydown', onDocumentKeydown)
         previouslyFocused?.focus()
         previouslyFocused = null
       }
@@ -93,6 +105,7 @@
   )
 
   onBeforeUnmount(() => {
+    document.removeEventListener('keydown', onDocumentKeydown)
     previouslyFocused = null
   })
 </script>

@@ -389,3 +389,41 @@ test('öffnet eine bestehende Playlist und übernimmt Reihenfolge und Auswahl', 
   )
   expect(xml).not.toContain('a.wav')
 })
+
+test('speichert Entwürfe, lädt sie wieder und löscht sie', async ({ page }) => {
+  await openWithFiles(page)
+  await page.getByRole('textbox', { name: 'Wiedergabeliste benennen' }).fill('roadtrip')
+  await page.getByRole('checkbox', { name: 'In Wiedergabeliste aufnehmen: b-song.wav' }).uncheck()
+
+  const dialog = page.getByRole('dialog', { name: 'Entwürfe' })
+  await page.getByRole('button', { name: 'Entwürfe' }).click()
+  await expect(dialog.getByText('Noch keine Entwürfe gespeichert.')).toBeVisible()
+  await dialog.getByRole('button', { name: '„roadtrip“ als Entwurf speichern' }).click()
+  await expect(dialog.getByRole('listitem')).toHaveCount(1)
+  await expect(dialog.getByRole('listitem')).toContainText('2 Titel')
+  await dialog.getByRole('button', { name: 'Schließen' }).click()
+
+  // Liste leeren und neu benennen, dann den Entwurf laden.
+  await page.getByRole('button', { name: 'Liste leeren' }).click()
+  const rows = page.getByRole('list', { name: 'Dateiliste' }).getByRole('listitem')
+  await expect(rows).toHaveCount(0)
+  await page.getByRole('textbox', { name: 'Wiedergabeliste benennen' }).fill('anders')
+
+  await page.getByRole('button', { name: 'Entwürfe' }).click()
+  await dialog.getByRole('button', { name: 'Laden: roadtrip' }).click()
+  await expect(dialog).toBeHidden()
+  await expect(rows).toHaveCount(2)
+  await expect(page.getByRole('textbox', { name: 'Wiedergabeliste benennen' })).toHaveValue(
+    'roadtrip',
+  )
+  await expect(
+    page.getByRole('checkbox', { name: 'In Wiedergabeliste aufnehmen: b-song.wav' }),
+  ).not.toBeChecked()
+
+  // Löschen braucht einen zweiten Klick.
+  await page.getByRole('button', { name: 'Entwürfe' }).click()
+  await dialog.getByRole('button', { name: 'Löschen: roadtrip' }).click()
+  await expect(dialog.getByRole('listitem')).toHaveCount(1)
+  await dialog.getByRole('button', { name: 'Wirklich löschen?: roadtrip' }).click()
+  await expect(dialog.getByText('Noch keine Entwürfe gespeichert.')).toBeVisible()
+})

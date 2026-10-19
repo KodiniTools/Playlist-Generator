@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch, nextTick } from 'vue'
-import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPersistence'
+import {
+  saveFiles,
+  saveMeta,
+  loadState,
+  clearState,
+  type PersistedMeta,
+} from '../utils/playlistPersistence'
 import { createHistory } from '../composables/useHistory'
 import { useDurations } from '../composables/useDurations'
 import { useTrackTags } from '../composables/useTrackTags'
@@ -44,6 +50,7 @@ export type HistoryLabel =
   | 'base_path_changed'
   | 'target_length_applied'
   | 'playlist_opened'
+  | 'draft_loaded'
 
 interface Snapshot {
   files: File[]
@@ -459,21 +466,53 @@ export const usePlaylistStore = defineStore('playlist', () => {
   const excludedNamesOf = () =>
     files.value.filter((f) => excludedFiles.value.has(f)).map((f) => f.name)
 
+  /** Einstellungen und Auswahl, wie sie gespeichert werden (Arbeitsstand und Entwürfe). */
+  const currentMeta = (): PersistedMeta => ({
+    sortOption: sortOption.value,
+    playlistName: playlistName.value,
+    outputFormat: outputFormat.value,
+    replaceMode: replaceMode.value,
+    pathMode: pathMode.value,
+    basePath: basePath.value,
+    excludedNames: excludedNamesOf(),
+  })
+
+  /** Übernimmt gespeicherte Einstellungen; fehlende oder ungültige Felder bleiben, wie sie sind. */
+  const applyMeta = (meta: Partial<PersistedMeta>) => {
+    if (meta.sortOption) sortOption.value = meta.sortOption as SortOption
+    if (typeof meta.playlistName === 'string') playlistName.value = meta.playlistName
+    if (meta.outputFormat) outputFormat.value = meta.outputFormat as OutputFormat
+    if (typeof meta.replaceMode === 'boolean') replaceMode.value = meta.replaceMode
+    if (meta.pathMode === 'name' || meta.pathMode === 'relative') pathMode.value = meta.pathMode
+    if (typeof meta.basePath === 'string') basePath.value = meta.basePath
+  }
+
+  /** Dateien plus Auswahl (über Dateinamen) setzen, wie beim Wiederherstellen. */
+  const applyFiles = (list: File[], excludedNames: readonly string[] = []) => {
+    const excluded = new Set(excludedNames)
+    files.value = list
+    excludedFiles.value = new Set(list.filter((f) => excluded.has(f.name)))
+  }
+
+  /** Aktueller Stand für einen Entwurf. */
+  const draftSnapshot = () => ({ meta: currentMeta(), files: files.value.slice() })
+
+  /** Ersetzt die Liste durch einen gespeicherten Entwurf; ein Undo-Schritt. */
+  const loadDraftState = (draft: { meta: PersistedMeta; files: File[] }) => {
+    history.record('draft_loaded')
+    applyMeta(draft.meta)
+    applyFiles(draft.files, draft.meta.excludedNames)
+    if (selectedFileIndex.value >= files.value.length) selectedFileIndex.value = -1
+    generatePlaylist()
+  }
+
   // Cheap, frequent write (settings + checkbox selection).
   let metaTimer: ReturnType<typeof setTimeout> | undefined
   const scheduleMetaSave = () => {
     if (restoring) return
     clearTimeout(metaTimer)
     metaTimer = setTimeout(() => {
-      saveMeta({
-        sortOption: sortOption.value,
-        playlistName: playlistName.value,
-        outputFormat: outputFormat.value,
-        replaceMode: replaceMode.value,
-        pathMode: pathMode.value,
-        basePath: basePath.value,
-        excludedNames: excludedNamesOf(),
-      }).catch((e) => console.warn('Could not persist playlist settings:', e))
+      saveMeta(currentMeta()).catch((e) => console.warn('Could not persist playlist settings:', e))
     }, 400)
   }
 
@@ -499,18 +538,9 @@ export const usePlaylistStore = defineStore('playlist', () => {
     restoring = true
     try {
       const { meta, files: savedFiles } = await loadState()
-      if (meta) {
-        if (meta.sortOption) sortOption.value = meta.sortOption as SortOption
-        if (typeof meta.playlistName === 'string') playlistName.value = meta.playlistName
-        if (meta.outputFormat) outputFormat.value = meta.outputFormat as OutputFormat
-        if (typeof meta.replaceMode === 'boolean') replaceMode.value = meta.replaceMode
-        if (meta.pathMode === 'name' || meta.pathMode === 'relative') pathMode.value = meta.pathMode
-        if (typeof meta.basePath === 'string') basePath.value = meta.basePath
-      }
+      if (meta) applyMeta(meta)
       if (savedFiles && savedFiles.length) {
-        files.value = savedFiles
-        const excludedNames = new Set((meta && meta.excludedNames) || [])
-        excludedFiles.value = new Set(savedFiles.filter((f) => excludedNames.has(f.name)))
+        applyFiles(savedFiles, meta?.excludedNames)
         generatePlaylist()
       }
       // Let the restore-triggered watchers flush while `restoring` is still true
@@ -592,6 +622,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
     setAllSelected,
     fitToLength,
     openPlaylist,
+    draftSnapshot,
+    loadDraftState,
     addFiles,
     clearFiles,
     removeFile,

@@ -54,4 +54,17 @@ describe('UiTextField', () => {
     expect(input.attributes('disabled')).toBeDefined()
     expect(wrapper.get('.ui-field__required').attributes('aria-hidden')).toBe('true')
   })
+
+  it('setzt class und style auf das äußere Element, nicht auf das input', () => {
+    const wrapper = mount(UiTextField, {
+      props: { label: 'Name' },
+      attrs: { class: 'breit', style: 'flex: 1', inputmode: 'numeric' },
+    })
+    expect(wrapper.classes()).toContain('breit')
+    expect(wrapper.attributes('style')).toContain('flex: 1')
+    const input = wrapper.get('input')
+    expect(input.classes()).not.toContain('breit')
+    expect(input.attributes('style')).toBeUndefined()
+    expect(input.attributes('inputmode')).toBe('numeric')
+  })
 })

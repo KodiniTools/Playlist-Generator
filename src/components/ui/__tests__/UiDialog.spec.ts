@@ -36,6 +36,27 @@ describe('UiDialog', () => {
     expect(wrapper.emitted('close')).toHaveLength(3)
   })
 
+  it('schließt bei Escape auch ohne Fokus im Dialog, aber nur solange er offen ist', async () => {
+    const wrapper = mount(UiDialog, {
+      props: { open: true, title: 'Entwürfe' },
+      global: { stubs: { teleport: true } },
+      attachTo: document.body,
+    })
+    const escape = () =>
+      document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    escape()
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    // Innerhalb des Panels nur einmal melden, nicht zusätzlich über das Dokument.
+    wrapper
+      .get('[role="dialog"]')
+      .element.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(wrapper.emitted('close')).toHaveLength(2)
+    await wrapper.setProps({ open: false })
+    escape()
+    expect(wrapper.emitted('close')).toHaveLength(2)
+    wrapper.unmount()
+  })
+
   it('übernimmt eine eigene id für aria-controls', () => {
     const wrapper = mount(UiDialog, {
       props: { open: true, title: 'Tastaturkürzel', id: 'shortcuts-panel' },
