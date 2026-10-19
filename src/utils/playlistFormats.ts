@@ -133,12 +133,30 @@ const generateJson = (list: PlaylistTrack[]) => {
   return JSON.stringify(playlistData, null, 4)
 }
 
+/**
+ * XSPF verlangt in <location> eine URI: Pfadsegmente werden prozentkodiert,
+ * absolute Pfade werden zu file:-URIs, fertige URLs bleiben unverändert.
+ * - CD1/01 Intro.mp3      → CD1/01%20Intro.mp3
+ * - D:\Musik\Früh.mp3     → file:///D:/Musik/Fr%C3%BCh.mp3
+ * - \\nas\Musik\a.mp3     → file://nas/Musik/a.mp3
+ * - /home/ich/a b.mp3     → file:///home/ich/a%20b.mp3
+ */
+export function toXspfLocation(path: string): string {
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(path)) return path
+  const encode = (segments: string[]) => segments.map(encodeURIComponent).join('/')
+  const drive = path.match(/^([a-z]):[\\/](.*)$/i)
+  if (drive) return `file:///${drive[1]}:/${encode(drive[2]!.split(/[\\/]/))}`
+  if (/^\\\\[^\\]/.test(path)) return `file://${encode(path.slice(2).split('\\'))}`
+  if (path.startsWith('/')) return `file://${encode(path.split('/'))}`
+  return encode(path.split(/[\\/]/))
+}
+
 const generateXspf = (list: PlaylistTrack[], playlistName: string) => {
   const tracks = list
     .map((track) => {
       // Reihenfolge laut XSPF-Schema: location, title, creator, album, trackNum, duration.
       const lines = [
-        `<location>${escapeXml(track.path)}</location>`,
+        `<location>${escapeXml(toXspfLocation(track.path))}</location>`,
         `<title>${escapeXml(titleOf(track))}</title>`,
       ]
       const { artist, album, track: trackNum } = track.tags ?? {}
