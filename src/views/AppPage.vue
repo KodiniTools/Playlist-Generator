@@ -128,7 +128,7 @@
   import type { CalloutType } from '../components/ui'
   import { usePlaylist, type OutputFormat } from '../composables/usePlaylist'
   import { useToast } from '../composables/useToast'
-  import { useTranslation } from '../composables/useTranslation'
+  import { useTranslation, type TranslationKey } from '../composables/useTranslation'
   import { useUndoRedo } from '../composables/useUndoRedo'
   import { clearSharedFiles, getSharedFiles } from '../utils/sharedFileRepository'
   import { FORMAT_MIME, openInTextEditor } from '../utils/textEditorHandoff'
@@ -400,7 +400,7 @@
     undoToastId = null
   }
 
-  const showUndoToast = (messageKey: string) => {
+  const showUndoToast = (messageKey: TranslationKey) => {
     dismissUndoToast()
     undoToastId = toast.addToast(t.value(messageKey), 'info', 5000, {
       label: t.value('toast_undo_btn'),

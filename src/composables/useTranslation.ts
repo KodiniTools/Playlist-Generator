@@ -2,615 +2,573 @@ import { ref, computed } from 'vue'
 
 type Language = 'de' | 'en'
 
+const de = {
+  // Navigation
+  nav_home: 'Start',
+  nav_app: 'App',
+  nav_faq: 'FAQ',
+  nav_blog: 'Blog',
+  nav_label: 'Seiten',
+
+  // Landing Page - Hero
+  hero_title: 'Audio Wiedergabeliste Generator',
+  hero_subtitle: 'Erstellen Sie professionelle Wiedergabelisten in Sekunden',
+  hero_description:
+    'Verwandeln Sie Ihre lokalen Audiodateien in perfekt organisierte Wiedergabelisten. Unterstützt M3U, XSPF und JSON – kostenlos und 100% lokal in Ihrem Browser.',
+  hero_cta: 'Jetzt starten',
+  hero_learn_more: 'Mehr erfahren',
+
+  // Feature Cards
+  feature1_title: 'Mehrere Formate',
+  feature1_desc:
+    'Exportieren Sie Ihre Wiedergabelisten in M3U, XSPF oder JSON – kompatibel mit VLC, Winamp, iTunes und mehr.',
+  feature2_title: '100% Privat',
+  feature2_desc:
+    'Alle Dateien werden lokal verarbeitet. Keine Uploads, keine Server – Ihre Musik bleibt auf Ihrem Gerät.',
+  feature3_title: 'Flexible Sortierung',
+  feature3_desc:
+    'Ordnen Sie Tracks alphabetisch, nach Datum, zufällig oder per Drag & Drop nach Ihren Wünschen.',
+
+  // Details Section
+  details_title: 'Leistungsstarke Funktionen',
+  details_subtitle: 'Alles, was Sie für perfekte Wiedergabelisten brauchen',
+
+  detail1_title: 'Drag & Drop Upload',
+  detail1_desc:
+    'Ziehen Sie einfach Ihre MP3-, WAV- oder FLAC-Dateien in den Browser – keine komplizierte Auswahl nötig.',
+  detail2_title: 'Interaktive Trackliste',
+  detail2_desc:
+    'Visualisieren und bearbeiten Sie Ihre Wiedergabeliste in Echtzeit mit unserer Canvas-basierten Oberfläche.',
+  detail3_title: 'Schnelle Tastenkombinationen',
+  detail3_desc:
+    'Strg+O zum Öffnen, Strg+S zum Speichern, Strg+C zum Kopieren – arbeiten Sie wie ein Profi.',
+  detail4_title: 'Theme-Wechsler',
+  detail4_desc: 'Wechseln Sie zwischen hellem und dunklem Design – perfekt für jede Umgebung.',
+  detail5_title: 'Mehrsprachig',
+  detail5_desc: 'Verfügbar auf Deutsch und Englisch – wechseln Sie die Sprache mit einem Klick.',
+  detail6_title: 'Keine Installation',
+  detail6_desc: 'Funktioniert direkt im Browser – kein Download, keine Installation erforderlich.',
+
+  // Trust Badges
+  trust_free: 'Kostenlos',
+  trust_no_registration: 'Keine Registrierung',
+  trust_private: '100% Lokal & Privat',
+
+  // App Preview Labels
+  preview_files_label: 'Audiodateien',
+  preview_output_label: 'Wiedergabeliste-Vorschau',
+
+  // CTA Section
+  cta_title: 'Bereit, loszulegen?',
+  cta_desc: 'Erstellen Sie jetzt Ihre erste Wiedergabeliste – kostenlos und ohne Registrierung.',
+  cta_button: 'Kostenlos Wiedergabeliste erstellen',
+
+  // App Page
+  notice_m3u:
+    'Wichtiger Hinweis für M3U/XSPF-Wiedergabelisten: Damit Mediaplayer (VLC, Winamp etc.) die Tracks finden, muss die Wiedergabeliste-Datei im selben Ordner wie Ihre Audio-Dateien gespeichert werden.',
+  main_title: 'Audio Wiedergabeliste Generator',
+  subtitle: 'Erstellen Sie professionelle Wiedergabelisten mit modernem Design',
+  button_add_files: 'Dateien hinzufügen',
+  button_add_folder: 'Ordner hinzufügen',
+  scanning_folder: 'Ordner wird durchsucht…',
+  select_all: 'Alle auswählen',
+  button_clear_title: 'Liste leeren',
+  stats_tracks: 'Tracks',
+  duration_approx_title: 'Geschätzte Gesamtdauer (noch nicht alle Tracks abgespielt)',
+  label_sort: 'Abspielreihenfolge festlegen',
+  sort_alpha: 'Alphabetisch',
+  sort_date: 'Nach Datum',
+  sort_random: 'Zufällig',
+  sort_manual: 'Manuell',
+  label_name: 'Wiedergabeliste benennen',
+  placeholder_name: 'Geben Sie einen Namen ein...',
+  preview_title: 'Vorschau & Speichern',
+  label_format: 'Vorschau-Format',
+  placeholder_output:
+    "Klicken Sie auf 'Wiedergabeliste erstellen', um hier eine Vorschau zu sehen...",
+  button_save: 'Speichern unter...',
+  button_copy: 'Kopieren',
+  lines: 'Zeilen',
+  preview_empty_title: 'Noch keine Vorschau',
+
+  // FAQ Page
+  faq_page_title: 'Häufig gestellte Fragen',
+  faq_page_subtitle: 'Alles, was Sie über den Audio Wiedergabeliste Generator wissen müssen',
+  faq_title: 'Häufig gestellte Fragen (FAQ)',
+  faq_q1_title: 'Was ist eine M3U-Datei?',
+  faq_q1_text:
+    'Eine M3U-Datei ist eine einfache Textdatei, die die Pfade zu Audio- oder Videodateien auflistet. Sie wird von vielen Mediaplayern (z.B. VLC, Winamp, iTunes) verwendet, um Wiedergabelisten zu organisieren und abzuspielen.',
+  faq_q9_title: 'Was ist eine XSPF-Datei?',
+  faq_q9_text:
+    'XSPF (XML Shareable Wiedergabeliste Format) ist ein moderner, offener Standard für Wiedergabelisten. Im Gegensatz zu M3U ist sie im XML-Format strukturiert, was sie flexibler macht. Sie wird von vielen Playern wie VLC unterstützt und ist ideal, um Wiedergabelisten zwischen verschiedenen Programmen und Systemen auszutauschen.',
+  faq_q2_title: 'Welche Audioformate werden unterstützt?',
+  faq_q2_text:
+    'Der Generator unterstützt die gängigsten Audioformate: <strong>.mp3</strong>, <strong>.wav</strong> und <strong>.flac</strong>. Andere Dateitypen werden ignoriert.',
+  faq_q3_title: 'Werden meine Dateien irgendwo hochgeladen?',
+  faq_q3_text:
+    'Nein, absolut nicht. Die gesamte Verarbeitung geschieht ausschliesslich lokal in Ihrem Browser. Ihre Audio-Dateien verlassen zu keinem Zeitpunkt Ihren Computer.',
+  faq_q4_title: 'Warum sind die Pfade in der Wiedergabeliste nur die Dateinamen?',
+  faq_q4_text:
+    'Das Tool verwendet bewusst relative Pfade (nur den Dateinamen). Darum müssen Sie die Wiedergabeliste-Datei im selben Ordner wie Ihre Musik speichern. Dadurch funktioniert die Wiedergabeliste auch dann noch, wenn Sie den gesamten Ordner auf einen anderen Computer verschieben.',
+  faq_q5_title: 'Wofür ist das JSON-Format gut?',
+  faq_q5_text:
+    'JSON ist ein Datenformat, das oft von Entwicklern oder in Webanwendungen verwendet wird. Sie könnten eine JSON-Wiedergabeliste z.B. nutzen, um die Trackliste auf einer Webseite dynamisch anzuzeigen oder in einem eigenen Softwareprojekt zu verarbeiten. Für normale Mediaplayer sind M3U oder XSPF die bessere Wahl.',
+  faq_q6_title: 'Welche Browser werden unterstützt?',
+  faq_q6_text:
+    'Der Audio Wiedergabeliste Generator funktioniert in allen modernen Browsern (Chrome, Firefox, Safari, Edge). Die Speicherfunktion nutzt die File System Access API und ist am besten in Chrome und Edge verfügbar.',
+  faq_q7_title: 'Ist der Generator kostenlos?',
+  faq_q7_text:
+    'Ja, der Audio Wiedergabeliste Generator ist vollständig kostenlos und erfordert keine Registrierung. Wenn Ihnen das Tool gefällt, können Sie uns gerne mit einer kleinen Spende unterstützen.',
+  faq_q8_title: 'Kann ich den Generator offline nutzen?',
+  faq_q8_text:
+    'Da die gesamte Verarbeitung lokal in Ihrem Browser stattfindet, benötigen Sie nur für den ersten Zugriff eine Internetverbindung. Sobald die Seite geladen ist, können Sie auch ohne Internet Wiedergabelisten erstellen.',
+
+  // Privacy Notice
+  privacy_title: 'Datenschutz-Hinweis',
+  privacy_text:
+    'Der Audio Wiedergabeliste Generator verarbeitet alle Daten lokal in Ihrem Browser. Es werden keine Dateien auf Server hochgeladen und keine persönlichen Daten gespeichert. Die einzigen gespeicherten Daten sind Ihre Theme- und Sprachpräferenzen im lokalen Speicher Ihres Browsers.',
+
+  // Toast Messages
+  alert_save_error: 'Fehler: Die Datei konnte nicht gespeichert werden.',
+  alert_create_first: 'Bitte erstellen Sie zuerst eine Wiedergabeliste.',
+  toast_files_added: '{count} Dateien hinzugefügt',
+  toast_duplicates_skipped: '{count} Duplikate übersprungen',
+  toast_playlist_saved: 'Wiedergabeliste gespeichert ✓',
+  toast_copied: 'In Zwischenablage kopiert ✓',
+  handoff_title: 'Im Texteditor öffnen?',
+  handoff_text_saved:
+    '„{name}“ wurde gespeichert. Möchten Sie die Datei jetzt im Kodini Texteditor weiterbearbeiten?',
+  handoff_text_copied:
+    '„{name}“ liegt in der Zwischenablage. Möchten Sie die Wiedergabeliste jetzt im Kodini Texteditor weiterbearbeiten?',
+  handoff_accept: 'Im Texteditor öffnen',
+  handoff_decline: 'Nicht jetzt',
+  handoff_error: 'Übergabe nicht möglich: Der Browser-Speicher ist nicht verfügbar.',
+  toast_copy_error: 'Kopieren fehlgeschlagen',
+  toast_close: 'Schließen',
+  toast_file_removed: 'Track entfernt',
+  toast_files_cleared: 'Liste geleert',
+  toast_undo_btn: 'Rückgängig',
+  toast_undo_done: 'Rückgängig: {action}',
+  toast_redo_done: 'Wiederholt: {action}',
+
+  // Undo / Redo
+  undo_redo_group: 'Rückgängig / Wiederholen',
+  undo_btn: 'Rückgängig',
+  redo_btn: 'Wiederholen',
+  undo_title: 'Nichts rückgängig zu machen (Strg+Z)',
+  redo_title: 'Nichts zu wiederholen (Strg+Y)',
+  undo_title_with_action: 'Rückgängig: {action} (Strg+Z)',
+  redo_title_with_action: 'Wiederholen: {action} (Strg+Y)',
+  history_files_added: 'Dateien hinzugefügt',
+  history_files_cleared: 'Liste geleert',
+  history_file_removed: 'Track entfernt',
+  history_file_moved: 'Track verschoben',
+  history_sorted: 'Sortierung geändert',
+  history_selection_changed: 'Trackauswahl geändert',
+  history_name_changed: 'Name geändert',
+  history_format_changed: 'Format geändert',
+  history_replace_mode_changed: 'Ersetzen-Option geändert',
+  replace_list_option: 'Bestehende Liste ersetzen',
+  files_panel_title: 'Dateien',
+  drop_zone_title: 'Dateien oder Ordner hierher ziehen',
+  drop_zone_hint: 'oder Strg+V zum Einfügen',
+  file_list_label: 'Dateiliste',
+  file_list_include: 'In Wiedergabeliste aufnehmen',
+  file_list_drag_handle: 'Verschieben, auch mit Alt und Pfeiltasten',
+  file_list_remove: 'Entfernen',
+  file_list_empty_title: 'Noch keine Dateien',
+  file_list_empty_text: 'Füge Audiodateien hinzu oder zieh sie hierher.',
+
+  // Shared Files (audiokonverter)
+  sharedFilesLoading: '{count} Datei(en) vom Audio Konverter werden importiert…',
+  sharedFilesLoaded: '{count} Datei(en) erfolgreich importiert',
+  sharedFilesEmpty: 'Keine Dateien vom Audio Konverter gefunden',
+  sharedFilesError: 'Fehler beim Importieren',
+
+  // Shared Files (audionormalizer)
+  sharedFilesNormalizerLoading: '{count} normalisierte Datei(en) werden importiert…',
+  sharedFilesNormalizerLoaded: '{count} normalisierte Datei(en) erfolgreich importiert',
+  sharedFilesNormalizerEmpty: 'Keine normalisierten Dateien gefunden',
+
+  // Shortcuts
+  shortcut_open: 'Dateien öffnen (Strg+O)',
+  shortcut_save: 'Speichern (Strg+S)',
+  shortcut_copy: 'Kopieren (Strg+C)',
+
+  // Onboarding Banner
+  onboarding_aria: 'Kurzanleitung',
+  onboarding_step1: 'Dateien hinzufügen',
+  onboarding_step2: 'Reihenfolge festlegen',
+  onboarding_step3: 'Wiedergabeliste speichern',
+
+  // Keyboard Shortcuts Panel
+  shortcuts_panel_title: 'Tastaturkürzel',
+  shortcuts_close_btn: 'Schließen',
+  shortcuts_hint_btn: 'Tastaturkürzel anzeigen',
+  shortcut_open_desc: 'Dateien öffnen',
+  shortcut_save_desc: 'Wiedergabeliste speichern',
+  shortcut_copy_desc: 'In Zwischenablage kopieren',
+  shortcut_delete_desc: 'Ausgewählten Track löschen',
+  shortcut_undo_desc: 'Letzte Aktion rückgängig machen',
+  shortcut_redo_desc: 'Aktion wiederholen',
+  shortcut_arrows_desc: 'Track auswählen',
+  shortcut_escape_desc: 'Auswahl aufheben',
+  shortcut_question_desc: 'Dieses Panel öffnen / schließen',
+
+  // Format descriptions (shown below format tabs)
+  format_desc_m3u: 'Kompatibel mit VLC, Winamp, Foobar2000 und den meisten Mediaplayern.',
+  format_desc_m3u8:
+    'M3U in UTF-8 – bewahrt Umlaute und Sonderzeichen, ideal für moderne Player und Streaming.',
+  format_desc_pls:
+    'Weit verbreitetes Format – kompatibel mit VLC, Winamp, foobar2000 und Internetradio.',
+  format_desc_txt:
+    'Einfache Textliste mit einem Dateinamen pro Zeile – universell für Skripte und USB-Sticks.',
+  format_desc_cue:
+    'Track-Sheet für DJ-Mixes und Alben – kompatibel mit foobar2000, VLC und CD-Brennprogrammen.',
+  format_desc_csv:
+    'Tabellen-Export (Dateiname, Titel, Größe) – öffnet sich in Excel oder Google Sheets.',
+  format_desc_xspf: 'Moderner XML-Standard – ideal für VLC und Austausch zwischen Programmen.',
+  format_desc_json: 'Für Entwickler und Webanwendungen – nicht für normale Mediaplayer geeignet.',
+
+  // Audio Player
+  player_title: 'Vorschau-Player',
+  player_no_track: 'Kein Track ausgewählt',
+  player_play: 'Abspielen',
+  player_pause: 'Pause',
+  player_stop: 'Stopp',
+  player_previous: 'Vorheriger Track',
+  player_next: 'Nächster Track',
+  player_mute: 'Stummschalten',
+  player_volume: 'Lautstärke',
+  player_unmute: 'Ton einschalten',
+  player_queue: 'Warteschlange',
+  player_repeat_off: 'Wiederholen: Aus',
+  player_repeat_all: 'Wiederholen: Ganze Wiedergabeliste',
+  player_repeat_one: 'Wiederholen: Aktueller Track',
+
+  // Tools Section
+  more_tools_title: 'Entdecken Sie weitere Audio-Tools',
+  tool1_title: 'Moderner Musikplayer',
+  tool1_desc:
+    'Ein stilvoller, moderner Musikplayer mit beeindruckenden Visualisierungen, Wiedergabeliste-Verwaltung und Unterstützung für lokale Audiodateien.',
+  tool2_title: 'Grafischer Equalizer',
+  tool2_desc:
+    'Passen Sie den Klang Ihrer Musik präzise an. Dieser 10-Band-Grafik-Equalizer ermöglicht es Ihnen, Frequenzen für das perfekte Hörerlebnis zu formen.',
+  tool3_title: 'Audio-Konverter',
+  tool3_desc:
+    'Konvertieren Sie Ihre Audiodateien schnell und einfach zwischen Formaten wie MP3, WAV und FLAC direkt in Ihrem Browser – ohne Uploads.',
+  tool_button: 'Ausprobieren',
+
+  // Landing Page – KodiniTools Section
+  landing_tools_title: 'Weitere KodiniTools für Ihre Musik',
+  landing_tools_subtitle:
+    'Kostenlose Browser-Tools, die den Wiedergabeliste Generator perfekt ergänzen – ohne Upload, ohne Registrierung.',
+  landing_tool_playlist_converter_title: 'Audio Wiedergabeliste Konverter',
+  landing_tool_playlist_converter_desc:
+    'Konvertieren Sie bestehende Wiedergabelisten zwischen M3U, XSPF und JSON – ideal, um erstellte Wiedergabelisten für andere Player anzupassen.',
+  landing_tool_audio_converter_title: 'Audio Konverter',
+  landing_tool_audio_converter_desc:
+    'Wandeln Sie Audiodateien zwischen MP3, WAV, FLAC und weiteren Formaten um – direkt im Browser, bevor Sie sie in Ihre Wiedergabeliste aufnehmen.',
+  landing_tool_normalizer_title: 'Audio Normalizer',
+  landing_tool_normalizer_desc:
+    'Gleichen Sie die Lautstärke Ihrer Titel an, damit Ihre Wiedergabeliste ohne störende Pegelsprünge läuft.',
+  landing_tool_link: 'Tool öffnen',
+  landing_tool_link_aria: 'öffnet in einem neuen Tab',
+
+  // Footer
+  donate_button: 'spenden',
+  donate_title: 'Mit PayPal spenden',
+  facebook_share: 'Teilen',
+  facebook_share_title: 'Auf Facebook teilen',
+}
+
+/** Alle gültigen Übersetzungs-Schlüssel, abgeleitet aus der deutschen Tabelle. */
+export type TranslationKey = keyof typeof de
+
 /** Übersetzt einen Schlüssel; unbekannte Schlüssel kommen unverändert zurück. */
-export type Translate = (key: string) => string
+export type Translate = (key: TranslationKey) => string
+
+// Record<TranslationKey, string> macht fehlende oder überzählige EN-Schlüssel zum Compile-Fehler.
+const en: Record<TranslationKey, string> = {
+  // Navigation
+  nav_home: 'Home',
+  nav_app: 'App',
+  nav_faq: 'FAQ',
+  nav_blog: 'Blog',
+  nav_label: 'Pages',
+
+  // Landing Page - Hero
+  hero_title: 'Audio Playlist Generator',
+  hero_subtitle: 'Create professional playlists in seconds',
+  hero_description:
+    'Transform your local audio files into perfectly organized playlists. Supports M3U, XSPF, and JSON – free and 100% local in your browser.',
+  hero_cta: 'Get Started',
+  hero_learn_more: 'Learn More',
+
+  // Feature Cards
+  feature1_title: 'Multiple Formats',
+  feature1_desc:
+    'Export your playlists to M3U, XSPF, or JSON – compatible with VLC, Winamp, iTunes, and more.',
+  feature2_title: '100% Private',
+  feature2_desc:
+    'All files are processed locally. No uploads, no servers – your music stays on your device.',
+  feature3_title: 'Flexible Sorting',
+  feature3_desc:
+    'Arrange tracks alphabetically, by date, randomly, or drag & drop to your preference.',
+
+  // Details Section
+  details_title: 'Powerful Features',
+  details_subtitle: 'Everything you need for perfect playlists',
+
+  detail1_title: 'Drag & Drop Upload',
+  detail1_desc:
+    'Simply drag your MP3, WAV, or FLAC files into the browser – no complicated selection needed.',
+  detail2_title: 'Interactive Track List',
+  detail2_desc: 'Visualize and edit your playlist in real-time with our canvas-based interface.',
+  detail3_title: 'Fast Keyboard Shortcuts',
+  detail3_desc: 'Ctrl+O to open, Ctrl+S to save, Ctrl+C to copy – work like a pro.',
+  detail4_title: 'Theme Switcher',
+  detail4_desc: 'Switch between light and dark design – perfect for any environment.',
+  detail5_title: 'Multilingual',
+  detail5_desc: 'Available in German and English – switch languages with one click.',
+  detail6_title: 'No Installation',
+  detail6_desc: 'Works directly in the browser – no download, no installation required.',
+
+  // Trust Badges
+  trust_free: 'Free',
+  trust_no_registration: 'No Registration',
+  trust_private: '100% Local & Private',
+
+  // App Preview Labels
+  preview_files_label: 'Audio Files',
+  preview_output_label: 'Playlist Preview',
+
+  // CTA Section
+  cta_title: 'Ready to get started?',
+  cta_desc: 'Create your first playlist now – free and without registration.',
+  cta_button: 'Create Playlist for Free',
+
+  // App Page
+  notice_m3u:
+    'Important Notice for M3U/XSPF Playlists: For media players (VLC, Winamp, etc.) to find the tracks, the playlist file must be saved in the same folder as your audio files.',
+  main_title: 'Audio Playlist Generator',
+  subtitle: 'Create professional playlists with a modern design',
+  button_add_files: 'Add Files',
+  button_add_folder: 'Add Folder',
+  scanning_folder: 'Scanning folder…',
+  select_all: 'Select all',
+  button_clear_title: 'Clear List',
+  stats_tracks: 'Tracks',
+  duration_approx_title: 'Estimated total duration (not all tracks played yet)',
+  label_sort: '2. Set Playback Order',
+  sort_alpha: 'Alphabetical',
+  sort_date: 'By Date',
+  sort_random: 'Random',
+  sort_manual: 'Manual',
+  label_name: '3. Name Playlist',
+  placeholder_name: 'Enter a name...',
+  preview_title: 'Preview & Save',
+  label_format: 'Preview Format',
+  placeholder_output: "Click 'Create Playlist' to see a preview here...",
+  button_save: 'Save As...',
+  button_copy: 'Copy',
+  lines: 'lines',
+  preview_empty_title: 'No preview yet',
+
+  // FAQ Page
+  faq_page_title: 'Frequently Asked Questions',
+  faq_page_subtitle: 'Everything you need to know about the Audio Playlist Generator',
+  faq_title: 'Frequently Asked Questions (FAQ)',
+  faq_q1_title: 'What is an M3U file?',
+  faq_q1_text:
+    'An M3U file is a plain text file that lists the paths to audio or video files. It is used by many media players (e.g., VLC, Winamp, iTunes) to organize and play playlists.',
+  faq_q9_title: 'What is an XSPF file?',
+  faq_q9_text:
+    'XSPF (XML Shareable Playlist Format) is a modern, open standard for playlists. Unlike M3U, it is structured in XML format, which makes it more flexible. It is supported by many players like VLC and is ideal for sharing playlists between different programs and systems.',
+  faq_q2_title: 'Which audio formats are supported?',
+  faq_q2_text:
+    'The generator supports the most common audio formats: <strong>.mp3</strong>, <strong>.wav</strong>, and <strong>.flac</strong>. Other file types will be ignored.',
+  faq_q3_title: 'Are my files uploaded anywhere?',
+  faq_q3_text:
+    'No, absolutely not. All processing happens exclusively locally in your browser. Your audio files never leave your computer.',
+  faq_q4_title: 'Why are the paths in the playlist just the filenames?',
+  faq_q4_text:
+    'The tool intentionally uses relative paths (just the filename). This is why you need to save the playlist file in the same folder as your music. This allows the playlist to work even if you move the entire folder to another computer.',
+  faq_q5_title: 'What is the JSON format good for?',
+  faq_q5_text:
+    'JSON is a data format often used by developers or in web applications. You could use a JSON playlist to dynamically display the track list on a website or to process it in your own software project. For regular media players, M3U or XSPF is the better choice.',
+  faq_q6_title: 'Which browsers are supported?',
+  faq_q6_text:
+    'The Audio Playlist Generator works in all modern browsers (Chrome, Firefox, Safari, Edge). The save function uses the File System Access API and works best in Chrome and Edge.',
+  faq_q7_title: 'Is the generator free?',
+  faq_q7_text:
+    'Yes, the Audio Playlist Generator is completely free and requires no registration. If you like the tool, feel free to support us with a small donation.',
+  faq_q8_title: 'Can I use the generator offline?',
+  faq_q8_text:
+    'Since all processing takes place locally in your browser, you only need an internet connection for the initial access. Once the page is loaded, you can create playlists even without internet.',
+
+  // Privacy Notice
+  privacy_title: 'Privacy Notice',
+  privacy_text:
+    "The Audio Playlist Generator processes all data locally in your browser. No files are uploaded to servers and no personal data is stored. The only stored data are your theme and language preferences in your browser's local storage.",
+
+  // Toast Messages
+  alert_save_error: 'Error: The file could not be saved.',
+  alert_create_first: 'Please create a playlist first.',
+  toast_files_added: '{count} files added',
+  toast_duplicates_skipped: '{count} duplicates skipped',
+  toast_playlist_saved: 'Playlist saved ✓',
+  toast_copied: 'Copied to clipboard ✓',
+  handoff_title: 'Open in text editor?',
+  handoff_text_saved:
+    '"{name}" has been saved. Would you like to continue editing it in the Kodini text editor?',
+  handoff_text_copied:
+    '"{name}" is in your clipboard. Would you like to continue editing the playlist in the Kodini text editor?',
+  handoff_accept: 'Open in text editor',
+  handoff_decline: 'Not now',
+  handoff_error: 'Handoff not possible: browser storage is unavailable.',
+  toast_copy_error: 'Copy failed',
+  toast_close: 'Close',
+  toast_file_removed: 'Track removed',
+  toast_files_cleared: 'List cleared',
+  toast_undo_btn: 'Undo',
+  toast_undo_done: 'Undone: {action}',
+  toast_redo_done: 'Redone: {action}',
+
+  // Undo / Redo
+  undo_redo_group: 'Undo / Redo',
+  undo_btn: 'Undo',
+  redo_btn: 'Redo',
+  undo_title: 'Nothing to undo (Ctrl+Z)',
+  redo_title: 'Nothing to redo (Ctrl+Y)',
+  undo_title_with_action: 'Undo: {action} (Ctrl+Z)',
+  redo_title_with_action: 'Redo: {action} (Ctrl+Y)',
+  history_files_added: 'Files added',
+  history_files_cleared: 'List cleared',
+  history_file_removed: 'Track removed',
+  history_file_moved: 'Track moved',
+  history_sorted: 'Sort order changed',
+  history_selection_changed: 'Track selection changed',
+  history_name_changed: 'Name changed',
+  history_format_changed: 'Format changed',
+  history_replace_mode_changed: 'Replace option changed',
+  replace_list_option: 'Replace existing list',
+  files_panel_title: 'Files',
+  drop_zone_title: 'Drop files or folders here',
+  drop_zone_hint: 'or Ctrl+V to paste',
+  file_list_label: 'File list',
+  file_list_include: 'Include in playlist',
+  file_list_drag_handle: 'Move, also with Alt and arrow keys',
+  file_list_remove: 'Remove',
+  file_list_empty_title: 'No files yet',
+  file_list_empty_text: 'Add audio files or drop them here.',
+
+  // Shared Files (audiokonverter)
+  sharedFilesLoading: 'Importing {count} file(s) from Audio Converter…',
+  sharedFilesLoaded: '{count} file(s) successfully imported',
+  sharedFilesEmpty: 'No files found from Audio Converter',
+  sharedFilesError: 'Error importing files',
+
+  // Shared Files (audionormalizer)
+  sharedFilesNormalizerLoading: 'Importing {count} normalised file(s)…',
+  sharedFilesNormalizerLoaded: '{count} normalised file(s) successfully imported',
+  sharedFilesNormalizerEmpty: 'No normalised files found',
+
+  // Shortcuts
+  shortcut_open: 'Open files (Ctrl+O)',
+  shortcut_save: 'Save (Ctrl+S)',
+  shortcut_copy: 'Copy (Ctrl+C)',
+
+  // Onboarding Banner
+  onboarding_aria: 'Quick guide',
+  onboarding_step1: 'Add files',
+  onboarding_step2: 'Set order',
+  onboarding_step3: 'Save playlist',
+
+  // Keyboard Shortcuts Panel
+  shortcuts_panel_title: 'Keyboard Shortcuts',
+  shortcuts_close_btn: 'Close',
+  shortcuts_hint_btn: 'Show keyboard shortcuts',
+  shortcut_open_desc: 'Open files',
+  shortcut_save_desc: 'Save playlist',
+  shortcut_copy_desc: 'Copy to clipboard',
+  shortcut_delete_desc: 'Delete selected track',
+  shortcut_undo_desc: 'Undo last action',
+  shortcut_redo_desc: 'Redo action',
+  shortcut_arrows_desc: 'Select track',
+  shortcut_escape_desc: 'Clear selection',
+  shortcut_question_desc: 'Open / close this panel',
+
+  // Format descriptions (shown below format tabs)
+  format_desc_m3u: 'Compatible with VLC, Winamp, Foobar2000 and most media players.',
+  format_desc_m3u8:
+    'M3U in UTF-8 – preserves accents and special characters, ideal for modern players and streaming.',
+  format_desc_pls:
+    'Widely supported format – works with VLC, Winamp, foobar2000 and internet radio.',
+  format_desc_txt:
+    'Simple text list with one filename per line – universal for scripts and USB sticks.',
+  format_desc_cue:
+    'Track sheet for DJ mixes and albums – compatible with foobar2000, VLC and CD burning tools.',
+  format_desc_csv: 'Spreadsheet export (filename, title, size) – opens in Excel or Google Sheets.',
+  format_desc_xspf: 'Modern XML standard – ideal for VLC and sharing between applications.',
+  format_desc_json: 'For developers and web apps – not suitable for regular media players.',
+
+  // Audio Player
+  player_title: 'Preview Player',
+  player_no_track: 'No track selected',
+  player_play: 'Play',
+  player_pause: 'Pause',
+  player_stop: 'Stop',
+  player_previous: 'Previous track',
+  player_next: 'Next track',
+  player_mute: 'Mute',
+  player_volume: 'Volume',
+  player_unmute: 'Unmute',
+  player_queue: 'Queue',
+  player_repeat_off: 'Repeat: Off',
+  player_repeat_all: 'Repeat: Entire playlist',
+  player_repeat_one: 'Repeat: Current track',
+
+  // Tools Section
+  more_tools_title: 'Discover More Audio Tools',
+  tool1_title: 'Modern Music Player',
+  tool1_desc:
+    'A stylish, modern music player with stunning visualizations, playlist management, and support for local audio files.',
+  tool2_title: 'Graphic Equalizer',
+  tool2_desc:
+    "Precisely adjust your music's sound. This 10-band graphic equalizer allows you to shape frequencies for the perfect listening experience.",
+  tool3_title: 'Audio Converter',
+  tool3_desc:
+    'Quickly and easily convert your audio files between formats like MP3, WAV, and FLAC directly in your browser—no uploads required.',
+  tool_button: 'Try It Out',
+
+  // Landing Page – KodiniTools Section
+  landing_tools_title: 'More KodiniTools for Your Music',
+  landing_tools_subtitle:
+    'Free browser tools that perfectly complement the Playlist Generator – no upload, no registration.',
+  landing_tool_playlist_converter_title: 'Audio Playlist Converter',
+  landing_tool_playlist_converter_desc:
+    'Convert existing playlists between M3U, XSPF and JSON – ideal for adapting your generated playlists to other players.',
+  landing_tool_audio_converter_title: 'Audio Converter',
+  landing_tool_audio_converter_desc:
+    'Convert audio files between MP3, WAV, FLAC and more – right in your browser, before adding them to your playlist.',
+  landing_tool_normalizer_title: 'Audio Normalizer',
+  landing_tool_normalizer_desc:
+    'Level out the volume of your tracks so your playlist plays without jarring loudness jumps.',
+  landing_tool_link: 'Open tool',
+  landing_tool_link_aria: 'opens in a new tab',
+
+  // Footer
+  donate_button: 'donate',
+  donate_title: 'Donate with PayPal',
+  facebook_share: 'Share',
+  facebook_share_title: 'Share on Facebook',
+}
 
 /** Übersetzungstabellen je Sprache; exportiert für Tests und Tooling. */
-export const translations: Readonly<Record<Language, Readonly<Record<string, string>>>> = {
-  de: {
-    // Meta tags
-    meta_title: 'Audio Wiedergabeliste Generator - M3U, XSPF & JSON Wiedergabelisten Erstellen',
-    meta_description:
-      'Erstellen Sie einfach und schnell benutzerdefinierte Audio-Wiedergabelisten (.m3u, .xspf, .json) aus Ihren MP3-, WAV- oder FLAC-Dateien. Sortieren, benennen und laden Sie Ihre Wiedergabeliste herunter.',
-
-    // Navigation
-    nav_home: 'Start',
-    nav_app: 'App',
-    nav_faq: 'FAQ',
-    nav_blog: 'Blog',
-    nav_label: 'Seiten',
-
-    // Landing Page - Hero
-    hero_title: 'Audio Wiedergabeliste Generator',
-    hero_subtitle: 'Erstellen Sie professionelle Wiedergabelisten in Sekunden',
-    hero_description:
-      'Verwandeln Sie Ihre lokalen Audiodateien in perfekt organisierte Wiedergabelisten. Unterstützt M3U, XSPF und JSON – kostenlos und 100% lokal in Ihrem Browser.',
-    hero_cta: 'Jetzt starten',
-    hero_learn_more: 'Mehr erfahren',
-
-    // Feature Cards
-    feature1_title: 'Mehrere Formate',
-    feature1_desc:
-      'Exportieren Sie Ihre Wiedergabelisten in M3U, XSPF oder JSON – kompatibel mit VLC, Winamp, iTunes und mehr.',
-    feature2_title: '100% Privat',
-    feature2_desc:
-      'Alle Dateien werden lokal verarbeitet. Keine Uploads, keine Server – Ihre Musik bleibt auf Ihrem Gerät.',
-    feature3_title: 'Flexible Sortierung',
-    feature3_desc:
-      'Ordnen Sie Tracks alphabetisch, nach Datum, zufällig oder per Drag & Drop nach Ihren Wünschen.',
-
-    // Details Section
-    details_title: 'Leistungsstarke Funktionen',
-    details_subtitle: 'Alles, was Sie für perfekte Wiedergabelisten brauchen',
-
-    detail1_title: 'Drag & Drop Upload',
-    detail1_desc:
-      'Ziehen Sie einfach Ihre MP3-, WAV- oder FLAC-Dateien in den Browser – keine komplizierte Auswahl nötig.',
-    detail2_title: 'Interaktive Trackliste',
-    detail2_desc:
-      'Visualisieren und bearbeiten Sie Ihre Wiedergabeliste in Echtzeit mit unserer Canvas-basierten Oberfläche.',
-    detail3_title: 'Schnelle Tastenkombinationen',
-    detail3_desc:
-      'Strg+O zum Öffnen, Strg+S zum Speichern, Strg+C zum Kopieren – arbeiten Sie wie ein Profi.',
-    detail4_title: 'Theme-Wechsler',
-    detail4_desc: 'Wechseln Sie zwischen hellem und dunklem Design – perfekt für jede Umgebung.',
-    detail5_title: 'Mehrsprachig',
-    detail5_desc: 'Verfügbar auf Deutsch und Englisch – wechseln Sie die Sprache mit einem Klick.',
-    detail6_title: 'Keine Installation',
-    detail6_desc:
-      'Funktioniert direkt im Browser – kein Download, keine Installation erforderlich.',
-
-    // Trust Badges
-    trust_free: 'Kostenlos',
-    trust_no_registration: 'Keine Registrierung',
-    trust_private: '100% Lokal & Privat',
-
-    // App Preview Labels
-    preview_files_label: 'Audiodateien',
-    preview_output_label: 'Wiedergabeliste-Vorschau',
-
-    // CTA Section
-    cta_title: 'Bereit, loszulegen?',
-    cta_desc: 'Erstellen Sie jetzt Ihre erste Wiedergabeliste – kostenlos und ohne Registrierung.',
-    cta_button: 'Kostenlos Wiedergabeliste erstellen',
-
-    // App Page
-    notice_m3u:
-      'Wichtiger Hinweis für M3U/XSPF-Wiedergabelisten: Damit Mediaplayer (VLC, Winamp etc.) die Tracks finden, muss die Wiedergabeliste-Datei im selben Ordner wie Ihre Audio-Dateien gespeichert werden.',
-    main_title: 'Audio Wiedergabeliste Generator',
-    subtitle: 'Erstellen Sie professionelle Wiedergabelisten mit modernem Design',
-    description_text:
-      'Wählen Sie Ihre lokalen Audio-Dateien (MP3, WAV, FLAC) aus, legen Sie die Sortierreihenfolge fest und exportieren Sie Ihre persönliche Wiedergabeliste im M3U-, XSPF- oder JSON-Format. Ideal, um Ihre Musiksammlung für Mediaplayer wie VLC, Winamp oder Foobar2000 zu organisieren.',
-    config_title: 'Wiedergabeliste Konfiguration',
-    label_files: 'Audio Dateien hinzufügen',
-    button_add_files: 'Dateien hinzufügen',
-    button_add_folder: 'Ordner hinzufügen',
-    drop_hint: 'oder Dateien / Ordner hier ablegen · Strg+V zum Einfügen',
-    scanning_folder: 'Ordner wird durchsucht…',
-    click_to_upload: 'dateien auswählen oder hierher ziehen...',
-    drop_files_here: 'dateien hier ablegen...',
-    files_selected: 'dateien ausgewählt',
-    select_all: 'Alle auswählen',
-    button_clear_title: 'Liste leeren',
-    stats_tracks: 'Tracks',
-    duration_approx_title: 'Geschätzte Gesamtdauer (noch nicht alle Tracks abgespielt)',
-    label_sort: 'Abspielreihenfolge festlegen',
-    sort_alpha: 'Alphabetisch',
-    sort_date: 'Nach Datum',
-    sort_random: 'Zufällig',
-    sort_manual: 'Manuell',
-    label_name: 'Wiedergabeliste benennen',
-    placeholder_name: 'Geben Sie einen Namen ein...',
-    button_create: '4. Wiedergabeliste erstellen',
-    preview_title: 'Vorschau & Speichern',
-    label_format: 'Vorschau-Format',
-    format_m3u: 'M3U Wiedergabeliste',
-    format_m3u8: 'M3U8 Wiedergabeliste',
-    format_pls: 'PLS Wiedergabeliste',
-    format_txt: 'TXT Liste',
-    format_cue: 'CUE Sheet',
-    format_csv: 'CSV Tabelle',
-    format_xspf: 'XSPF Wiedergabeliste',
-    format_json: 'JSON Datei',
-    placeholder_output:
-      "Klicken Sie auf 'Wiedergabeliste erstellen', um hier eine Vorschau zu sehen...",
-    button_save: 'Speichern unter...',
-    button_copy: 'Kopieren',
-    lines: 'Zeilen',
-    preview_empty_title: 'Noch keine Vorschau',
-
-    // FAQ Page
-    faq_page_title: 'Häufig gestellte Fragen',
-    faq_page_subtitle: 'Alles, was Sie über den Audio Wiedergabeliste Generator wissen müssen',
-    faq_title: 'Häufig gestellte Fragen (FAQ)',
-    faq_q1_title: 'Was ist eine M3U-Datei?',
-    faq_q1_text:
-      'Eine M3U-Datei ist eine einfache Textdatei, die die Pfade zu Audio- oder Videodateien auflistet. Sie wird von vielen Mediaplayern (z.B. VLC, Winamp, iTunes) verwendet, um Wiedergabelisten zu organisieren und abzuspielen.',
-    faq_q9_title: 'Was ist eine XSPF-Datei?',
-    faq_q9_text:
-      'XSPF (XML Shareable Wiedergabeliste Format) ist ein moderner, offener Standard für Wiedergabelisten. Im Gegensatz zu M3U ist sie im XML-Format strukturiert, was sie flexibler macht. Sie wird von vielen Playern wie VLC unterstützt und ist ideal, um Wiedergabelisten zwischen verschiedenen Programmen und Systemen auszutauschen.',
-    faq_q2_title: 'Welche Audioformate werden unterstützt?',
-    faq_q2_text:
-      'Der Generator unterstützt die gängigsten Audioformate: <strong>.mp3</strong>, <strong>.wav</strong> und <strong>.flac</strong>. Andere Dateitypen werden ignoriert.',
-    faq_q3_title: 'Werden meine Dateien irgendwo hochgeladen?',
-    faq_q3_text:
-      'Nein, absolut nicht. Die gesamte Verarbeitung geschieht ausschliesslich lokal in Ihrem Browser. Ihre Audio-Dateien verlassen zu keinem Zeitpunkt Ihren Computer.',
-    faq_q4_title: 'Warum sind die Pfade in der Wiedergabeliste nur die Dateinamen?',
-    faq_q4_text:
-      'Das Tool verwendet bewusst relative Pfade (nur den Dateinamen). Darum müssen Sie die Wiedergabeliste-Datei im selben Ordner wie Ihre Musik speichern. Dadurch funktioniert die Wiedergabeliste auch dann noch, wenn Sie den gesamten Ordner auf einen anderen Computer verschieben.',
-    faq_q5_title: 'Wofür ist das JSON-Format gut?',
-    faq_q5_text:
-      'JSON ist ein Datenformat, das oft von Entwicklern oder in Webanwendungen verwendet wird. Sie könnten eine JSON-Wiedergabeliste z.B. nutzen, um die Trackliste auf einer Webseite dynamisch anzuzeigen oder in einem eigenen Softwareprojekt zu verarbeiten. Für normale Mediaplayer sind M3U oder XSPF die bessere Wahl.',
-    faq_q6_title: 'Welche Browser werden unterstützt?',
-    faq_q6_text:
-      'Der Audio Wiedergabeliste Generator funktioniert in allen modernen Browsern (Chrome, Firefox, Safari, Edge). Die Speicherfunktion nutzt die File System Access API und ist am besten in Chrome und Edge verfügbar.',
-    faq_q7_title: 'Ist der Generator kostenlos?',
-    faq_q7_text:
-      'Ja, der Audio Wiedergabeliste Generator ist vollständig kostenlos und erfordert keine Registrierung. Wenn Ihnen das Tool gefällt, können Sie uns gerne mit einer kleinen Spende unterstützen.',
-    faq_q8_title: 'Kann ich den Generator offline nutzen?',
-    faq_q8_text:
-      'Da die gesamte Verarbeitung lokal in Ihrem Browser stattfindet, benötigen Sie nur für den ersten Zugriff eine Internetverbindung. Sobald die Seite geladen ist, können Sie auch ohne Internet Wiedergabelisten erstellen.',
-
-    // Privacy Notice
-    privacy_title: 'Datenschutz-Hinweis',
-    privacy_text:
-      'Der Audio Wiedergabeliste Generator verarbeitet alle Daten lokal in Ihrem Browser. Es werden keine Dateien auf Server hochgeladen und keine persönlichen Daten gespeichert. Die einzigen gespeicherten Daten sind Ihre Theme- und Sprachpräferenzen im lokalen Speicher Ihres Browsers.',
-
-    // Toast Messages
-    alert_save_error: 'Fehler: Die Datei konnte nicht gespeichert werden.',
-    alert_create_first: 'Bitte erstellen Sie zuerst eine Wiedergabeliste.',
-    toast_files_added: '{count} Dateien hinzugefügt',
-    toast_duplicates_skipped: '{count} Duplikate übersprungen',
-    toast_playlist_saved: 'Wiedergabeliste gespeichert ✓',
-    toast_copied: 'In Zwischenablage kopiert ✓',
-    handoff_title: 'Im Texteditor öffnen?',
-    handoff_text_saved:
-      '„{name}“ wurde gespeichert. Möchten Sie die Datei jetzt im Kodini Texteditor weiterbearbeiten?',
-    handoff_text_copied:
-      '„{name}“ liegt in der Zwischenablage. Möchten Sie die Wiedergabeliste jetzt im Kodini Texteditor weiterbearbeiten?',
-    handoff_accept: 'Im Texteditor öffnen',
-    handoff_decline: 'Nicht jetzt',
-    handoff_error: 'Übergabe nicht möglich: Der Browser-Speicher ist nicht verfügbar.',
-    toast_copy_error: 'Kopieren fehlgeschlagen',
-    toast_close: 'Schließen',
-    toast_file_removed: 'Track entfernt',
-    toast_files_cleared: 'Liste geleert',
-    toast_undo_btn: 'Rückgängig',
-    toast_undo_restored: 'Track wiederhergestellt ✓',
-    toast_undo_done: 'Rückgängig: {action}',
-    toast_redo_done: 'Wiederholt: {action}',
-
-    // Undo / Redo
-    undo_redo_group: 'Rückgängig / Wiederholen',
-    undo_btn: 'Rückgängig',
-    redo_btn: 'Wiederholen',
-    undo_title: 'Nichts rückgängig zu machen (Strg+Z)',
-    redo_title: 'Nichts zu wiederholen (Strg+Y)',
-    undo_title_with_action: 'Rückgängig: {action} (Strg+Z)',
-    redo_title_with_action: 'Wiederholen: {action} (Strg+Y)',
-    history_files_added: 'Dateien hinzugefügt',
-    history_files_cleared: 'Liste geleert',
-    history_file_removed: 'Track entfernt',
-    history_file_moved: 'Track verschoben',
-    history_sorted: 'Sortierung geändert',
-    history_selection_changed: 'Trackauswahl geändert',
-    history_name_changed: 'Name geändert',
-    history_format_changed: 'Format geändert',
-    history_replace_mode_changed: 'Ersetzen-Option geändert',
-    replace_list_option: 'Bestehende Liste ersetzen',
-    files_panel_title: 'Dateien',
-    drop_zone_title: 'Dateien oder Ordner hierher ziehen',
-    drop_zone_hint: 'oder Strg+V zum Einfügen',
-    file_list_label: 'Dateiliste',
-    file_list_include: 'In Wiedergabeliste aufnehmen',
-    file_list_drag_handle: 'Verschieben, auch mit Alt und Pfeiltasten',
-    file_list_remove: 'Entfernen',
-    file_list_empty_title: 'Noch keine Dateien',
-    file_list_empty_text: 'Füge Audiodateien hinzu oder zieh sie hierher.',
-
-    // Shared Files (audiokonverter)
-    sharedFilesLoading: '{count} Datei(en) vom Audio Konverter werden importiert…',
-    sharedFilesLoaded: '{count} Datei(en) erfolgreich importiert',
-    sharedFilesEmpty: 'Keine Dateien vom Audio Konverter gefunden',
-    sharedFilesError: 'Fehler beim Importieren',
-
-    // Shared Files (audionormalizer)
-    sharedFilesNormalizerLoading: '{count} normalisierte Datei(en) werden importiert…',
-    sharedFilesNormalizerLoaded: '{count} normalisierte Datei(en) erfolgreich importiert',
-    sharedFilesNormalizerEmpty: 'Keine normalisierten Dateien gefunden',
-
-    // Shortcuts
-    shortcut_open: 'Dateien öffnen (Strg+O)',
-    shortcut_save: 'Speichern (Strg+S)',
-    shortcut_copy: 'Kopieren (Strg+C)',
-
-    // Onboarding Banner
-    onboarding_aria: 'Kurzanleitung',
-    onboarding_step1: 'Dateien hinzufügen',
-    onboarding_step2: 'Reihenfolge festlegen',
-    onboarding_step3: 'Wiedergabeliste speichern',
-
-    // Keyboard Shortcuts Panel
-    shortcuts_panel_title: 'Tastaturkürzel',
-    shortcuts_close_btn: 'Schließen',
-    shortcuts_hint_btn: 'Tastaturkürzel anzeigen',
-    shortcut_open_desc: 'Dateien öffnen',
-    shortcut_save_desc: 'Wiedergabeliste speichern',
-    shortcut_copy_desc: 'In Zwischenablage kopieren',
-    shortcut_delete_desc: 'Ausgewählten Track löschen',
-    shortcut_undo_desc: 'Letzte Aktion rückgängig machen',
-    shortcut_redo_desc: 'Aktion wiederholen',
-    shortcut_arrows_desc: 'Track auswählen',
-    shortcut_escape_desc: 'Auswahl aufheben',
-    shortcut_question_desc: 'Dieses Panel öffnen / schließen',
-
-    // Format descriptions (shown below format tabs)
-    format_desc_m3u: 'Kompatibel mit VLC, Winamp, Foobar2000 und den meisten Mediaplayern.',
-    format_desc_m3u8:
-      'M3U in UTF-8 – bewahrt Umlaute und Sonderzeichen, ideal für moderne Player und Streaming.',
-    format_desc_pls:
-      'Weit verbreitetes Format – kompatibel mit VLC, Winamp, foobar2000 und Internetradio.',
-    format_desc_txt:
-      'Einfache Textliste mit einem Dateinamen pro Zeile – universell für Skripte und USB-Sticks.',
-    format_desc_cue:
-      'Track-Sheet für DJ-Mixes und Alben – kompatibel mit foobar2000, VLC und CD-Brennprogrammen.',
-    format_desc_csv:
-      'Tabellen-Export (Dateiname, Titel, Größe) – öffnet sich in Excel oder Google Sheets.',
-    format_desc_xspf: 'Moderner XML-Standard – ideal für VLC und Austausch zwischen Programmen.',
-    format_desc_json: 'Für Entwickler und Webanwendungen – nicht für normale Mediaplayer geeignet.',
-
-    // Audio Player
-    player_title: 'Vorschau-Player',
-    player_no_track: 'Kein Track ausgewählt',
-    player_play: 'Abspielen',
-    player_pause: 'Pause',
-    player_stop: 'Stopp',
-    player_previous: 'Vorheriger Track',
-    player_next: 'Nächster Track',
-    player_mute: 'Stummschalten',
-    player_volume: 'Lautstärke',
-    player_unmute: 'Ton einschalten',
-    player_queue: 'Warteschlange',
-    player_repeat_off: 'Wiederholen: Aus',
-    player_repeat_all: 'Wiederholen: Ganze Wiedergabeliste',
-    player_repeat_one: 'Wiederholen: Aktueller Track',
-
-    // Tools Section
-    more_tools_title: 'Entdecken Sie weitere Audio-Tools',
-    tool1_title: 'Moderner Musikplayer',
-    tool1_desc:
-      'Ein stilvoller, moderner Musikplayer mit beeindruckenden Visualisierungen, Wiedergabeliste-Verwaltung und Unterstützung für lokale Audiodateien.',
-    tool2_title: 'Grafischer Equalizer',
-    tool2_desc:
-      'Passen Sie den Klang Ihrer Musik präzise an. Dieser 10-Band-Grafik-Equalizer ermöglicht es Ihnen, Frequenzen für das perfekte Hörerlebnis zu formen.',
-    tool3_title: 'Audio-Konverter',
-    tool3_desc:
-      'Konvertieren Sie Ihre Audiodateien schnell und einfach zwischen Formaten wie MP3, WAV und FLAC direkt in Ihrem Browser – ohne Uploads.',
-    tool_button: 'Ausprobieren',
-
-    // Landing Page – KodiniTools Section
-    landing_tools_title: 'Weitere KodiniTools für Ihre Musik',
-    landing_tools_subtitle:
-      'Kostenlose Browser-Tools, die den Wiedergabeliste Generator perfekt ergänzen – ohne Upload, ohne Registrierung.',
-    landing_tool_playlist_converter_title: 'Audio Wiedergabeliste Konverter',
-    landing_tool_playlist_converter_desc:
-      'Konvertieren Sie bestehende Wiedergabelisten zwischen M3U, XSPF und JSON – ideal, um erstellte Wiedergabelisten für andere Player anzupassen.',
-    landing_tool_audio_converter_title: 'Audio Konverter',
-    landing_tool_audio_converter_desc:
-      'Wandeln Sie Audiodateien zwischen MP3, WAV, FLAC und weiteren Formaten um – direkt im Browser, bevor Sie sie in Ihre Wiedergabeliste aufnehmen.',
-    landing_tool_normalizer_title: 'Audio Normalizer',
-    landing_tool_normalizer_desc:
-      'Gleichen Sie die Lautstärke Ihrer Titel an, damit Ihre Wiedergabeliste ohne störende Pegelsprünge läuft.',
-    landing_tool_link: 'Tool öffnen',
-    landing_tool_link_aria: 'öffnet in einem neuen Tab',
-
-    // Footer
-    donate_button: 'spenden',
-    donate_title: 'Mit PayPal spenden',
-    facebook_share: 'Teilen',
-    facebook_share_title: 'Auf Facebook teilen',
-    footer_copyright: 'Audio Wiedergabeliste Generator',
-  },
-  en: {
-    // Meta tags
-    meta_title: 'Audio Playlist Generator - Create M3U, XSPF & JSON Playlists',
-    meta_description:
-      'Easily and quickly create custom audio playlists (.m3u, .xspf, .json) from your MP3, WAV, or FLAC files. Sort, name, and download your playlist.',
-
-    // Navigation
-    nav_home: 'Home',
-    nav_app: 'App',
-    nav_faq: 'FAQ',
-    nav_blog: 'Blog',
-    nav_label: 'Pages',
-
-    // Landing Page - Hero
-    hero_title: 'Audio Playlist Generator',
-    hero_subtitle: 'Create professional playlists in seconds',
-    hero_description:
-      'Transform your local audio files into perfectly organized playlists. Supports M3U, XSPF, and JSON – free and 100% local in your browser.',
-    hero_cta: 'Get Started',
-    hero_learn_more: 'Learn More',
-
-    // Feature Cards
-    feature1_title: 'Multiple Formats',
-    feature1_desc:
-      'Export your playlists to M3U, XSPF, or JSON – compatible with VLC, Winamp, iTunes, and more.',
-    feature2_title: '100% Private',
-    feature2_desc:
-      'All files are processed locally. No uploads, no servers – your music stays on your device.',
-    feature3_title: 'Flexible Sorting',
-    feature3_desc:
-      'Arrange tracks alphabetically, by date, randomly, or drag & drop to your preference.',
-
-    // Details Section
-    details_title: 'Powerful Features',
-    details_subtitle: 'Everything you need for perfect playlists',
-
-    detail1_title: 'Drag & Drop Upload',
-    detail1_desc:
-      'Simply drag your MP3, WAV, or FLAC files into the browser – no complicated selection needed.',
-    detail2_title: 'Interactive Track List',
-    detail2_desc: 'Visualize and edit your playlist in real-time with our canvas-based interface.',
-    detail3_title: 'Fast Keyboard Shortcuts',
-    detail3_desc: 'Ctrl+O to open, Ctrl+S to save, Ctrl+C to copy – work like a pro.',
-    detail4_title: 'Theme Switcher',
-    detail4_desc: 'Switch between light and dark design – perfect for any environment.',
-    detail5_title: 'Multilingual',
-    detail5_desc: 'Available in German and English – switch languages with one click.',
-    detail6_title: 'No Installation',
-    detail6_desc: 'Works directly in the browser – no download, no installation required.',
-
-    // Trust Badges
-    trust_free: 'Free',
-    trust_no_registration: 'No Registration',
-    trust_private: '100% Local & Private',
-
-    // App Preview Labels
-    preview_files_label: 'Audio Files',
-    preview_output_label: 'Playlist Preview',
-
-    // CTA Section
-    cta_title: 'Ready to get started?',
-    cta_desc: 'Create your first playlist now – free and without registration.',
-    cta_button: 'Create Playlist for Free',
-
-    // App Page
-    notice_m3u:
-      'Important Notice for M3U/XSPF Playlists: For media players (VLC, Winamp, etc.) to find the tracks, the playlist file must be saved in the same folder as your audio files.',
-    main_title: 'Audio Playlist Generator',
-    subtitle: 'Create professional playlists with a modern design',
-    description_text:
-      'Select your local audio files (MP3, WAV, FLAC), define the sorting order, and export your personal playlist in M3U, XSPF or JSON format. Ideal for organizing your music collection for media players like VLC, Winamp, or Foobar2000.',
-    config_title: 'Playlist Configuration',
-    label_files: '1. add audio files',
-    button_add_files: 'Add Files',
-    button_add_folder: 'Add Folder',
-    drop_hint: 'or drop files / folders here · Ctrl+V to paste',
-    scanning_folder: 'Scanning folder…',
-    click_to_upload: 'choose files or drag here...',
-    drop_files_here: 'drop files here...',
-    files_selected: 'files selected',
-    select_all: 'Select all',
-    button_clear_title: 'Clear List',
-    stats_tracks: 'Tracks',
-    duration_approx_title: 'Estimated total duration (not all tracks played yet)',
-    label_sort: '2. Set Playback Order',
-    sort_alpha: 'Alphabetical',
-    sort_date: 'By Date',
-    sort_random: 'Random',
-    sort_manual: 'Manual',
-    label_name: '3. Name Playlist',
-    placeholder_name: 'Enter a name...',
-    button_create: '4. Create Playlist',
-    preview_title: 'Preview & Save',
-    label_format: 'Preview Format',
-    format_m3u: 'M3U Playlist',
-    format_m3u8: 'M3U8 Playlist',
-    format_pls: 'PLS Playlist',
-    format_txt: 'TXT List',
-    format_cue: 'CUE Sheet',
-    format_csv: 'CSV Table',
-    format_xspf: 'XSPF Playlist',
-    format_json: 'JSON File',
-    placeholder_output: "Click 'Create Playlist' to see a preview here...",
-    button_save: 'Save As...',
-    button_copy: 'Copy',
-    lines: 'lines',
-    preview_empty_title: 'No preview yet',
-
-    // FAQ Page
-    faq_page_title: 'Frequently Asked Questions',
-    faq_page_subtitle: 'Everything you need to know about the Audio Playlist Generator',
-    faq_title: 'Frequently Asked Questions (FAQ)',
-    faq_q1_title: 'What is an M3U file?',
-    faq_q1_text:
-      'An M3U file is a plain text file that lists the paths to audio or video files. It is used by many media players (e.g., VLC, Winamp, iTunes) to organize and play playlists.',
-    faq_q9_title: 'What is an XSPF file?',
-    faq_q9_text:
-      'XSPF (XML Shareable Playlist Format) is a modern, open standard for playlists. Unlike M3U, it is structured in XML format, which makes it more flexible. It is supported by many players like VLC and is ideal for sharing playlists between different programs and systems.',
-    faq_q2_title: 'Which audio formats are supported?',
-    faq_q2_text:
-      'The generator supports the most common audio formats: <strong>.mp3</strong>, <strong>.wav</strong>, and <strong>.flac</strong>. Other file types will be ignored.',
-    faq_q3_title: 'Are my files uploaded anywhere?',
-    faq_q3_text:
-      'No, absolutely not. All processing happens exclusively locally in your browser. Your audio files never leave your computer.',
-    faq_q4_title: 'Why are the paths in the playlist just the filenames?',
-    faq_q4_text:
-      'The tool intentionally uses relative paths (just the filename). This is why you need to save the playlist file in the same folder as your music. This allows the playlist to work even if you move the entire folder to another computer.',
-    faq_q5_title: 'What is the JSON format good for?',
-    faq_q5_text:
-      'JSON is a data format often used by developers or in web applications. You could use a JSON playlist to dynamically display the track list on a website or to process it in your own software project. For regular media players, M3U or XSPF is the better choice.',
-    faq_q6_title: 'Which browsers are supported?',
-    faq_q6_text:
-      'The Audio Playlist Generator works in all modern browsers (Chrome, Firefox, Safari, Edge). The save function uses the File System Access API and works best in Chrome and Edge.',
-    faq_q7_title: 'Is the generator free?',
-    faq_q7_text:
-      'Yes, the Audio Playlist Generator is completely free and requires no registration. If you like the tool, feel free to support us with a small donation.',
-    faq_q8_title: 'Can I use the generator offline?',
-    faq_q8_text:
-      'Since all processing takes place locally in your browser, you only need an internet connection for the initial access. Once the page is loaded, you can create playlists even without internet.',
-
-    // Privacy Notice
-    privacy_title: 'Privacy Notice',
-    privacy_text:
-      "The Audio Playlist Generator processes all data locally in your browser. No files are uploaded to servers and no personal data is stored. The only stored data are your theme and language preferences in your browser's local storage.",
-
-    // Toast Messages
-    alert_save_error: 'Error: The file could not be saved.',
-    alert_create_first: 'Please create a playlist first.',
-    toast_files_added: '{count} files added',
-    toast_duplicates_skipped: '{count} duplicates skipped',
-    toast_playlist_saved: 'Playlist saved ✓',
-    toast_copied: 'Copied to clipboard ✓',
-    handoff_title: 'Open in text editor?',
-    handoff_text_saved:
-      '"{name}" has been saved. Would you like to continue editing it in the Kodini text editor?',
-    handoff_text_copied:
-      '"{name}" is in your clipboard. Would you like to continue editing the playlist in the Kodini text editor?',
-    handoff_accept: 'Open in text editor',
-    handoff_decline: 'Not now',
-    handoff_error: 'Handoff not possible: browser storage is unavailable.',
-    toast_copy_error: 'Copy failed',
-    toast_close: 'Close',
-    toast_file_removed: 'Track removed',
-    toast_files_cleared: 'List cleared',
-    toast_undo_btn: 'Undo',
-    toast_undo_restored: 'Track restored ✓',
-    toast_undo_done: 'Undone: {action}',
-    toast_redo_done: 'Redone: {action}',
-
-    // Undo / Redo
-    undo_redo_group: 'Undo / Redo',
-    undo_btn: 'Undo',
-    redo_btn: 'Redo',
-    undo_title: 'Nothing to undo (Ctrl+Z)',
-    redo_title: 'Nothing to redo (Ctrl+Y)',
-    undo_title_with_action: 'Undo: {action} (Ctrl+Z)',
-    redo_title_with_action: 'Redo: {action} (Ctrl+Y)',
-    history_files_added: 'Files added',
-    history_files_cleared: 'List cleared',
-    history_file_removed: 'Track removed',
-    history_file_moved: 'Track moved',
-    history_sorted: 'Sort order changed',
-    history_selection_changed: 'Track selection changed',
-    history_name_changed: 'Name changed',
-    history_format_changed: 'Format changed',
-    history_replace_mode_changed: 'Replace option changed',
-    replace_list_option: 'Replace existing list',
-    files_panel_title: 'Files',
-    drop_zone_title: 'Drop files or folders here',
-    drop_zone_hint: 'or Ctrl+V to paste',
-    file_list_label: 'File list',
-    file_list_include: 'Include in playlist',
-    file_list_drag_handle: 'Move, also with Alt and arrow keys',
-    file_list_remove: 'Remove',
-    file_list_empty_title: 'No files yet',
-    file_list_empty_text: 'Add audio files or drop them here.',
-
-    // Shared Files (audiokonverter)
-    sharedFilesLoading: 'Importing {count} file(s) from Audio Converter…',
-    sharedFilesLoaded: '{count} file(s) successfully imported',
-    sharedFilesEmpty: 'No files found from Audio Converter',
-    sharedFilesError: 'Error importing files',
-
-    // Shared Files (audionormalizer)
-    sharedFilesNormalizerLoading: 'Importing {count} normalised file(s)…',
-    sharedFilesNormalizerLoaded: '{count} normalised file(s) successfully imported',
-    sharedFilesNormalizerEmpty: 'No normalised files found',
-
-    // Shortcuts
-    shortcut_open: 'Open files (Ctrl+O)',
-    shortcut_save: 'Save (Ctrl+S)',
-    shortcut_copy: 'Copy (Ctrl+C)',
-
-    // Onboarding Banner
-    onboarding_aria: 'Quick guide',
-    onboarding_step1: 'Add files',
-    onboarding_step2: 'Set order',
-    onboarding_step3: 'Save playlist',
-
-    // Keyboard Shortcuts Panel
-    shortcuts_panel_title: 'Keyboard Shortcuts',
-    shortcuts_close_btn: 'Close',
-    shortcuts_hint_btn: 'Show keyboard shortcuts',
-    shortcut_open_desc: 'Open files',
-    shortcut_save_desc: 'Save playlist',
-    shortcut_copy_desc: 'Copy to clipboard',
-    shortcut_delete_desc: 'Delete selected track',
-    shortcut_undo_desc: 'Undo last action',
-    shortcut_redo_desc: 'Redo action',
-    shortcut_arrows_desc: 'Select track',
-    shortcut_escape_desc: 'Clear selection',
-    shortcut_question_desc: 'Open / close this panel',
-
-    // Format descriptions (shown below format tabs)
-    format_desc_m3u: 'Compatible with VLC, Winamp, Foobar2000 and most media players.',
-    format_desc_m3u8:
-      'M3U in UTF-8 – preserves accents and special characters, ideal for modern players and streaming.',
-    format_desc_pls:
-      'Widely supported format – works with VLC, Winamp, foobar2000 and internet radio.',
-    format_desc_txt:
-      'Simple text list with one filename per line – universal for scripts and USB sticks.',
-    format_desc_cue:
-      'Track sheet for DJ mixes and albums – compatible with foobar2000, VLC and CD burning tools.',
-    format_desc_csv:
-      'Spreadsheet export (filename, title, size) – opens in Excel or Google Sheets.',
-    format_desc_xspf: 'Modern XML standard – ideal for VLC and sharing between applications.',
-    format_desc_json: 'For developers and web apps – not suitable for regular media players.',
-
-    // Audio Player
-    player_title: 'Preview Player',
-    player_no_track: 'No track selected',
-    player_play: 'Play',
-    player_pause: 'Pause',
-    player_stop: 'Stop',
-    player_previous: 'Previous track',
-    player_next: 'Next track',
-    player_mute: 'Mute',
-    player_volume: 'Volume',
-    player_unmute: 'Unmute',
-    player_queue: 'Queue',
-    player_repeat_off: 'Repeat: Off',
-    player_repeat_all: 'Repeat: Entire playlist',
-    player_repeat_one: 'Repeat: Current track',
-
-    // Tools Section
-    more_tools_title: 'Discover More Audio Tools',
-    tool1_title: 'Modern Music Player',
-    tool1_desc:
-      'A stylish, modern music player with stunning visualizations, playlist management, and support for local audio files.',
-    tool2_title: 'Graphic Equalizer',
-    tool2_desc:
-      "Precisely adjust your music's sound. This 10-band graphic equalizer allows you to shape frequencies for the perfect listening experience.",
-    tool3_title: 'Audio Converter',
-    tool3_desc:
-      'Quickly and easily convert your audio files between formats like MP3, WAV, and FLAC directly in your browser—no uploads required.',
-    tool_button: 'Try It Out',
-
-    // Landing Page – KodiniTools Section
-    landing_tools_title: 'More KodiniTools for Your Music',
-    landing_tools_subtitle:
-      'Free browser tools that perfectly complement the Playlist Generator – no upload, no registration.',
-    landing_tool_playlist_converter_title: 'Audio Playlist Converter',
-    landing_tool_playlist_converter_desc:
-      'Convert existing playlists between M3U, XSPF and JSON – ideal for adapting your generated playlists to other players.',
-    landing_tool_audio_converter_title: 'Audio Converter',
-    landing_tool_audio_converter_desc:
-      'Convert audio files between MP3, WAV, FLAC and more – right in your browser, before adding them to your playlist.',
-    landing_tool_normalizer_title: 'Audio Normalizer',
-    landing_tool_normalizer_desc:
-      'Level out the volume of your tracks so your playlist plays without jarring loudness jumps.',
-    landing_tool_link: 'Open tool',
-    landing_tool_link_aria: 'opens in a new tab',
-
-    // Footer
-    donate_button: 'donate',
-    donate_title: 'Donate with PayPal',
-    facebook_share: 'Share',
-    facebook_share_title: 'Share on Facebook',
-    footer_copyright: 'Audio Playlist Generator',
-  },
+export const translations: Readonly<Record<Language, Readonly<Record<TranslationKey, string>>>> = {
+  de,
+  en,
 }
 
 // Nav-Uebersetzungen fuer SSI-Partial data-nav-i18n Attribute

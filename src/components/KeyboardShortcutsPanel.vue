@@ -41,7 +41,7 @@
 <script setup lang="ts">
   import { onMounted, onUnmounted, ref } from 'vue'
   import { UiDialog, UiIconButton, UiKbd } from './ui'
-  import { useTranslation } from '../composables/useTranslation'
+  import { useTranslation, type TranslationKey } from '../composables/useTranslation'
 
   /**
    * Fragezeichen-Button in der Kopfzeile plus Dialog mit allen Tastaturkürzeln.
@@ -50,7 +50,7 @@
   const { t } = useTranslation()
   const isOpen = ref(false)
 
-  const shortcuts: ReadonlyArray<{ keys: string[]; descKey: string }> = [
+  const shortcuts: ReadonlyArray<{ keys: string[]; descKey: TranslationKey }> = [
     { keys: ['Ctrl', 'O'], descKey: 'shortcut_open_desc' },
     { keys: ['Ctrl', 'S'], descKey: 'shortcut_save_desc' },
     { keys: ['Ctrl', 'C'], descKey: 'shortcut_copy_desc' },

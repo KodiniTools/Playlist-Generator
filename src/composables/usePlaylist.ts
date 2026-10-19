@@ -11,6 +11,18 @@ export interface AddFilesResult {
   skipped: number
 }
 
+/** Undo-Schritte; jeder Wert braucht einen Übersetzungs-Schlüssel `history_<label>`. */
+export type HistoryLabel =
+  | 'files_added'
+  | 'files_cleared'
+  | 'file_removed'
+  | 'file_moved'
+  | 'sorted'
+  | 'selection_changed'
+  | 'name_changed'
+  | 'format_changed'
+  | 'replace_mode_changed'
+
 interface Snapshot {
   files: File[]
   excluded: Set<File>
@@ -70,7 +82,11 @@ const restoreSnapshot = (snapshot: Snapshot) => {
   generatePlaylist()
 }
 
-const history = createHistory({ capture: captureSnapshot, restore: restoreSnapshot, limit: 50 })
+const history = createHistory<Snapshot, HistoryLabel>({
+  capture: captureSnapshot,
+  restore: restoreSnapshot,
+  limit: 50,
+})
 
 // The ordered subset of files that are checked and thus included in the output.
 const includedFiles = () => files.value.filter((f) => !excludedFiles.value.has(f))

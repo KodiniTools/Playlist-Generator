@@ -348,7 +348,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useTranslation } from '../composables/useTranslation'
+  import { useTranslation, type TranslationKey } from '../composables/useTranslation'
   import AppHeader from '../components/AppHeader.vue'
   import { UiButton } from '../components/ui'
 
@@ -358,8 +358,8 @@
   interface KodiniTool {
     id: 'playlist-converter' | 'audio-converter' | 'audio-normalizer'
     url: string
-    titleKey: string
-    descKey: string
+    titleKey: TranslationKey
+    descKey: TranslationKey
   }
 
   const kodiniTools: readonly KodiniTool[] = [

@@ -69,13 +69,18 @@
 <script setup lang="ts">
   import { useId } from 'vue'
   import { UiButton } from './ui'
-  import { useTranslation } from '../composables/useTranslation'
+  import { useTranslation, type TranslationKey } from '../composables/useTranslation'
 
   /** Verweise auf die anderen KodiniTools, flache Karten mit Linkbutton. */
   const { t } = useTranslation()
   const titleId = `tools-${useId()}`
 
-  const tools: ReadonlyArray<{ id: string; titleKey: string; descKey: string; href: string }> = [
+  const tools: ReadonlyArray<{
+    id: string
+    titleKey: TranslationKey
+    descKey: TranslationKey
+    href: string
+  }> = [
     {
       id: 'player',
       titleKey: 'tool1_title',
