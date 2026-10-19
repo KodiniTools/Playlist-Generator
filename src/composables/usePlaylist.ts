@@ -55,6 +55,8 @@ export function usePlaylist() {
     toggleFileSelected: store.toggleFileSelected,
     setAllSelected: store.setAllSelected,
     fitToLength: store.fitToLength,
+    draftSnapshot: store.draftSnapshot,
+    loadDraftState: store.loadDraftState,
     openPlaylist: store.openPlaylist,
     addFiles: store.addFiles,
     clearFiles: store.clearFiles,

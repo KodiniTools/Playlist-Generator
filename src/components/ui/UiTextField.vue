@@ -1,5 +1,12 @@
 <template>
-  <div :class="['ui-field', { 'ui-field--error': Boolean(error), 'ui-field--disabled': disabled }]">
+  <div
+    :class="[
+      'ui-field',
+      { 'ui-field--error': Boolean(error), 'ui-field--disabled': disabled },
+      $attrs.class,
+    ]"
+    :style="$attrs.style as StyleValue"
+  >
     <label :for="inputId" class="ui-field__label">
       {{ label }}<span v-if="required" class="ui-field__required" aria-hidden="true"> *</span>
     </label>
@@ -13,7 +20,7 @@
       :required="required"
       :aria-invalid="error ? 'true' : undefined"
       :aria-describedby="describedBy"
-      v-bind="$attrs"
+      v-bind="inputAttrs"
     />
     <p v-if="error" :id="errorId" class="ui-field__error" role="alert">{{ error }}</p>
     <p v-else-if="hint" :id="hintId" class="ui-field__hint">{{ hint }}</p>
@@ -21,12 +28,13 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, useId } from 'vue'
+  import { computed, useAttrs, useId, type StyleValue } from 'vue'
   import type { TextFieldType } from './types'
 
   /**
    * Einzeiliges Textfeld mit sichtbarem Label, optionalem Hinweis und Fehlertext.
-   * Weitere Attribute (autocomplete, maxlength, …) landen auf dem <input>.
+   * Weitere Attribute (autocomplete, maxlength, …) landen auf dem <input>;
+   * `class` und `style` auf dem äußeren Element, damit Layout-Klassen greifen.
    */
   defineOptions({ inheritAttrs: false })
 
@@ -45,6 +53,11 @@
   )
 
   const model = defineModel<string>({ default: '' })
+
+  const attrs = useAttrs()
+  const inputAttrs = computed(() =>
+    Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style')),
+  )
 
   const generatedId = useId()
   const inputId = computed(() => props.id ?? `ui-field-${generatedId}`)
