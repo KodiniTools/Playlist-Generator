@@ -1,17 +1,17 @@
 import { reactive } from 'vue'
 
 // Module-level singleton: filename → duration in seconds (real, from audio metadata)
-const known = reactive(new Map())
+const known = reactive(new Map<string, number>())
 
 // Names currently being probed, so overlapping calls don't measure twice.
-const measuring = new Set()
+const measuring = new Set<string>()
 
 // Read the real duration of a single File from its audio metadata. Only the
 // metadata (header) is loaded, never the whole file, so this is fast and works
 // fully offline. Resolves regardless of success — failures just leave the file
 // without a known duration (an estimate is used instead).
-const measureFile = (file) =>
-  new Promise((resolve) => {
+const measureFile = (file: File) =>
+  new Promise<void>((resolve) => {
     const audio = new Audio()
     const url = URL.createObjectURL(file)
 
@@ -39,20 +39,21 @@ const measureFile = (file) =>
     audio.src = url
   })
 
+/** Dauern aus Audio-Metadaten, Singleton-Map. */
 export function useDurations() {
-  const setDuration = (filename, seconds) => {
+  const setDuration = (filename: string, seconds: number) => {
     if (filename && isFinite(seconds) && seconds > 0) {
       known.set(filename, seconds)
     }
   }
 
-  const getDuration = (filename) => known.get(filename) ?? null
+  const getDuration = (filename: string): number | null => known.get(filename) ?? null
 
   // Ensure every file has a real, metadata-based duration. Files already known
   // (or already being measured) are skipped. Runs with limited concurrency to
   // avoid opening too many decoders at once.
-  const measureDurations = async (files) => {
-    const pending = []
+  const measureDurations = async (files: Iterable<File> | null | undefined) => {
+    const pending: File[] = []
     for (const file of files || []) {
       if (!file || !file.name) continue
       if (known.has(file.name) || measuring.has(file.name)) continue
@@ -65,7 +66,7 @@ export function useDurations() {
     let cursor = 0
     const worker = async () => {
       while (cursor < pending.length) {
-        const file = pending[cursor++]
+        const file = pending[cursor++]!
         try {
           await measureFile(file)
         } finally {

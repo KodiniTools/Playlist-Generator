@@ -1,15 +1,21 @@
 import { ref, watch, onUnmounted } from 'vue'
 
-const currentTheme = ref(
+export type Theme = 'dark' | 'light'
+
+const currentTheme = ref<string>(
   localStorage.getItem('theme') || localStorage.getItem('playlist-generator-theme') || 'dark',
 )
 
+/**
+ * Setzt body.light-theme (App) und html[data-theme] (SSI-Partials) und folgt
+ * theme-changed-Events der SSI-Navigation.
+ */
 export function useTheme() {
   const toggleTheme = () => {
     currentTheme.value = currentTheme.value === 'dark' ? 'light' : 'dark'
   }
 
-  const setTheme = (theme) => {
+  const setTheme = (theme: Theme) => {
     currentTheme.value = theme
   }
 
@@ -35,8 +41,8 @@ export function useTheme() {
   )
 
   // Listen for theme-changed events from the global navigation (SSI include)
-  const handleGlobalThemeChange = (e) => {
-    const newTheme = e.detail?.theme
+  const handleGlobalThemeChange = (e: Event) => {
+    const newTheme = (e as CustomEvent<{ theme?: string } | undefined>).detail?.theme
     if (newTheme && newTheme !== currentTheme.value) {
       currentTheme.value = newTheme
     }

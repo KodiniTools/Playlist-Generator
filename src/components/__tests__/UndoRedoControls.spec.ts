@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Ref } from 'vue'
 import UndoRedoControls from '../UndoRedoControls.vue'
 import { useTranslation } from '../../composables/useTranslation'
 import { useUndoRedo } from '../../composables/useUndoRedo'
@@ -23,7 +24,11 @@ vi.mock('../../composables/useUndoRedo', async () => {
   return { useUndoRedo: () => state }
 })
 
-const state = useUndoRedo()
+// Der Mock liefert beschreibbare Refs, damit die Tests den Zustand umschalten können.
+const state = useUndoRedo() as Omit<ReturnType<typeof useUndoRedo>, 'canUndo' | 'canRedo'> & {
+  canUndo: Ref<boolean>
+  canRedo: Ref<boolean>
+}
 
 describe('UndoRedoControls', () => {
   beforeEach(() => {
