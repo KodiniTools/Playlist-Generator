@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatPlaylist, type PlaylistTrack } from '../playlistFormats'
+import { formatPlaylist, toXspfLocation, type PlaylistTrack } from '../playlistFormats'
 import type { AudioTags } from '../audioTags'
 
 const track = (
@@ -103,7 +103,7 @@ describe('formatPlaylist', () => {
     const xml = formatPlaylist('xspf', LIST, 'A & B')
     expect(xml).toContain('<title>A &amp; B</title>')
     expect(xml).toContain(
-      '<location>Rock &amp; Roll.mp3</location>\n      <title>Rock &amp; Roll</title>\n      <duration>221400</duration>\n    </track>',
+      '<location>Rock%20%26%20Roll.mp3</location>\n      <title>Rock &amp; Roll</title>\n      <duration>221400</duration>\n    </track>',
     )
     expect(xml).toContain(
       '<location>unbekannt.flac</location>\n      <title>unbekannt</title>\n    </track>',
@@ -122,7 +122,7 @@ describe('formatPlaylist', () => {
       ['pls', 'File1=CD1/01 Intro.mp3\n'],
       ['txt', 'CD1/01 Intro.mp3\n'],
       ['cue', 'FILE "CD1/01 Intro.mp3" MP3\n'],
-      ['xspf', '<location>CD1/01 Intro.mp3</location>'],
+      ['xspf', '<location>CD1/01%20Intro.mp3</location>'],
       ['csv', '01 Intro.mp3,CD1/01 Intro.mp3,01 Intro,1,60,,,'],
       ['json', '"path": "CD1/01 Intro.mp3"'],
     ] as const)('%s verweist auf den Pfad', (format, expected) => {
@@ -185,5 +185,20 @@ describe('formatPlaylist', () => {
         },
       ])
     })
+  })
+})
+
+describe('toXspfLocation', () => {
+  it.each([
+    ['Früh & spät.mp3', 'Fr%C3%BCh%20%26%20sp%C3%A4t.mp3'],
+    ['CD1/01 Intro.mp3', 'CD1/01%20Intro.mp3'],
+    ['../Musik/#1.mp3', '../Musik/%231.mp3'],
+    ['D:\\Musik\\CD 1\\a.mp3', 'file:///D:/Musik/CD%201/a.mp3'],
+    ['c:/Musik/a.mp3', 'file:///c:/Musik/a.mp3'],
+    ['\\\\nas\\Musik\\a b.mp3', 'file://nas/Musik/a%20b.mp3'],
+    ['/home/ich/a b.mp3', 'file:///home/ich/a%20b.mp3'],
+    ['https://example.com/musik/a%20b.mp3', 'https://example.com/musik/a%20b.mp3'],
+  ])('%s → %s', (path, uri) => {
+    expect(toXspfLocation(path)).toBe(uri)
   })
 })
