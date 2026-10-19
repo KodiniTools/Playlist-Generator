@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import App from '../App.vue'
 import { useTranslation } from '../composables/useTranslation'
 
@@ -11,9 +12,13 @@ class ResizeObserverStub {
 }
 
 function mountApp() {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', name: 'landing', component: { render: () => null } }],
+  })
   return mount(App, {
     attachTo: document.body,
-    global: { stubs: { RouterView: true, ToastContainer: true } },
+    global: { plugins: [router], stubs: { RouterView: true, ToastContainer: true } },
   })
 }
 

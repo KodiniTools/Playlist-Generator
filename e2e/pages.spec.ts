@@ -78,3 +78,28 @@ test('Navigation im Header wechselt die Seiten', async ({ page }) => {
     'Audio Wiedergabeliste Generator',
   )
 })
+
+test('Titel und Beschreibung folgen Seite und Sprache, ?lang= hat Vorrang', async ({ page }) => {
+  await prepare(page, 'de')
+  await page.goto('./faq')
+  await expect(page).toHaveTitle('FAQ – Audio Wiedergabeliste Generator')
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    'https://kodinitools.com/playlist_generator/faq',
+  )
+
+  await page.goto('./blog?lang=en')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'The Ultimate Audio Playlist Generator: All Features in Detail',
+  )
+  await expect(page).toHaveTitle('All Features in Detail – Audio Playlist Generator')
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    'content',
+    /^How the Audio Playlist Generator works/,
+  )
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    'https://kodinitools.com/playlist_generator/blog?lang=en',
+  )
+})

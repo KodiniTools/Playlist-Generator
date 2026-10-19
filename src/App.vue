@@ -8,6 +8,7 @@
 <script setup lang="ts">
   import { onMounted, onUnmounted } from 'vue'
   import ToastContainer from './components/ToastContainer.vue'
+  import { usePageMeta } from './composables/usePageMeta'
   import { useTheme } from './composables/useTheme'
   import { useTranslation } from './composables/useTranslation'
 
@@ -17,6 +18,9 @@
   // Initialize translation
   // setLanguage() includes SYNCHRONOUS SSI sync (nav, footer, cookie-banner)
   const { currentLanguage, setLanguage, syncAllExternalElements } = useTranslation()
+
+  // Seitentitel, Beschreibung und kanonische URL je Route und Sprache
+  usePageMeta()
 
   // =====================================================================
   // Incoming language changes from SSI nav (event + attribute observers)
