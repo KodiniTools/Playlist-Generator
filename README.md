@@ -56,6 +56,8 @@ src/
 │   ├── PlaylistConfig.vue
 │   ├── PlaylistPreview.vue
 │   ├── ToolsGrid.vue
+│   ├── blog/            # Blog-Artikel DE/EN
+│   ├── landing/         # Abschnitte der Landing-Seite
 │   └── ui/              # Design-System-Komponenten (Ui*)
 ├── stores/              # Pinia-Stores (playlist, toast)
 ├── composables/         # Wiederverwendbare Logik

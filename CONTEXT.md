@@ -60,6 +60,8 @@ Playlist-Generator/
 │   │   ├── ToastContainer.vue    # Toast-Benachrichtigungssystem
 │   │   ├── ToolsGrid.vue         # Grid mit anderen Audio-Tools
 │   │   ├── __tests__/            # Komponenten-Tests
+│   │   ├── blog/                 # Blog-Artikel DE/EN + gemeinsames blogArticle.css
+│   │   ├── landing/              # Abschnitte der Landing-Seite (Hero, Features, Details, Tools, CTA)
 │   │   └── ui/                   # Design-System-Komponenten (Ui*)
 │   │
 │   ├── stores/                   # Pinia-Stores

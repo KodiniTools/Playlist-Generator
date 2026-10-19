@@ -14,6 +14,12 @@ const MIGRATED = [
   'components/AppHeader.vue',
   'components/OnboardingBanner.vue',
   'components/ToolsGrid.vue',
+  'components/landing/LandingHero.vue',
+  'components/landing/LandingFeatureCards.vue',
+  'components/landing/LandingDetails.vue',
+  'components/landing/LandingTools.vue',
+  'components/landing/LandingCta.vue',
+  'components/blog/blogArticle.css',
 ]
 
 /** Außer --ds-* ist nur die vom SSI-Layout gesetzte Nav-Höhe erlaubt. */
