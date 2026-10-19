@@ -5,7 +5,7 @@
    src/assets/main.css (@import). Maschinenlesbar: tokens.json,
    typisiert für JS/TS: tokens.ts, Dokumentation: README.md (gleicher Ordner).
 
-   Theme-Mechanik (src/composables/useTheme.js):
+   Theme-Mechanik (src/composables/useTheme.ts):
      Dark  = Standard, Variablen auf :root
      Light = body.light-theme (App-CSS) und html[data-theme='light'] (SSI-Partials)
 

@@ -58,13 +58,13 @@ src/
 │   ├── ToolsGrid.vue
 │   └── ui/              # Design-System-Komponenten (Ui*)
 ├── composables/         # Wiederverwendbare Logik
-│   ├── usePlaylist.js
-│   ├── useTheme.js
-│   └── useTranslation.js
+│   ├── usePlaylist.ts
+│   ├── useTheme.ts
+│   └── useTranslation.ts
 ├── assets/
 │   └── main.css        # Globale Styles
 ├── App.vue             # Haupt-Komponente
-└── main.js             # App-Einstiegspunkt
+└── main.ts             # App-Einstiegspunkt
 ```
 
 ## Komponenten-Übersicht

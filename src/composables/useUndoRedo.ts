@@ -12,7 +12,7 @@ export function useUndoRedo() {
   const toast = useToast()
   const { t } = useTranslation()
 
-  const actionText = (label) => (label ? t.value(`history_${label}`) : '')
+  const actionText = (label: string | null) => (label ? t.value(`history_${label}`) : '')
 
   const undoTitle = computed(() =>
     canUndo.value
@@ -26,16 +26,16 @@ export function useUndoRedo() {
       : t.value('redo_title'),
   )
 
-  /** @returns {boolean} whether something was undone */
-  const performUndo = () => {
+  /** Whether something was undone. */
+  const performUndo = (): boolean => {
     const label = undo()
     if (!label) return false
     toast.info(t.value('toast_undo_done').replace('{action}', actionText(label)), 2500)
     return true
   }
 
-  /** @returns {boolean} whether something was redone */
-  const performRedo = () => {
+  /** Whether something was redone. */
+  const performRedo = (): boolean => {
     const label = redo()
     if (!label) return false
     toast.info(t.value('toast_redo_done').replace('{action}', actionText(label)), 2500)

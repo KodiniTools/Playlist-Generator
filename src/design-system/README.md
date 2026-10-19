@@ -26,7 +26,7 @@ nur noch globale Basis-Regeln (Reset, Body, SSI-Footer, Bewegung, Druck) auf `--
 
 ## Theme-Mechanik
 
-`useTheme.js` setzt `body.light-theme` (für die App) und `html[data-theme="light"]` (für die
+`useTheme.ts` setzt `body.light-theme` (für die App) und `html[data-theme="light"]` (für die
 SSI-Partials). Dark ist Standard. Tokens, die andere Variablen referenzieren, sind in den
 Light-Selektoren erneut deklariert, weil `var()` innerhalb einer Custom Property auf dem
 deklarierenden Element aufgelöst wird. In v2 tragen beide Light-Selektoren den vollständigen Satz,

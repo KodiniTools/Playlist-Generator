@@ -62,14 +62,14 @@ Playlist-Generator/
 │   │   └── ui/                   # Design-System-Komponenten (Ui*)
 │   │
 │   ├── composables/              # Vue Composition API Logik
-│   │   ├── usePlaylist.js        # Kern-Playlist-Logik
-│   │   ├── useHistory.js         # Snapshot-Historie (Undo/Redo)
-│   │   ├── useUndoRedo.js        # Undo/Redo-Anbindung an die UI
-│   │   ├── useAudioPlayer.js     # Vorschau-Player
-│   │   ├── useDurations.js       # Laufzeit-Messung der Tracks
-│   │   ├── useTheme.js           # Theme-Verwaltung
-│   │   ├── useToast.js           # Toast-Benachrichtigungen
-│   │   └── useTranslation.js     # Internationalisierung (DE/EN)
+│   │   ├── usePlaylist.ts        # Kern-Playlist-Logik
+│   │   ├── useHistory.ts         # Snapshot-Historie (Undo/Redo)
+│   │   ├── useUndoRedo.ts        # Undo/Redo-Anbindung an die UI
+│   │   ├── useAudioPlayer.ts     # Vorschau-Player
+│   │   ├── useDurations.ts       # Laufzeit-Messung der Tracks
+│   │   ├── useTheme.ts           # Theme-Verwaltung
+│   │   ├── useToast.ts           # Toast-Benachrichtigungen
+│   │   └── useTranslation.ts     # Internationalisierung (DE/EN)
 │   │
 │   ├── views/                    # Seiten-Komponenten
 │   │   ├── AppPage.vue           # Haupt-Anwendungsseite
@@ -88,7 +88,7 @@ Playlist-Generator/
 │   │   └── logo.svg              # Anwendungs-Logo
 │   │
 │   ├── App.vue                   # Root-Komponente
-│   ├── main.js                   # Entry Point (von index.html geladen)
+│   ├── main.ts                   # Entry Point (von index.html geladen)
 │   └── env.d.ts                  # TypeScript Umgebungsdefinitionen
 │
 ├── e2e/                          # End-to-End Tests

@@ -1,25 +1,53 @@
 import { ref, computed, watch, nextTick, effectScope } from 'vue'
 import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPersistence'
 import { createHistory } from './useHistory'
+import type { SharedFileRecord } from '../utils/sharedFileRepository'
+
+export type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
+export type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'cue' | 'csv' | 'json' | 'xspf'
+
+export interface AddFilesResult {
+  added: number
+  skipped: number
+}
+
+interface Snapshot {
+  files: File[]
+  excluded: Set<File>
+  sortOption: SortOption
+  playlistName: string
+  outputFormat: OutputFormat
+  replaceMode: boolean
+}
+
+// File System Access API (Chrome/Edge); not part of the standard DOM typings.
+interface SaveFilePickerWindow {
+  showSaveFilePicker(options: {
+    suggestedName: string
+    types: { description: string; accept: Record<string, string[]> }[]
+  }): Promise<{
+    createWritable(): Promise<{ write(data: string): Promise<void>; close(): Promise<void> }>
+  }>
+}
 
 // Module-level singleton state — survives component destroy/recreate
-// (same pattern as useTranslation.js)
-const files = ref([])
-const sortOption = ref('alphabetical')
+// (same pattern as useTranslation.ts)
+const files = ref<File[]>([])
+const sortOption = ref<SortOption>('alphabetical')
 const playlistName = ref('meine_wiedergabeliste')
-const outputFormat = ref('m3u')
+const outputFormat = ref<OutputFormat>('m3u')
 const playlistContent = ref('')
 const replaceMode = ref(false)
 const selectedFileIndex = ref(-1)
 // Files that are UNCHECKED (excluded from the generated playlist). Tracked by
 // File reference. Default = empty → every file is checked/included.
-const excludedFiles = ref(new Set())
+const excludedFiles = ref(new Set<File>())
 
 // --- Undo / Redo ------------------------------------------------------------
 // Snapshot-based history over everything the user can change: file list and
 // order, checkbox selection, sort option, name, output format, replace mode.
 // Snapshots only hold references to the File objects (no blob copies).
-const captureSnapshot = () => ({
+const captureSnapshot = (): Snapshot => ({
   files: files.value.slice(),
   excluded: new Set(excludedFiles.value),
   sortOption: sortOption.value,
@@ -28,7 +56,7 @@ const captureSnapshot = () => ({
   replaceMode: replaceMode.value,
 })
 
-const restoreSnapshot = (snapshot) => {
+const restoreSnapshot = (snapshot: Snapshot) => {
   files.value = snapshot.files.slice()
   excludedFiles.value = new Set(snapshot.excluded)
   sortOption.value = snapshot.sortOption
@@ -47,7 +75,7 @@ const history = createHistory({ capture: captureSnapshot, restore: restoreSnapsh
 // The ordered subset of files that are checked and thus included in the output.
 const includedFiles = () => files.value.filter((f) => !excludedFiles.value.has(f))
 
-const isFileSelected = (file) => !excludedFiles.value.has(file)
+const isFileSelected = (file: File) => !excludedFiles.value.has(file)
 
 const selectedCount = computed(() =>
   files.value.reduce((n, f) => n + (excludedFiles.value.has(f) ? 0 : 1), 0),
@@ -59,7 +87,7 @@ const someSelected = computed(
   () => selectedCount.value > 0 && selectedCount.value < files.value.length,
 )
 
-const toggleFileSelected = (index) => {
+const toggleFileSelected = (index: number) => {
   const file = files.value[index]
   if (!file) return
   history.record('selection_changed')
@@ -70,16 +98,16 @@ const toggleFileSelected = (index) => {
   generatePlaylist()
 }
 
-const setAllSelected = (selected) => {
+const setAllSelected = (selected: boolean) => {
   if (files.value.length === 0) return
   history.record('selection_changed')
-  excludedFiles.value = selected ? new Set() : new Set(files.value)
+  excludedFiles.value = selected ? new Set<File>() : new Set(files.value)
   generatePlaylist()
 }
 
 const supportedFormats = ['.mp3', '.wav', '.flac']
 
-const escapeXml = (str) => {
+const escapeXml = (str: string) => {
   return str.replace(/[<>&'"]/g, (char) => {
     switch (char) {
       case '<':
@@ -98,7 +126,7 @@ const escapeXml = (str) => {
   })
 }
 
-const generateM3u = (list) => {
+const generateM3u = (list: File[]) => {
   let output = '#EXTM3U\n'
   list.forEach((file) => {
     const title = file.name.replace(/\.[^/.]+$/, '')
@@ -110,9 +138,9 @@ const generateM3u = (list) => {
 // M3U8 is the UTF-8 encoded variant of M3U — identical content, but the
 // .m3u8 extension signals UTF-8 so titles with umlauts / non-Latin
 // characters are interpreted correctly by players.
-const generateM3u8 = (list) => generateM3u(list)
+const generateM3u8 = (list: File[]) => generateM3u(list)
 
-const generatePls = (list) => {
+const generatePls = (list: File[]) => {
   let output = '[playlist]\n'
   list.forEach((file, index) => {
     const n = index + 1
@@ -126,20 +154,20 @@ const generatePls = (list) => {
   return output
 }
 
-const generateTxt = (list) => {
+const generateTxt = (list: File[]) => {
   return list.map((file) => file.name).join('\n') + '\n'
 }
 
 // Map an audio extension to a CUE sheet FILE type. Non-standard types
 // (e.g. FLAC/OGG) fall back to WAVE, which players accept.
-const cueFileType = (name) => {
-  const ext = name.split('.').pop().toLowerCase()
+const cueFileType = (name: string) => {
+  const ext = (name.split('.').pop() ?? '').toLowerCase()
   if (ext === 'mp3') return 'MP3'
   if (ext === 'aiff' || ext === 'aif') return 'AIFF'
   return 'WAVE'
 }
 
-const generateCue = (list) => {
+const generateCue = (list: File[]) => {
   let output = `TITLE "${playlistName.value.replace(/"/g, "'")}"\n`
   list.forEach((file, index) => {
     const title = file.name.replace(/\.[^/.]+$/, '').replace(/"/g, "'")
@@ -154,7 +182,7 @@ const generateCue = (list) => {
 
 // Escape a value for CSV (RFC 4180): wrap in quotes and double any
 // embedded quotes when it contains a comma, quote or newline.
-const escapeCsv = (value) => {
+const escapeCsv = (value: string | number) => {
   const str = String(value)
   if (/[",\n\r]/.test(str)) {
     return `"${str.replace(/"/g, '""')}"`
@@ -162,7 +190,7 @@ const escapeCsv = (value) => {
   return str
 }
 
-const generateCsv = (list) => {
+const generateCsv = (list: File[]) => {
   const header = 'Filename,Title,Size (Bytes)'
   const rows = list.map((file) => {
     const title = file.name.replace(/\.[^/.]+$/, '')
@@ -171,7 +199,7 @@ const generateCsv = (list) => {
   return [header, ...rows].join('\r\n') + '\r\n'
 }
 
-const generateJson = (list) => {
+const generateJson = (list: File[]) => {
   const playlistData = list.map((file) => ({
     filename: file.name,
     title: file.name.replace(/\.[^/.]+$/, ''),
@@ -180,7 +208,7 @@ const generateJson = (list) => {
   return JSON.stringify(playlistData, null, 4)
 }
 
-const generateXspf = (list) => {
+const generateXspf = (list: File[]) => {
   const tracks = list
     .map((file) => {
       const title = escapeXml(file.name.replace(/\.[^/.]+$/, ''))
@@ -236,7 +264,7 @@ const generatePlaylist = () => {
   }
 }
 
-const addFiles = (fileList) => {
+const addFiles = (fileList: Iterable<File> | ArrayLike<File>): AddFilesResult => {
   const validFiles = Array.from(fileList).filter((f) =>
     supportedFormats.some((ext) => f.name.toLowerCase().endsWith(ext)),
   )
@@ -245,7 +273,7 @@ const addFiles = (fileList) => {
     // Replace mode: clear and add all new files (all checked by default)
     if (validFiles.length === 0 && files.value.length === 0) return { added: 0, skipped: 0 }
     history.record('files_added')
-    excludedFiles.value = new Set()
+    excludedFiles.value = new Set<File>()
     files.value = validFiles
     sortFiles()
     generatePlaylist()
@@ -254,7 +282,7 @@ const addFiles = (fileList) => {
 
   // Append mode: check for duplicates by filename
   const existingNames = new Set(files.value.map((f) => f.name.toLowerCase()))
-  const newFiles = []
+  const newFiles: File[] = []
   let skipped = 0
 
   for (const file of validFiles) {
@@ -279,13 +307,13 @@ const clearFiles = () => {
   if (files.value.length === 0) return
   history.record('files_cleared')
   files.value = []
-  excludedFiles.value = new Set()
+  excludedFiles.value = new Set<File>()
   playlistContent.value = ''
 }
 
-const removeFile = (index) => {
+const removeFile = (index: number) => {
   if (index >= 0 && index < files.value.length) {
-    const file = files.value[index]
+    const file = files.value[index]!
     history.record('file_removed')
     files.value.splice(index, 1)
     if (excludedFiles.value.has(file)) {
@@ -297,14 +325,15 @@ const removeFile = (index) => {
   }
 }
 
-const moveFile = (fromIndex, toIndex) => {
+/** `toIndex` ist der Index im Endzustand. */
+const moveFile = (fromIndex: number, toIndex: number) => {
   if (fromIndex < 0 || fromIndex >= files.value.length) return
   if (toIndex < 0 || toIndex >= files.value.length) return
   if (fromIndex === toIndex) return
 
   history.record('file_moved')
   const [movedFile] = files.value.splice(fromIndex, 1)
-  files.value.splice(toIndex, 0, movedFile)
+  files.value.splice(toIndex, 0, movedFile!)
 
   // Switch to manual sort mode when user manually reorders
   sortOption.value = 'manual'
@@ -326,41 +355,44 @@ const sortFiles = () => {
   } else if (option === 'random') {
     for (let i = files.value.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
-      ;[files.value[i], files.value[j]] = [files.value[j], files.value[i]]
+      ;[files.value[i], files.value[j]] = [files.value[j]!, files.value[i]!]
     }
   }
   generatePlaylist()
 }
 
 /** User picked a sort option: one undoable step for option + resulting order. */
-const applySortOption = (option) => {
+const applySortOption = (option: SortOption) => {
   history.record('sorted')
   sortOption.value = option
   sortFiles()
 }
 
 /** Consecutive keystrokes within 1 s are merged into a single undo step. */
-const setPlaylistName = (name) => {
+const setPlaylistName = (name: string) => {
   if (name === playlistName.value) return
   history.record('name_changed', { coalesceKey: 'playlistName' })
   playlistName.value = name
 }
 
-const setOutputFormat = (format) => {
+const setOutputFormat = (format: OutputFormat) => {
   if (format === outputFormat.value) return
   history.record('format_changed')
   outputFormat.value = format
 }
 
-const setReplaceMode = (enabled) => {
+const setReplaceMode = (enabled: boolean) => {
   if (enabled === replaceMode.value) return
   history.record('replace_mode_changed')
   replaceMode.value = enabled
 }
 
-const analyzeBlob = async (blob, name) => {
+const analyzeBlob = async (blob: Blob, name: string) => {
   const arrayBuffer = await blob.arrayBuffer()
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+  const AudioContextCtor =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+  const audioContext = new AudioContextCtor()
   const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
   audioContext.close()
 
@@ -379,7 +411,7 @@ const analyzeBlob = async (blob, name) => {
   }
 }
 
-const handleSharedFiles = async (sharedRecords) => {
+const handleSharedFiles = async (sharedRecords: SharedFileRecord[]) => {
   let processed = 0
 
   for (const record of sharedRecords) {
@@ -413,12 +445,13 @@ const handleSharedFiles = async (sharedRecords) => {
   return { processed }
 }
 
-const savePlaylist = async () => {
+/** true = gespeichert, false = Fehler oder nichts zu speichern, null = abgebrochen. */
+const savePlaylist = async (): Promise<boolean | null> => {
   if (!playlistContent.value) {
     return false
   }
 
-  const formatDetails = {
+  const formatDetails: Record<OutputFormat, { ext: string; mime: string }> = {
     m3u: { ext: '.m3u', mime: 'audio/x-mpegurl' },
     m3u8: { ext: '.m3u8', mime: 'application/vnd.apple.mpegurl' },
     pls: { ext: '.pls', mime: 'audio/x-scpls' },
@@ -443,13 +476,13 @@ const savePlaylist = async () => {
   }
 
   try {
-    const handle = await window.showSaveFilePicker(options)
+    const handle = await (window as unknown as SaveFilePickerWindow).showSaveFilePicker(options)
     const writable = await handle.createWritable()
     await writable.write(playlistContent.value)
     await writable.close()
     return true
   } catch (err) {
-    if (err.name !== 'AbortError') {
+    if ((err as Error | null)?.name !== 'AbortError') {
       console.error('Could not save the file:', err)
       return false
     }
@@ -465,7 +498,7 @@ const excludedNamesOf = () =>
   files.value.filter((f) => excludedFiles.value.has(f)).map((f) => f.name)
 
 // Cheap, frequent write (settings + checkbox selection).
-let metaTimer = null
+let metaTimer: ReturnType<typeof setTimeout> | undefined
 const scheduleMetaSave = () => {
   if (restoring) return
   clearTimeout(metaTimer)
@@ -481,7 +514,7 @@ const scheduleMetaSave = () => {
 }
 
 // Heavier write — only when the set/order of files actually changes.
-let filesTimer = null
+let filesTimer: ReturnType<typeof setTimeout> | undefined
 const scheduleFilesSave = () => {
   if (restoring) return
   clearTimeout(filesTimer)
@@ -503,9 +536,9 @@ async function restorePersistedState() {
   try {
     const { meta, files: savedFiles } = await loadState()
     if (meta) {
-      if (meta.sortOption) sortOption.value = meta.sortOption
+      if (meta.sortOption) sortOption.value = meta.sortOption as SortOption
       if (typeof meta.playlistName === 'string') playlistName.value = meta.playlistName
-      if (meta.outputFormat) outputFormat.value = meta.outputFormat
+      if (meta.outputFormat) outputFormat.value = meta.outputFormat as OutputFormat
       if (typeof meta.replaceMode === 'boolean') replaceMode.value = meta.replaceMode
     }
     if (savedFiles && savedFiles.length) {
@@ -561,6 +594,7 @@ function initWatchers() {
   })
 }
 
+/** Singleton-Zustand der Wiedergabeliste. */
 export function usePlaylist() {
   // Set up watchers only once, independent of the calling component's lifetime
   if (!watchersInitialized) {

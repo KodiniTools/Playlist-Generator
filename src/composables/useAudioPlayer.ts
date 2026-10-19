@@ -1,10 +1,21 @@
-import { ref, watch, onUnmounted, computed } from 'vue'
+import { ref, watch, onUnmounted, computed, type Ref } from 'vue'
 import { useDurations } from './useDurations'
 
-export function useAudioPlayer(filesRef) {
+export type RepeatMode = 'off' | 'all' | 'one'
+
+export interface PlayerTrack {
+  index: number
+  name: string
+  /** Dateiname ohne Endung. */
+  title: string
+  file: File
+}
+
+/** Ein <audio>-Element je Aufruf, kein Singleton. */
+export function useAudioPlayer(filesRef: Ref<File[]>) {
   const { setDuration } = useDurations()
   const audio = new Audio()
-  const objectUrls = new Map() // file name -> blob URL
+  const objectUrls = new Map<string, string>() // file name -> blob URL
 
   // Player state
   const isPlaying = ref(false)
@@ -15,10 +26,10 @@ export function useAudioPlayer(filesRef) {
   const volume = ref(0.7)
   const isMuted = ref(false)
   // Repeat mode: 'off' (stop at end) | 'all' (loop playlist) | 'one' (loop track)
-  const repeatMode = ref('off')
+  const repeatMode = ref<RepeatMode>('off')
 
   // Ordered playlist derived from files
-  const playlist = computed(() =>
+  const playlist = computed<PlayerTrack[]>(() =>
     filesRef.value.map((file, index) => ({
       index,
       name: file.name,
@@ -27,20 +38,22 @@ export function useAudioPlayer(filesRef) {
     })),
   )
 
-  const currentTrack = computed(() => {
+  const currentTrack = computed<PlayerTrack | null>(() => {
     if (currentTrackIndex.value >= 0 && currentTrackIndex.value < playlist.value.length) {
-      return playlist.value[currentTrackIndex.value]
+      return playlist.value[currentTrackIndex.value] ?? null
     }
     return null
   })
 
   // Create or retrieve object URL for a file
-  const getObjectUrl = (file) => {
+  const getObjectUrl = (file: File): string => {
     const key = file.name + '_' + file.size + '_' + file.lastModified
-    if (!objectUrls.has(key)) {
-      objectUrls.set(key, URL.createObjectURL(file))
+    let url = objectUrls.get(key)
+    if (!url) {
+      url = URL.createObjectURL(file)
+      objectUrls.set(key, url)
     }
-    return objectUrls.get(key)
+    return url
   }
 
   // Clean up all object URLs
@@ -50,10 +63,9 @@ export function useAudioPlayer(filesRef) {
   }
 
   // Load and play a track by index
-  const loadTrack = (index) => {
-    if (index < 0 || index >= filesRef.value.length) return false
-
-    const file = filesRef.value[index]
+  const loadTrack = (index: number): boolean => {
+    const file = index >= 0 ? filesRef.value[index] : undefined
+    if (!file) return false
     const url = getObjectUrl(file)
 
     audio.src = url
@@ -64,7 +76,8 @@ export function useAudioPlayer(filesRef) {
     return true
   }
 
-  const play = (index) => {
+  /** Ohne Index: aktuellen Titel fortsetzen, sonst den ersten laden. */
+  const play = (index?: number) => {
     if (typeof index === 'number') {
       if (!loadTrack(index)) return
     } else if (currentTrackIndex.value === -1 && filesRef.value.length > 0) {
@@ -128,14 +141,14 @@ export function useAudioPlayer(filesRef) {
       repeatMode.value === 'off' ? 'all' : repeatMode.value === 'all' ? 'one' : 'off'
   }
 
-  const seek = (time) => {
+  const seek = (time: number) => {
     if (duration.value > 0) {
       audio.currentTime = time
       currentTime.value = time
     }
   }
 
-  const setVolume = (val) => {
+  const setVolume = (val: number) => {
     volume.value = Math.max(0, Math.min(1, val))
     audio.volume = volume.value
     if (volume.value > 0) {
@@ -156,8 +169,9 @@ export function useAudioPlayer(filesRef) {
   audio.addEventListener('loadedmetadata', () => {
     duration.value = audio.duration
     // Persist real duration for the currently loaded file
-    if (currentTrackIndex.value >= 0 && currentTrackIndex.value < filesRef.value.length) {
-      setDuration(filesRef.value[currentTrackIndex.value].name, audio.duration)
+    const file = filesRef.value[currentTrackIndex.value]
+    if (currentTrackIndex.value >= 0 && file) {
+      setDuration(file.name, audio.duration)
     }
   })
 
@@ -193,7 +207,7 @@ export function useAudioPlayer(filesRef) {
 
   // Watch for file list changes to keep player in sync
   // When files are reordered, find the currently playing track in the new order
-  let currentPlayingFileName = null
+  let currentPlayingFileName: string | null = null
 
   watch(
     () => filesRef.value,
@@ -225,15 +239,16 @@ export function useAudioPlayer(filesRef) {
 
   // Track the currently playing file name for sync purposes
   watch(currentTrackIndex, (index) => {
-    if (index >= 0 && index < filesRef.value.length) {
-      currentPlayingFileName = filesRef.value[index].name
+    const file = index >= 0 ? filesRef.value[index] : undefined
+    if (file) {
+      currentPlayingFileName = file.name
     } else {
       currentPlayingFileName = null
     }
   })
 
   // Format time helper
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     if (!seconds || !isFinite(seconds)) return '0:00'
     const mins = Math.floor(seconds / 60)
     const secs = Math.floor(seconds % 60)

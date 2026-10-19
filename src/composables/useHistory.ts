@@ -1,4 +1,42 @@
-import { shallowRef, computed } from 'vue'
+import { shallowRef, computed, type ComputedRef, type ShallowRef } from 'vue'
+
+export interface HistoryOptions<S> {
+  /** Liefert einen unveränderlichen Schnappschuss des aktuellen Zustands. */
+  capture: () => S
+  /** Wendet einen Schnappschuss wieder an. */
+  restore: (snapshot: S) => void
+  /** Maximale Anzahl gehaltener Undo-Schritte (Standard 50). */
+  limit?: number
+  /** Zeitfenster in ms, in dem aufeinanderfolgende Aufzeichnungen mit gleichem `coalesceKey` zu einem Schritt verschmelzen (Standard 1000). */
+  coalesceWindow?: number
+}
+
+export interface RecordOptions {
+  coalesceKey?: string | null
+}
+
+export interface History {
+  canUndo: ComputedRef<boolean>
+  canRedo: ComputedRef<boolean>
+  undoLabel: ComputedRef<string | null>
+  redoLabel: ComputedRef<string | null>
+  /** Vor der Mutation aufrufen; verwirft alle Redo-Schritte. Während `restore` läuft, wird nichts aufgezeichnet. */
+  record(label: string, options?: RecordOptions): void
+  /** Label des rückgängig gemachten Schritts, sonst null. */
+  undo(): string | null
+  /** Label des wiederholten Schritts, sonst null. */
+  redo(): string | null
+  clear(): void
+  /** True, solange ein Schnappschuss wiederhergestellt wird. */
+  isApplying(): boolean
+}
+
+interface Entry<S> {
+  label: string
+  coalesceKey: string | null
+  snapshot: S
+  at: number
+}
 
 /**
  * Generic snapshot-based undo/redo history.
@@ -11,21 +49,20 @@ import { shallowRef, computed } from 'vue'
  * Entries are stored in shallow refs so that large snapshots (e.g. arrays of
  * File objects) are not made deeply reactive.
  *
- * @param {object} options
- * @param {() => any} options.capture
- * @param {(snapshot: any) => void} options.restore
- * @param {number} [options.limit=50]  max number of undo steps kept
- * @param {number} [options.coalesceWindow=1000]  ms within which consecutive
- *   records with the same `coalesceKey` are merged into one step (typing)
+ * Throws a TypeError when `capture` or `restore` is missing.
  */
-export function createHistory({ capture, restore, limit = 50, coalesceWindow = 1000 }) {
+export function createHistory<S>({
+  capture,
+  restore,
+  limit = 50,
+  coalesceWindow = 1000,
+}: HistoryOptions<S>): History {
   if (typeof capture !== 'function' || typeof restore !== 'function') {
     throw new TypeError('createHistory: capture and restore must be functions')
   }
 
-  /** @type {import('vue').ShallowRef<Array<{label: string, coalesceKey: string|null, snapshot: any, at: number}>>} */
-  const past = shallowRef([])
-  const future = shallowRef([])
+  const past = shallowRef<Entry<S>[]>([])
+  const future = shallowRef<Entry<S>[]>([])
   let applying = false
 
   const canUndo = computed(() => past.value.length > 0)
@@ -37,7 +74,7 @@ export function createHistory({ capture, restore, limit = 50, coalesceWindow = 1
    * Record the current state as the "before" of an action. Must be called
    * before the mutation. Any redo steps are discarded.
    */
-  const record = (label, { coalesceKey = null } = {}) => {
+  const record = (label: string, { coalesceKey = null }: RecordOptions = {}) => {
     if (applying) return
     const now = Date.now()
     const top = past.value[past.value.length - 1]
@@ -53,7 +90,7 @@ export function createHistory({ capture, restore, limit = 50, coalesceWindow = 1
     if (future.value.length) future.value = []
   }
 
-  const move = (from, to) => {
+  const move = (from: ShallowRef<Entry<S>[]>, to: ShallowRef<Entry<S>[]>): string | null => {
     const entry = from.value[from.value.length - 1]
     if (!entry) return null
 
@@ -69,9 +106,9 @@ export function createHistory({ capture, restore, limit = 50, coalesceWindow = 1
     return entry.label
   }
 
-  /** @returns {string|null} label of the undone action, or null if nothing to undo */
+  /** Label of the undone action, or null if nothing to undo. */
   const undo = () => move(past, future)
-  /** @returns {string|null} label of the redone action, or null if nothing to redo */
+  /** Label of the redone action, or null if nothing to redo. */
   const redo = () => move(future, past)
 
   const clear = () => {

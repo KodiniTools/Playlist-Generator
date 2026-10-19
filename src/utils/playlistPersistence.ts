@@ -15,15 +15,35 @@ const META_STORE = 'meta'
 const DB_VERSION = 1
 const META_KEY = 'current'
 
+/** Settings and checkbox selection, persisted separately from the files. */
+export interface PersistedMeta {
+  sortOption: string
+  playlistName: string
+  outputFormat: string
+  replaceMode: boolean
+  excludedNames: string[]
+}
+
+interface MetaRecord extends Partial<PersistedMeta> {
+  key: string
+}
+
+interface FileRecord {
+  idx: number
+  name: string
+  blob: Blob
+  lastModified?: number
+}
+
 function hasIndexedDB() {
   return typeof indexedDB !== 'undefined'
 }
 
-function openDB() {
+function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION)
-    req.onupgradeneeded = (e) => {
-      const db = e.target.result
+    req.onupgradeneeded = () => {
+      const db = req.result
       if (!db.objectStoreNames.contains(FILES_STORE)) {
         db.createObjectStore(FILES_STORE, { keyPath: 'idx' })
       }
@@ -36,7 +56,12 @@ function openDB() {
   })
 }
 
-function runTx(db, storeName, mode, fn) {
+function runTx(
+  db: IDBDatabase,
+  storeName: string,
+  mode: IDBTransactionMode,
+  fn: (store: IDBObjectStore) => void,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, mode)
     fn(tx.objectStore(storeName))
@@ -46,16 +71,16 @@ function runTx(db, storeName, mode, fn) {
   })
 }
 
-function getAll(db, storeName) {
+function getAll<T>(db: IDBDatabase, storeName: string): Promise<T[]> {
   return new Promise((resolve, reject) => {
     const req = db.transaction(storeName, 'readonly').objectStore(storeName).getAll()
-    req.onsuccess = () => resolve(req.result || [])
+    req.onsuccess = () => resolve((req.result as T[]) || [])
     req.onerror = () => reject(req.error)
   })
 }
 
 /** Persist the ordered list of files (the heavy write). */
-export async function saveFiles(files) {
+export async function saveFiles(files: File[]): Promise<void> {
   if (!hasIndexedDB()) return
   const db = await openDB()
   try {
@@ -71,7 +96,7 @@ export async function saveFiles(files) {
 }
 
 /** Persist the small settings/selection record (cheap, frequent write). */
-export async function saveMeta(meta) {
+export async function saveMeta(meta: PersistedMeta): Promise<void> {
   if (!hasIndexedDB()) return
   const db = await openDB()
   try {
@@ -83,17 +108,14 @@ export async function saveMeta(meta) {
   }
 }
 
-/**
- * Load the persisted playlist.
- * @returns {Promise<{ meta: object|null, files: File[] }>}
- */
-export async function loadState() {
+/** Load the persisted playlist. Fields of `meta` may be missing in old records. */
+export async function loadState(): Promise<{ meta: MetaRecord | null; files: File[] }> {
   if (!hasIndexedDB()) return { meta: null, files: [] }
   const db = await openDB()
   try {
     const [metaRecs, fileRecs] = await Promise.all([
-      getAll(db, META_STORE),
-      getAll(db, FILES_STORE),
+      getAll<MetaRecord>(db, META_STORE),
+      getAll<FileRecord>(db, FILES_STORE),
     ])
     const meta = metaRecs.find((m) => m.key === META_KEY) || null
     fileRecs.sort((a, b) => a.idx - b.idx)
@@ -107,7 +129,7 @@ export async function loadState() {
 }
 
 /** Remove everything (used when the user clears the list). */
-export async function clearState() {
+export async function clearState(): Promise<void> {
   if (!hasIndexedDB()) return
   const db = await openDB()
   try {

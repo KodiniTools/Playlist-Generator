@@ -1,10 +1,31 @@
 import { ref } from 'vue'
 
-const toasts = ref([])
+export type ToastType = 'success' | 'error' | 'info'
+
+export interface ToastAction {
+  label: string
+  callback: () => void
+}
+
+export interface Toast {
+  id: number
+  message: string
+  type: ToastType
+  duration: number
+  action: ToastAction | null
+}
+
+const toasts = ref<Toast[]>([])
 let toastId = 0
 
+/** Singleton-Liste der Benachrichtigungen. */
 export function useToast() {
-  const addToast = (message, type = 'info', duration = 3000, action = null) => {
+  const addToast = (
+    message: string,
+    type: ToastType = 'info',
+    duration = 3000,
+    action: ToastAction | null = null,
+  ): number => {
     const id = ++toastId
     toasts.value.push({
       id,
@@ -24,22 +45,22 @@ export function useToast() {
     return id
   }
 
-  const removeToast = (id) => {
+  const removeToast = (id: number) => {
     const index = toasts.value.findIndex((t) => t.id === id)
     if (index > -1) {
       toasts.value.splice(index, 1)
     }
   }
 
-  const success = (message, duration = 3000) => {
+  const success = (message: string, duration = 3000) => {
     return addToast(message, 'success', duration)
   }
 
-  const error = (message, duration = 5000) => {
+  const error = (message: string, duration = 5000) => {
     return addToast(message, 'error', duration)
   }
 
-  const info = (message, duration = 3000) => {
+  const info = (message: string, duration = 3000) => {
     return addToast(message, 'info', duration)
   }
 

@@ -1,7 +1,12 @@
 import { ref, computed } from 'vue'
 
+type Language = 'de' | 'en'
+
+/** Übersetzt einen Schlüssel; unbekannte Schlüssel kommen unverändert zurück. */
+export type Translate = (key: string) => string
+
 /** Übersetzungstabellen je Sprache; exportiert für Tests und Tooling. */
-export const translations = {
+export const translations: Readonly<Record<Language, Readonly<Record<string, string>>>> = {
   de: {
     // Meta tags
     meta_title: 'Audio Wiedergabeliste Generator - M3U, XSPF & JSON Wiedergabelisten Erstellen',
@@ -610,7 +615,7 @@ export const translations = {
 
 // Nav-Uebersetzungen fuer SSI-Partial data-nav-i18n Attribute
 // Keys muessen EXAKT mit den data-nav-i18n Attributen in nav.html uebereinstimmen
-const navTranslations = {
+const navTranslations: Readonly<Record<Language, Readonly<Record<string, string>>>> = {
   de: {
     'nav.aria': 'Hauptnavigation',
     'nav.audiotools': 'Audiotools',
@@ -670,7 +675,9 @@ const storedLang =
   localStorage.getItem('locale') ||
   localStorage.getItem('playlist-generator-locale') ||
   localStorage.getItem('language')
-const currentLanguage = ref(storedLang || (navigator.language.startsWith('de') ? 'de' : 'en'))
+const currentLanguage = ref<string>(
+  storedLang || (navigator.language.startsWith('de') ? 'de' : 'en'),
+)
 
 // Ensure both keys are in sync on initialization
 if (currentLanguage.value) {
@@ -681,21 +688,21 @@ if (currentLanguage.value) {
 /**
  * Translate SSI nav elements that use data-nav-i18n attributes
  */
-function translateExternalNav(lang) {
-  const t = navTranslations[lang]
+function translateExternalNav(lang: string) {
+  const t = navTranslations[lang as Language]
   if (!t) return
 
   document.querySelectorAll('[data-nav-i18n]').forEach((el) => {
-    const key = el.getAttribute('data-nav-i18n')
-    if (t[key]) el.textContent = t[key]
+    const text = t[el.getAttribute('data-nav-i18n') ?? '']
+    if (text) el.textContent = text
   })
   document.querySelectorAll('[data-nav-i18n-aria]').forEach((el) => {
-    const key = el.getAttribute('data-nav-i18n-aria')
-    if (t[key]) el.setAttribute('aria-label', t[key])
+    const text = t[el.getAttribute('data-nav-i18n-aria') ?? '']
+    if (text) el.setAttribute('aria-label', text)
   })
   document.querySelectorAll('[data-nav-i18n-title]').forEach((el) => {
-    const key = el.getAttribute('data-nav-i18n-title')
-    if (t[key]) el.setAttribute('title', t[key])
+    const text = t[el.getAttribute('data-nav-i18n-title') ?? '']
+    if (text) el.setAttribute('title', text)
   })
 }
 
@@ -704,7 +711,7 @@ function translateExternalNav(lang) {
  * Combines nav (data-nav-i18n), footer/cookie-banner (data-lang-*),
  * lang button active states, and language-changed event dispatch.
  */
-function syncAllExternalElements(lang) {
+function syncAllExternalElements(lang: string) {
   // 1. Nav elements: data-nav-i18n attributes
   translateExternalNav(lang)
 
@@ -725,7 +732,7 @@ function syncAllExternalElements(lang) {
 /**
  * Sync the active state of external lang buttons in SSI nav
  */
-function syncExternalLangButtons(lang) {
+function syncExternalLangButtons(lang: string) {
   document.querySelectorAll('.global-nav-lang-btn').forEach((btn) => {
     const btnLang = btn.getAttribute('data-lang')
     if (btnLang === lang) {
@@ -745,11 +752,11 @@ function syncExternalLangButtons(lang) {
  * and dispatches 'language-changed', which App.vue listens for.
  */
 export function useTranslation() {
-  const t = computed(() => (key) => {
-    return translations[currentLanguage.value]?.[key] || key
+  const t = computed<Translate>(() => (key) => {
+    return translations[currentLanguage.value as Language]?.[key] || key
   })
 
-  const setLanguage = (lang) => {
+  const setLanguage = (lang: string) => {
     currentLanguage.value = lang
     // Dual-Key localStorage (global + app-specific + legacy)
     localStorage.setItem('locale', lang)

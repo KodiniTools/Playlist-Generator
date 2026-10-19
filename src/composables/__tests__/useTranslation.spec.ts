@@ -16,7 +16,7 @@ function sourceFiles(dir: string, out: string[] = []): string[] {
     } else if (
       SOURCE_EXT.test(entry) &&
       !entry.endsWith('.d.ts') &&
-      entry !== 'useTranslation.js'
+      entry !== 'useTranslation.ts'
     ) {
       out.push(path)
     }
