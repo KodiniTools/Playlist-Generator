@@ -17,9 +17,10 @@ Diese Datei dokumentiert den technischen Kontext des Playlist-Generator-Projekts
 
 ### State Management & Routing
 
-| Technologie    | Version | Beschreibung            |
-| -------------- | ------- | ----------------------- |
-| **Vue Router** | ^4.5.1  | Client-seitiges Routing |
+| Technologie    | Version | Beschreibung                               |
+| -------------- | ------- | ------------------------------------------ |
+| **Pinia**      | ^3.0.4  | State Management (Stores in `src/stores/`) |
+| **Vue Router** | ^4.5.1  | Client-seitiges Routing                    |
 
 ### Testing
 
@@ -61,14 +62,18 @@ Playlist-Generator/
 │   │   ├── __tests__/            # Komponenten-Tests
 │   │   └── ui/                   # Design-System-Komponenten (Ui*)
 │   │
+│   ├── stores/                   # Pinia-Stores
+│   │   ├── playlist.ts           # Kern-Playlist-Logik, Undo/Redo, Persistenz
+│   │   └── toast.ts              # Toast-Benachrichtigungen
+│   │
 │   ├── composables/              # Vue Composition API Logik
-│   │   ├── usePlaylist.ts        # Kern-Playlist-Logik
+│   │   ├── usePlaylist.ts        # Ref-Zugriff auf den Playlist-Store
 │   │   ├── useHistory.ts         # Snapshot-Historie (Undo/Redo)
 │   │   ├── useUndoRedo.ts        # Undo/Redo-Anbindung an die UI
 │   │   ├── useAudioPlayer.ts     # Vorschau-Player
 │   │   ├── useDurations.ts       # Laufzeit-Messung der Tracks
 │   │   ├── useTheme.ts           # Theme-Verwaltung
-│   │   ├── useToast.ts           # Toast-Benachrichtigungen
+│   │   ├── useToast.ts           # Ref-Zugriff auf den Toast-Store
 │   │   └── useTranslation.ts     # Internationalisierung (DE/EN)
 │   │
 │   ├── views/                    # Seiten-Komponenten
