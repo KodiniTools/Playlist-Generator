@@ -57,6 +57,7 @@ src/
 │   ├── PlaylistPreview.vue
 │   ├── ToolsGrid.vue
 │   └── ui/              # Design-System-Komponenten (Ui*)
+├── stores/              # Pinia-Stores (playlist, toast)
 ├── composables/         # Wiederverwendbare Logik
 │   ├── usePlaylist.ts
 │   ├── useTheme.ts

@@ -1,0 +1,642 @@
+import { defineStore } from 'pinia'
+import { ref, computed, watch, nextTick } from 'vue'
+import { saveFiles, saveMeta, loadState, clearState } from '../utils/playlistPersistence'
+import { createHistory } from '../composables/useHistory'
+import type { SharedFileRecord } from '../utils/sharedFileRepository'
+
+export type SortOption = 'alphabetical' | 'date' | 'random' | 'manual'
+export type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'cue' | 'csv' | 'json' | 'xspf'
+
+export interface AddFilesResult {
+  added: number
+  skipped: number
+}
+
+/** Undo-Schritte; jeder Wert braucht einen Übersetzungs-Schlüssel `history_<label>`. */
+export type HistoryLabel =
+  | 'files_added'
+  | 'files_cleared'
+  | 'file_removed'
+  | 'file_moved'
+  | 'sorted'
+  | 'selection_changed'
+  | 'name_changed'
+  | 'format_changed'
+  | 'replace_mode_changed'
+
+interface Snapshot {
+  files: File[]
+  excluded: Set<File>
+  sortOption: SortOption
+  playlistName: string
+  outputFormat: OutputFormat
+  replaceMode: boolean
+}
+
+// File System Access API (Chrome/Edge); not part of the standard DOM typings.
+interface SaveFilePickerWindow {
+  showSaveFilePicker(options: {
+    suggestedName: string
+    types: { description: string; accept: Record<string, string[]> }[]
+  }): Promise<{
+    createWritable(): Promise<{ write(data: string): Promise<void>; close(): Promise<void> }>
+  }>
+}
+
+/**
+ * Zustand der Wiedergabeliste (Dateien, Auswahl, Einstellungen, Undo/Redo,
+ * IndexedDB-Persistenz). Die Watcher leben im Effect-Scope des Stores und
+ * überdauern damit jede Komponente, die den Store zuerst benutzt.
+ */
+export const usePlaylistStore = defineStore('playlist', () => {
+  const files = ref<File[]>([])
+  const sortOption = ref<SortOption>('alphabetical')
+  const playlistName = ref('meine_wiedergabeliste')
+  const outputFormat = ref<OutputFormat>('m3u')
+  const playlistContent = ref('')
+  const replaceMode = ref(false)
+  const selectedFileIndex = ref(-1)
+  // Files that are UNCHECKED (excluded from the generated playlist). Tracked by
+  // File reference. Default = empty → every file is checked/included.
+  const excludedFiles = ref(new Set<File>())
+
+  // --- Undo / Redo ------------------------------------------------------------
+  // Snapshot-based history over everything the user can change: file list and
+  // order, checkbox selection, sort option, name, output format, replace mode.
+  // Snapshots only hold references to the File objects (no blob copies).
+  const captureSnapshot = (): Snapshot => ({
+    files: files.value.slice(),
+    excluded: new Set(excludedFiles.value),
+    sortOption: sortOption.value,
+    playlistName: playlistName.value,
+    outputFormat: outputFormat.value,
+    replaceMode: replaceMode.value,
+  })
+
+  const restoreSnapshot = (snapshot: Snapshot) => {
+    files.value = snapshot.files.slice()
+    excludedFiles.value = new Set(snapshot.excluded)
+    sortOption.value = snapshot.sortOption
+    playlistName.value = snapshot.playlistName
+    outputFormat.value = snapshot.outputFormat
+    replaceMode.value = snapshot.replaceMode
+    // Keep the UI selection inside the (possibly shorter) list.
+    if (selectedFileIndex.value >= files.value.length) {
+      selectedFileIndex.value = files.value.length - 1
+    }
+    generatePlaylist()
+  }
+
+  const history = createHistory<Snapshot, HistoryLabel>({
+    capture: captureSnapshot,
+    restore: restoreSnapshot,
+    limit: 50,
+  })
+
+  // The ordered subset of files that are checked and thus included in the output.
+  const includedFiles = () => files.value.filter((f) => !excludedFiles.value.has(f))
+
+  const isFileSelected = (file: File) => !excludedFiles.value.has(file)
+
+  const selectedCount = computed(() =>
+    files.value.reduce((n, f) => n + (excludedFiles.value.has(f) ? 0 : 1), 0),
+  )
+  const allSelected = computed(
+    () => files.value.length > 0 && selectedCount.value === files.value.length,
+  )
+  const someSelected = computed(
+    () => selectedCount.value > 0 && selectedCount.value < files.value.length,
+  )
+
+  const toggleFileSelected = (index: number) => {
+    const file = files.value[index]
+    if (!file) return
+    history.record('selection_changed')
+    const next = new Set(excludedFiles.value)
+    if (next.has(file)) next.delete(file)
+    else next.add(file)
+    excludedFiles.value = next
+    generatePlaylist()
+  }
+
+  const setAllSelected = (selected: boolean) => {
+    if (files.value.length === 0) return
+    history.record('selection_changed')
+    excludedFiles.value = selected ? new Set<File>() : new Set(files.value)
+    generatePlaylist()
+  }
+
+  const supportedFormats = ['.mp3', '.wav', '.flac']
+
+  const escapeXml = (str: string) => {
+    return str.replace(/[<>&'"]/g, (char) => {
+      switch (char) {
+        case '<':
+          return '&lt;'
+        case '>':
+          return '&gt;'
+        case '&':
+          return '&amp;'
+        case "'":
+          return '&apos;'
+        case '"':
+          return '&quot;'
+        default:
+          return char
+      }
+    })
+  }
+
+  const generateM3u = (list: File[]) => {
+    let output = '#EXTM3U\n'
+    list.forEach((file) => {
+      const title = file.name.replace(/\.[^/.]+$/, '')
+      output += `#EXTINF:-1,${title}\n${file.name}\n`
+    })
+    return output
+  }
+
+  // M3U8 is the UTF-8 encoded variant of M3U — identical content, but the
+  // .m3u8 extension signals UTF-8 so titles with umlauts / non-Latin
+  // characters are interpreted correctly by players.
+  const generateM3u8 = (list: File[]) => generateM3u(list)
+
+  const generatePls = (list: File[]) => {
+    let output = '[playlist]\n'
+    list.forEach((file, index) => {
+      const n = index + 1
+      const title = file.name.replace(/\.[^/.]+$/, '')
+      output += `File${n}=${file.name}\n`
+      output += `Title${n}=${title}\n`
+      output += `Length${n}=-1\n`
+    })
+    output += `NumberOfEntries=${list.length}\n`
+    output += 'Version=2\n'
+    return output
+  }
+
+  const generateTxt = (list: File[]) => {
+    return list.map((file) => file.name).join('\n') + '\n'
+  }
+
+  // Map an audio extension to a CUE sheet FILE type. Non-standard types
+  // (e.g. FLAC/OGG) fall back to WAVE, which players accept.
+  const cueFileType = (name: string) => {
+    const ext = (name.split('.').pop() ?? '').toLowerCase()
+    if (ext === 'mp3') return 'MP3'
+    if (ext === 'aiff' || ext === 'aif') return 'AIFF'
+    return 'WAVE'
+  }
+
+  const generateCue = (list: File[]) => {
+    let output = `TITLE "${playlistName.value.replace(/"/g, "'")}"\n`
+    list.forEach((file, index) => {
+      const title = file.name.replace(/\.[^/.]+$/, '').replace(/"/g, "'")
+      const trackNum = String(index + 1).padStart(2, '0')
+      output += `FILE "${file.name.replace(/"/g, "'")}" ${cueFileType(file.name)}\n`
+      output += `  TRACK ${trackNum} AUDIO\n`
+      output += `    TITLE "${title}"\n`
+      output += `    INDEX 01 00:00:00\n`
+    })
+    return output
+  }
+
+  // Escape a value for CSV (RFC 4180): wrap in quotes and double any
+  // embedded quotes when it contains a comma, quote or newline.
+  const escapeCsv = (value: string | number) => {
+    const str = String(value)
+    if (/[",\n\r]/.test(str)) {
+      return `"${str.replace(/"/g, '""')}"`
+    }
+    return str
+  }
+
+  const generateCsv = (list: File[]) => {
+    const header = 'Filename,Title,Size (Bytes)'
+    const rows = list.map((file) => {
+      const title = file.name.replace(/\.[^/.]+$/, '')
+      return [escapeCsv(file.name), escapeCsv(title), escapeCsv(file.size ?? '')].join(',')
+    })
+    return [header, ...rows].join('\r\n') + '\r\n'
+  }
+
+  const generateJson = (list: File[]) => {
+    const playlistData = list.map((file) => ({
+      filename: file.name,
+      title: file.name.replace(/\.[^/.]+$/, ''),
+      size: file.size,
+    }))
+    return JSON.stringify(playlistData, null, 4)
+  }
+
+  const generateXspf = (list: File[]) => {
+    const tracks = list
+      .map((file) => {
+        const title = escapeXml(file.name.replace(/\.[^/.]+$/, ''))
+        const location = escapeXml(file.name)
+        return `    <track>\n      <location>${location}</location>\n      <title>${title}</title>\n    </track>`
+      })
+      .join('\n')
+
+    return `<?xml version="1.0" encoding="UTF-8"?>
+  <playlist version="1" xmlns="http://xspf.org/ns/0/">
+    <title>${escapeXml(playlistName.value)}</title>
+    <trackList>
+  ${tracks}
+    </trackList>
+  </playlist>`
+  }
+
+  const generatePlaylist = () => {
+    // Only checked tracks are written to the playlist.
+    const list = includedFiles()
+    if (list.length === 0) {
+      playlistContent.value = ''
+      return
+    }
+
+    switch (outputFormat.value) {
+      case 'm3u':
+        playlistContent.value = generateM3u(list)
+        break
+      case 'm3u8':
+        playlistContent.value = generateM3u8(list)
+        break
+      case 'pls':
+        playlistContent.value = generatePls(list)
+        break
+      case 'txt':
+        playlistContent.value = generateTxt(list)
+        break
+      case 'cue':
+        playlistContent.value = generateCue(list)
+        break
+      case 'csv':
+        playlistContent.value = generateCsv(list)
+        break
+      case 'json':
+        playlistContent.value = generateJson(list)
+        break
+      case 'xspf':
+        playlistContent.value = generateXspf(list)
+        break
+      default:
+        playlistContent.value = 'Unsupported format.'
+    }
+  }
+
+  const addFiles = (fileList: Iterable<File> | ArrayLike<File>): AddFilesResult => {
+    const validFiles = Array.from(fileList).filter((f) =>
+      supportedFormats.some((ext) => f.name.toLowerCase().endsWith(ext)),
+    )
+
+    if (replaceMode.value) {
+      // Replace mode: clear and add all new files (all checked by default)
+      if (validFiles.length === 0 && files.value.length === 0) return { added: 0, skipped: 0 }
+      history.record('files_added')
+      excludedFiles.value = new Set<File>()
+      files.value = validFiles
+      sortFiles()
+      generatePlaylist()
+      return { added: validFiles.length, skipped: 0 }
+    }
+
+    // Append mode: check for duplicates by filename
+    const existingNames = new Set(files.value.map((f) => f.name.toLowerCase()))
+    const newFiles: File[] = []
+    let skipped = 0
+
+    for (const file of validFiles) {
+      if (existingNames.has(file.name.toLowerCase())) {
+        skipped++
+      } else {
+        newFiles.push(file)
+        existingNames.add(file.name.toLowerCase())
+      }
+    }
+
+    if (newFiles.length === 0) return { added: 0, skipped }
+
+    history.record('files_added')
+    files.value = [...files.value, ...newFiles]
+    sortFiles()
+    generatePlaylist()
+    return { added: newFiles.length, skipped }
+  }
+
+  const clearFiles = () => {
+    if (files.value.length === 0) return
+    history.record('files_cleared')
+    files.value = []
+    excludedFiles.value = new Set<File>()
+    playlistContent.value = ''
+  }
+
+  const removeFile = (index: number) => {
+    if (index >= 0 && index < files.value.length) {
+      const file = files.value[index]!
+      history.record('file_removed')
+      files.value.splice(index, 1)
+      if (excludedFiles.value.has(file)) {
+        const next = new Set(excludedFiles.value)
+        next.delete(file)
+        excludedFiles.value = next
+      }
+      generatePlaylist()
+    }
+  }
+
+  /** `toIndex` ist der Index im Endzustand. */
+  const moveFile = (fromIndex: number, toIndex: number) => {
+    if (fromIndex < 0 || fromIndex >= files.value.length) return
+    if (toIndex < 0 || toIndex >= files.value.length) return
+    if (fromIndex === toIndex) return
+
+    history.record('file_moved')
+    const [movedFile] = files.value.splice(fromIndex, 1)
+    files.value.splice(toIndex, 0, movedFile!)
+
+    // Switch to manual sort mode when user manually reorders
+    sortOption.value = 'manual'
+    generatePlaylist()
+  }
+
+  const sortFiles = () => {
+    const option = sortOption.value
+    // Manual mode: don't sort, keep user's order
+    if (option === 'manual') {
+      generatePlaylist()
+      return
+    }
+
+    if (option === 'alphabetical') {
+      files.value.sort((a, b) => a.name.localeCompare(b.name))
+    } else if (option === 'date') {
+      files.value.sort((a, b) => a.lastModified - b.lastModified)
+    } else if (option === 'random') {
+      for (let i = files.value.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[files.value[i], files.value[j]] = [files.value[j]!, files.value[i]!]
+      }
+    }
+    generatePlaylist()
+  }
+
+  /** User picked a sort option: one undoable step for option + resulting order. */
+  const applySortOption = (option: SortOption) => {
+    history.record('sorted')
+    sortOption.value = option
+    sortFiles()
+  }
+
+  /** Consecutive keystrokes within 1 s are merged into a single undo step. */
+  const setPlaylistName = (name: string) => {
+    if (name === playlistName.value) return
+    history.record('name_changed', { coalesceKey: 'playlistName' })
+    playlistName.value = name
+  }
+
+  const setOutputFormat = (format: OutputFormat) => {
+    if (format === outputFormat.value) return
+    history.record('format_changed')
+    outputFormat.value = format
+  }
+
+  const setReplaceMode = (enabled: boolean) => {
+    if (enabled === replaceMode.value) return
+    history.record('replace_mode_changed')
+    replaceMode.value = enabled
+  }
+
+  const analyzeBlob = async (blob: Blob, name: string) => {
+    const arrayBuffer = await blob.arrayBuffer()
+    const AudioContextCtor =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    const audioContext = new AudioContextCtor()
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+    audioContext.close()
+
+    // Create a File object from the Blob so it integrates with the existing playlist system
+    const file = new File([blob], name, {
+      type: blob.type || 'audio/wav',
+      lastModified: Date.now(),
+    })
+
+    return {
+      file,
+      name,
+      duration: audioBuffer.duration,
+      sampleRate: audioBuffer.sampleRate,
+      channels: audioBuffer.numberOfChannels,
+    }
+  }
+
+  const handleSharedFiles = async (sharedRecords: SharedFileRecord[]) => {
+    let processed = 0
+
+    for (const record of sharedRecords) {
+      const blob =
+        record.blob instanceof Blob
+          ? record.blob
+          : new Blob([record.blob], { type: record.mimeType || 'audio/wav' })
+
+      if (blob.size === 0) continue
+
+      try {
+        const result = await analyzeBlob(blob, record.name)
+        // Check for duplicates
+        const existingNames = new Set(files.value.map((f) => f.name.toLowerCase()))
+        if (!existingNames.has(result.file.name.toLowerCase())) {
+          // All shared files of one import form a single undo step.
+          if (processed === 0) history.record('files_added')
+          files.value = [...files.value, result.file]
+          processed++
+        }
+      } catch (err) {
+        console.warn('Could not process shared file:', record.name, err)
+      }
+    }
+
+    if (processed > 0) {
+      sortFiles()
+      generatePlaylist()
+    }
+
+    return { processed }
+  }
+
+  /** true = gespeichert, false = Fehler oder nichts zu speichern, null = abgebrochen. */
+  const savePlaylist = async (): Promise<boolean | null> => {
+    if (!playlistContent.value) {
+      return false
+    }
+
+    const formatDetails: Record<OutputFormat, { ext: string; mime: string }> = {
+      m3u: { ext: '.m3u', mime: 'audio/x-mpegurl' },
+      m3u8: { ext: '.m3u8', mime: 'application/vnd.apple.mpegurl' },
+      pls: { ext: '.pls', mime: 'audio/x-scpls' },
+      txt: { ext: '.txt', mime: 'text/plain' },
+      cue: { ext: '.cue', mime: 'application/x-cue' },
+      csv: { ext: '.csv', mime: 'text/csv' },
+      json: { ext: '.json', mime: 'application/json' },
+      xspf: { ext: '.xspf', mime: 'application/xspf+xml' },
+    }
+
+    const details = formatDetails[outputFormat.value]
+    if (!details) return false
+
+    const options = {
+      suggestedName: `${playlistName.value}${details.ext}`,
+      types: [
+        {
+          description: `${outputFormat.value.toUpperCase()} Playlist`,
+          accept: { [details.mime]: [details.ext] },
+        },
+      ],
+    }
+
+    try {
+      const handle = await (window as unknown as SaveFilePickerWindow).showSaveFilePicker(options)
+      const writable = await handle.createWritable()
+      await writable.write(playlistContent.value)
+      await writable.close()
+      return true
+    } catch (err) {
+      if ((err as Error | null)?.name !== 'AbortError') {
+        console.error('Could not save the file:', err)
+        return false
+      }
+      return null // User cancelled
+    }
+  }
+
+  // --- Persistence: keep files + settings across reloads (all local) ---------
+  let restoring = false
+  let restored = false
+
+  const excludedNamesOf = () =>
+    files.value.filter((f) => excludedFiles.value.has(f)).map((f) => f.name)
+
+  // Cheap, frequent write (settings + checkbox selection).
+  let metaTimer: ReturnType<typeof setTimeout> | undefined
+  const scheduleMetaSave = () => {
+    if (restoring) return
+    clearTimeout(metaTimer)
+    metaTimer = setTimeout(() => {
+      saveMeta({
+        sortOption: sortOption.value,
+        playlistName: playlistName.value,
+        outputFormat: outputFormat.value,
+        replaceMode: replaceMode.value,
+        excludedNames: excludedNamesOf(),
+      }).catch((e) => console.warn('Could not persist playlist settings:', e))
+    }, 400)
+  }
+
+  // Heavier write — only when the set/order of files actually changes.
+  let filesTimer: ReturnType<typeof setTimeout> | undefined
+  const scheduleFilesSave = () => {
+    if (restoring) return
+    clearTimeout(filesTimer)
+    filesTimer = setTimeout(() => {
+      if (files.value.length === 0) {
+        clearState().catch((e) => console.warn('Could not clear persisted playlist:', e))
+        return
+      }
+      saveFiles(files.value).catch((e) => console.warn('Could not persist playlist files:', e))
+      // File set changed → selection names may have changed too.
+      scheduleMetaSave()
+    }, 800)
+  }
+
+  async function restorePersistedState() {
+    if (restored) return
+    restored = true
+    restoring = true
+    try {
+      const { meta, files: savedFiles } = await loadState()
+      if (meta) {
+        if (meta.sortOption) sortOption.value = meta.sortOption as SortOption
+        if (typeof meta.playlistName === 'string') playlistName.value = meta.playlistName
+        if (meta.outputFormat) outputFormat.value = meta.outputFormat as OutputFormat
+        if (typeof meta.replaceMode === 'boolean') replaceMode.value = meta.replaceMode
+      }
+      if (savedFiles && savedFiles.length) {
+        files.value = savedFiles
+        const excludedNames = new Set((meta && meta.excludedNames) || [])
+        excludedFiles.value = new Set(savedFiles.filter((f) => excludedNames.has(f.name)))
+        generatePlaylist()
+      }
+      // Let the restore-triggered watchers flush while `restoring` is still true
+      // so they don't immediately re-persist what we just loaded.
+      await nextTick()
+    } catch (e) {
+      console.warn('Could not restore playlist state:', e)
+    } finally {
+      restoring = false
+      // Note: restoring writes the refs directly (no history.record), so the
+      // history is untouched — actions the user performed while the restore was
+      // in flight stay undoable.
+    }
+  }
+
+  watch(outputFormat, () => {
+    if (files.value.length > 0) {
+      generatePlaylist()
+    }
+  })
+
+  watch(playlistName, () => {
+    // Only XSPF and CUE embed the playlist name in the output
+    if (files.value.length > 0 && (outputFormat.value === 'xspf' || outputFormat.value === 'cue')) {
+      generatePlaylist()
+    }
+  })
+
+  // Persist on change. Files (heavy) only when the list itself changes;
+  // settings + selection (cheap) on their own.
+  watch(files, scheduleFilesSave, { deep: true })
+  watch([sortOption, playlistName, outputFormat, replaceMode, excludedFiles], scheduleMetaSave)
+
+  // Restore any previously persisted playlist as soon as the app uses the store.
+  void restorePersistedState()
+
+  return {
+    files,
+    sortOption,
+    playlistName,
+    outputFormat,
+    playlistContent,
+    replaceMode,
+    selectedFileIndex,
+    excludedFiles,
+    isFileSelected,
+    selectedCount,
+    allSelected,
+    someSelected,
+    toggleFileSelected,
+    setAllSelected,
+    addFiles,
+    clearFiles,
+    removeFile,
+    moveFile,
+    sortFiles,
+    applySortOption,
+    setPlaylistName,
+    setOutputFormat,
+    setReplaceMode,
+    generatePlaylist,
+    // Undo / Redo
+    undo: history.undo,
+    redo: history.redo,
+    canUndo: history.canUndo,
+    canRedo: history.canRedo,
+    undoLabel: history.undoLabel,
+    redoLabel: history.redoLabel,
+    clearHistory: history.clear,
+    savePlaylist,
+    analyzeBlob,
+    handleSharedFiles,
+  }
+})

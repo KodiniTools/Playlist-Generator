@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest'
 import { nextTick } from 'vue'
+import { createPinia, getActivePinia, setActivePinia } from 'pinia'
 import { usePlaylist } from '../usePlaylist'
 
 const mk = (name: string, lastModified = 1) => new File(['x'], name, { lastModified })
@@ -23,17 +24,21 @@ describe('usePlaylist – undo/redo', () => {
   })
 
   it('keeps steps recorded while the persisted state was still loading', async () => {
-    // Fresh module instance: usePlaylist() kicks off the async restore.
-    vi.resetModules()
-    const fresh = await import('../usePlaylist')
-    const q = fresh.usePlaylist()
-    q.addFiles([mk('early.mp3')])
-    expect(q.canUndo.value).toBe(true)
-    await new Promise((r) => setTimeout(r, 0))
-    await nextTick()
-    expect(q.canUndo.value).toBe(true)
-    expect(q.undo()).toBe('files_added')
-    expect(q.files.value).toHaveLength(0)
+    // Fresh Pinia: the first usePlaylist() creates the store and kicks off the async restore.
+    const previous = getActivePinia()
+    setActivePinia(createPinia())
+    try {
+      const q = usePlaylist()
+      q.addFiles([mk('early.mp3')])
+      expect(q.canUndo.value).toBe(true)
+      await new Promise((r) => setTimeout(r, 0))
+      await nextTick()
+      expect(q.canUndo.value).toBe(true)
+      expect(q.undo()).toBe('files_added')
+      expect(q.files.value).toHaveLength(0)
+    } finally {
+      if (previous) setActivePinia(previous)
+    }
   })
 
   beforeEach(() => {

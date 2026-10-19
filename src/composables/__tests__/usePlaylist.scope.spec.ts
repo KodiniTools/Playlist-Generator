@@ -1,22 +1,22 @@
 import { defineComponent, h, nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import { usePlaylist } from '../usePlaylist'
 
 const mk = (name: string) => new File(['x'], name, { lastModified: 1 })
 
 /**
- * Die Watcher von usePlaylist werden beim ersten Aufruf registriert. Passiert der
+ * Der Playlist-Store (und seine Watcher) entsteht beim ersten Aufruf. Passiert der
  * im Setup einer Komponente (AppPage), dürfen sie deren Unmount nicht mit sterben:
  * nach Landing -> App -> Landing -> App müssen Formatwechsel weiter wirken.
  */
 describe('usePlaylist – Watcher überleben die erste aufrufende Komponente', () => {
   beforeEach(() => {
-    vi.resetModules()
+    setActivePinia(createPinia())
   })
 
   it('regeneriert den Inhalt nach Formatwechsel, auch wenn die erste Komponente weg ist', async () => {
-    const { usePlaylist } = await import('../usePlaylist')
-
     const Host = defineComponent({
       setup() {
         usePlaylist()
