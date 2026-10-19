@@ -102,6 +102,10 @@
     padding: 2px;
     height: var(--ds-control-md);
     box-sizing: border-box;
+    /* Auf schmalen Bildschirmen horizontal scrollen statt überzulaufen. */
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
     border: var(--ds-border-width) solid var(--ds-border);
     border-radius: var(--ds-radius-md);
     background: var(--ds-surface-0);
@@ -109,6 +113,7 @@
 
   .ui-segmented__option {
     display: inline-flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     padding: 0 var(--ds-space-3);

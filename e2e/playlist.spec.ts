@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { audioFile, prepare, wav } from './helpers'
+import { audioFile, prepare, taggedAudioFile, wav } from './helpers'
 
 /** Zeilentext der Vorschau, ohne die aria-hidden Zeilennummern. */
 const preview = (page: Page) =>
@@ -286,4 +286,35 @@ test('schreibt relative Pfade und Basis-URL für einen gezogenen Ordner', async 
   await expect
     .poll(() => preview(page).allTextContents())
     .toEqual(expect.arrayContaining(['https://example.com/musik/Musik/CD2/b-song.wav']))
+})
+
+test('liest Interpret und Titel aus den Tags und sortiert nach Interpret', async ({ page }) => {
+  await prepare(page, 'de')
+  await page.goto('./app')
+  await page
+    .locator('#fileInput')
+    .setInputFiles([
+      taggedAudioFile('a.wav', { title: 'Zweites Lied', artist: 'Beta', album: 'X', track: 2 }),
+      taggedAudioFile('b.wav', { title: 'Erstes Lied', artist: 'Beta', album: 'X', track: 1 }),
+      taggedAudioFile('c.wav', { title: 'Hyperballad', artist: 'Björk' }),
+      audioFile('d.wav'),
+    ])
+  const rows = page.getByRole('list', { name: 'Dateiliste' }).getByRole('listitem')
+  await expect(rows).toHaveCount(4)
+  await expect(rows.nth(2)).toContainText('Björk – Hyperballad')
+
+  await expect
+    .poll(() => preview(page).allTextContents())
+    .toEqual(expect.arrayContaining(['#EXTINF:1,Björk - Hyperballad', '#EXTINF:1,d']))
+
+  await page.getByRole('radio', { name: 'Interpret' }).click()
+  const order = async () =>
+    (await preview(page).allTextContents()).filter((line) => line.endsWith('.wav'))
+  await expect.poll(order).toEqual(['b.wav', 'a.wav', 'c.wav', 'd.wav'])
+
+  await page.getByRole('combobox', { name: 'Vorschau-Format' }).selectOption('xspf')
+  const xspf = (await preview(page).allTextContents()).join('\n')
+  expect(xspf).toContain('<creator>Beta</creator>')
+  expect(xspf).toContain('<album>X</album>')
+  expect(xspf).toContain('<trackNum>1</trackNum>')
 })

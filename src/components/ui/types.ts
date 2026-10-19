@@ -26,6 +26,8 @@ export interface FileListItem {
   name: string
   size: number
   duration?: number | null
+  /** Zusatz hinter dem Namen, z. B. „Interpret – Titel“ aus den Tags. */
+  detail?: string
 }
 
 /** Beschriftungen der Dateiliste, alle mit deutschen Standardwerten. */

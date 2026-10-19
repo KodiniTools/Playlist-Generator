@@ -27,7 +27,7 @@ const de = {
     'Alle Dateien werden lokal verarbeitet. Keine Uploads, keine Server – Ihre Musik bleibt auf Ihrem Gerät.',
   feature3_title: 'Flexible Sortierung',
   feature3_desc:
-    'Ordnen Sie Tracks alphabetisch, nach Datum, zufällig oder per Drag & Drop nach Ihren Wünschen.',
+    'Ordnen Sie Tracks alphabetisch, nach Datum, nach Interpret und Album, zufällig oder per Drag & Drop nach Ihren Wünschen.',
 
   // Details Section
   details_title: 'Leistungsstarke Funktionen',
@@ -78,6 +78,7 @@ const de = {
   label_sort: 'Abspielreihenfolge festlegen',
   sort_alpha: 'Alphabetisch',
   sort_date: 'Nach Datum',
+  sort_artist: 'Interpret',
   sort_random: 'Zufällig',
   sort_manual: 'Manuell',
   label_name: 'Wiedergabeliste benennen',
@@ -323,7 +324,7 @@ const en: Record<TranslationKey, string> = {
     'All files are processed locally. No uploads, no servers – your music stays on your device.',
   feature3_title: 'Flexible Sorting',
   feature3_desc:
-    'Arrange tracks alphabetically, by date, randomly, or drag & drop to your preference.',
+    'Arrange tracks alphabetically, by date, by artist and album, randomly, or drag & drop to your preference.',
 
   // Details Section
   details_title: 'Powerful Features',
@@ -372,6 +373,7 @@ const en: Record<TranslationKey, string> = {
   label_sort: '2. Set Playback Order',
   sort_alpha: 'Alphabetical',
   sort_date: 'By Date',
+  sort_artist: 'Artist',
   sort_random: 'Random',
   sort_manual: 'Manual',
   label_name: '3. Name Playlist',
