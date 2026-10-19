@@ -61,7 +61,6 @@ export function usePlaylist() {
     redoLabel,
     clearHistory: store.clearHistory,
     savePlaylist: store.savePlaylist,
-    analyzeBlob: store.analyzeBlob,
     handleSharedFiles: store.handleSharedFiles,
   }
 }
