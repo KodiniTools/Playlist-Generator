@@ -2,47 +2,121 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
+  <!-- Eine Seite, Sprache per ?lang=de|en; ohne Parameter Browsersprache (x-default). -->
+
   <!-- Landing Page -->
   <url>
     <loc>https://kodinitools.com/playlist_generator/</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/"/>
+  </url>
+  <url>
+    <loc>https://kodinitools.com/playlist_generator/?lang=de</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/"/>
+  </url>
+  <url>
+    <loc>https://kodinitools.com/playlist_generator/?lang=en</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/?lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/"/>
   </url>
 
   <!-- App Page -->
   <url>
     <loc>https://kodinitools.com/playlist_generator/app</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/app"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/app"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/app?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/app?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/app"/>
+  </url>
+  <url>
+    <loc>https://kodinitools.com/playlist_generator/app?lang=de</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/app?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/app?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/app"/>
+  </url>
+  <url>
+    <loc>https://kodinitools.com/playlist_generator/app?lang=en</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/app?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/app?lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/app"/>
   </url>
 
   <!-- FAQ Page -->
   <url>
     <loc>https://kodinitools.com/playlist_generator/faq</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/faq"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/faq"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/faq?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/faq?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/faq"/>
+  </url>
+  <url>
+    <loc>https://kodinitools.com/playlist_generator/faq?lang=de</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/faq?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/faq?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/faq"/>
+  </url>
+  <url>
+    <loc>https://kodinitools.com/playlist_generator/faq?lang=en</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/faq?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/faq?lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/faq"/>
   </url>
 
   <!-- Blog Page -->
   <url>
     <loc>https://kodinitools.com/playlist_generator/blog</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/blog"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/blog"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/blog?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/blog?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/blog"/>
+  </url>
+  <url>
+    <loc>https://kodinitools.com/playlist_generator/blog?lang=de</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/blog?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/blog?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/blog"/>
+  </url>
+  <url>
+    <loc>https://kodinitools.com/playlist_generator/blog?lang=en</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kodinitools.com/playlist_generator/blog?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kodinitools.com/playlist_generator/blog?lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://kodinitools.com/playlist_generator/blog"/>
   </url>
 

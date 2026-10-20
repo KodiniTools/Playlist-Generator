@@ -1,6 +1,14 @@
 import { ref, computed } from 'vue'
 
-type Language = 'de' | 'en'
+export type Language = 'de' | 'en'
+
+export const LANGUAGES: readonly Language[] = ['de', 'en']
+
+/** Sprache aus `?lang=de|en`; null ohne oder bei unbekanntem Wert. */
+export function languageFromSearch(search: string): Language | null {
+  const lang = new URLSearchParams(search).get('lang')
+  return LANGUAGES.find((l) => l === lang) ?? null
+}
 
 const de = {
   // Navigation
@@ -9,6 +17,20 @@ const de = {
   nav_faq: 'FAQ',
   nav_blog: 'Blog',
   nav_label: 'Seiten',
+
+  // Seitentitel und Beschreibung (document.title, meta description)
+  meta_title_landing: 'Audio Wiedergabeliste Generator – M3U, PLS, XSPF & JSON erstellen',
+  meta_description_landing:
+    'Erstellen Sie Wiedergabelisten (.m3u, .m3u8, .pls, .xspf, .json, .csv) aus MP3-, WAV- und FLAC-Dateien. Alles läuft lokal im Browser, ohne Upload.',
+  meta_title_app: 'Wiedergabeliste erstellen – Audio Wiedergabeliste Generator',
+  meta_description_app:
+    'Audiodateien hinzufügen, sortieren und als M3U, PLS, XSPF, JSON oder CSV speichern. Mit Laufzeiten, Metadaten und Entwürfen, direkt im Browser.',
+  meta_title_faq: 'FAQ – Audio Wiedergabeliste Generator',
+  meta_description_faq:
+    'Antworten zu M3U, XSPF und JSON, unterstützten Audioformaten, Pfaden in der Wiedergabeliste und Datenschutz.',
+  meta_title_blog: 'Alle Funktionen im Detail – Audio Wiedergabeliste Generator',
+  meta_description_blog:
+    'Wie der Audio Wiedergabeliste Generator funktioniert: Formate, Sortierung, Tastenkürzel und Tipps für perfekte Wiedergabelisten.',
 
   // Landing Page - Hero
   hero_title: 'Audio Wiedergabeliste Generator',
@@ -337,6 +359,20 @@ const en: Record<TranslationKey, string> = {
   nav_faq: 'FAQ',
   nav_blog: 'Blog',
   nav_label: 'Pages',
+
+  // Page title and description (document.title, meta description)
+  meta_title_landing: 'Audio Playlist Generator – Create M3U, PLS, XSPF & JSON',
+  meta_description_landing:
+    'Create playlists (.m3u, .m3u8, .pls, .xspf, .json, .csv) from MP3, WAV and FLAC files. Everything runs locally in your browser, no upload.',
+  meta_title_app: 'Create a Playlist – Audio Playlist Generator',
+  meta_description_app:
+    'Add audio files, sort them and save as M3U, PLS, XSPF, JSON or CSV. With durations, metadata and drafts, right in your browser.',
+  meta_title_faq: 'FAQ – Audio Playlist Generator',
+  meta_description_faq:
+    'Answers about M3U, XSPF and JSON, supported audio formats, paths in the playlist and privacy.',
+  meta_title_blog: 'All Features in Detail – Audio Playlist Generator',
+  meta_description_blog:
+    'How the Audio Playlist Generator works: formats, sorting, keyboard shortcuts and tips for perfect playlists.',
 
   // Landing Page - Hero
   hero_title: 'Audio Playlist Generator',
@@ -715,8 +751,11 @@ const storedLang =
   localStorage.getItem('locale') ||
   localStorage.getItem('playlist-generator-locale') ||
   localStorage.getItem('language')
+// `?lang=` (Links aus Sitemap/hreflang) hat Vorrang vor der gespeicherten Sprache.
 const currentLanguage = ref<string>(
-  storedLang || (navigator.language.startsWith('de') ? 'de' : 'en'),
+  languageFromSearch(location.search) ||
+    storedLang ||
+    (navigator.language.startsWith('de') ? 'de' : 'en'),
 )
 
 // Ensure both keys are in sync on initialization
