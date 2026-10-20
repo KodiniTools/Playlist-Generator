@@ -135,6 +135,7 @@
   import { useTranslation, type TranslationKey } from '../composables/useTranslation'
   import { useUndoRedo } from '../composables/useUndoRedo'
   import { clearSharedFiles, getSharedFiles } from '../utils/sharedFileRepository'
+  import { consumeLaunchedFiles } from '../utils/pwa'
   import { hasModifier } from '../utils/platform'
   import { FORMAT_MIME, openInTextEditor } from '../utils/textEditorHandoff'
   import {
@@ -556,6 +557,8 @@
   onMounted(() => {
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('paste', handlePaste)
+    // Installierte App: per „Öffnen mit“ übergebene Audio- und Playlist-Dateien
+    consumeLaunchedFiles(handleAddFiles)
   })
 
   onUnmounted(() => {
