@@ -39,28 +39,33 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, onUnmounted, ref } from 'vue'
+  import { computed, onMounted, onUnmounted, ref } from 'vue'
   import { UiDialog, UiIconButton, UiKbd } from './ui'
   import { useTranslation, type TranslationKey } from '../composables/useTranslation'
+  import { modifierLabel } from '../utils/platform'
 
   /**
    * Fragezeichen-Button in der Kopfzeile plus Dialog mit allen Tastaturkürzeln.
    * Die Taste ? öffnet und schließt den Dialog, solange kein Textfeld den Fokus hat.
    */
-  const { t } = useTranslation()
+  const { t, currentLanguage } = useTranslation()
   const isOpen = ref(false)
 
-  const shortcuts: ReadonlyArray<{ keys: string[]; descKey: TranslationKey }> = [
-    { keys: ['Ctrl', 'O'], descKey: 'shortcut_open_desc' },
-    { keys: ['Ctrl', 'S'], descKey: 'shortcut_save_desc' },
-    { keys: ['Ctrl', 'C'], descKey: 'shortcut_copy_desc' },
-    { keys: ['Delete'], descKey: 'shortcut_delete_desc' },
-    { keys: ['Ctrl', 'Z'], descKey: 'shortcut_undo_desc' },
-    { keys: ['Ctrl', 'Y'], descKey: 'shortcut_redo_desc' },
-    { keys: ['↑', '↓'], descKey: 'shortcut_arrows_desc' },
-    { keys: ['Esc'], descKey: 'shortcut_escape_desc' },
-    { keys: ['?'], descKey: 'shortcut_question_desc' },
-  ]
+  // Befehlstaste je System: ⌘ auf Apple-Geräten, sonst Strg bzw. Ctrl.
+  const shortcuts = computed<ReadonlyArray<{ keys: string[]; descKey: TranslationKey }>>(() => {
+    const mod = modifierLabel(currentLanguage.value)
+    return [
+      { keys: [mod, 'O'], descKey: 'shortcut_open_desc' },
+      { keys: [mod, 'S'], descKey: 'shortcut_save_desc' },
+      { keys: [mod, 'C'], descKey: 'shortcut_copy_desc' },
+      { keys: ['Delete'], descKey: 'shortcut_delete_desc' },
+      { keys: [mod, 'Z'], descKey: 'shortcut_undo_desc' },
+      { keys: [mod, 'Y'], descKey: 'shortcut_redo_desc' },
+      { keys: ['↑', '↓'], descKey: 'shortcut_arrows_desc' },
+      { keys: ['Esc'], descKey: 'shortcut_escape_desc' },
+      { keys: ['?'], descKey: 'shortcut_question_desc' },
+    ]
+  })
 
   const toggle = () => {
     isOpen.value = !isOpen.value

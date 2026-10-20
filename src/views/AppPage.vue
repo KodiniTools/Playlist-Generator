@@ -135,6 +135,7 @@
   import { useTranslation, type TranslationKey } from '../composables/useTranslation'
   import { useUndoRedo } from '../composables/useUndoRedo'
   import { clearSharedFiles, getSharedFiles } from '../utils/sharedFileRepository'
+  import { hasModifier } from '../utils/platform'
   import { FORMAT_MIME, openInTextEditor } from '../utils/textEditorHandoff'
   import {
     isPlaylistFile,
@@ -493,17 +494,17 @@
       return
     }
 
-    if (event.ctrlKey && event.key === 'o') {
+    if (hasModifier(event) && event.key === 'o') {
       event.preventDefault()
       playlistConfigRef.value?.openFileDialog()
     }
 
-    if (event.ctrlKey && event.key === 's') {
+    if (hasModifier(event) && event.key === 's') {
       event.preventDefault()
       void handleSave()
     }
 
-    if (event.ctrlKey && event.key === 'c' && !window.getSelection()?.toString()) {
+    if (hasModifier(event) && event.key === 'c' && !window.getSelection()?.toString()) {
       event.preventDefault()
       void handleCopy()
     }
@@ -514,11 +515,11 @@
     }
 
     const key = event.key.toLowerCase()
-    if (event.ctrlKey && key === 'z') {
+    if (hasModifier(event) && key === 'z') {
       event.preventDefault()
       if (event.shiftKey) handleRedo()
       else handleUndo()
-    } else if (event.ctrlKey && key === 'y') {
+    } else if (hasModifier(event) && key === 'y') {
       event.preventDefault()
       handleRedo()
     }

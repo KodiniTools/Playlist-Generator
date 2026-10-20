@@ -90,4 +90,13 @@ describe('useTranslation', () => {
     setLanguage('en')
     expect(t.value('nav_home')).toBe('Home')
   })
+
+  it('ersetzt {mod} durch die Befehlstaste der Sprache', () => {
+    const { t, setLanguage } = useTranslation()
+    expect(t.value('shortcut_save')).toBe('Speichern (Strg+S)')
+    setLanguage('en')
+    expect(t.value('detail3_desc')).toBe(
+      'Ctrl+O to open, Ctrl+S to save, Ctrl+C to copy – work like a pro.',
+    )
+  })
 })

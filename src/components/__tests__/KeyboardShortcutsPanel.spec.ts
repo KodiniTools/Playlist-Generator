@@ -42,7 +42,7 @@ describe('KeyboardShortcutsPanel', () => {
         .at(0)
         ?.findAll('kbd')
         .map((key) => key.text()),
-    ).toEqual(['Ctrl', 'O'])
+    ).toEqual(['Strg', 'O'])
     expect(items.at(0)?.get('.shortcuts__desc').text().length).toBeGreaterThan(0)
     wrapper.unmount()
   })
