@@ -427,3 +427,33 @@ test('speichert Entwürfe, lädt sie wieder und löscht sie', async ({ page }) =
   await dialog.getByRole('button', { name: 'Wirklich löschen?: roadtrip' }).click()
   await expect(dialog.getByText('Noch keine Entwürfe gespeichert.')).toBeVisible()
 })
+
+test('nutzt auf dem Mac ⌘ für Kürzel und zeigt ⌘ an', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(Navigator.prototype, 'platform', { get: () => 'MacIntel' })
+    Object.defineProperty(Navigator.prototype, 'userAgentData', {
+      get: () => ({ platform: 'macOS' }),
+    })
+  })
+  await openWithFiles(page)
+  const rows = page.getByRole('list', { name: 'Dateiliste' }).getByRole('listitem')
+
+  await page.getByRole('button', { name: 'Entfernen: a-song.wav' }).click()
+  await expect(rows).toHaveCount(1)
+  await expect(page.getByRole('button', { name: /^Rückgängig: / })).toHaveAttribute(
+    'title',
+    /\(⌘\+Z\)$/,
+  )
+  await expect(page.getByText('oder ⌘+V zum Einfügen')).toBeVisible()
+
+  await page.keyboard.press('Meta+z')
+  await expect(rows).toHaveCount(2)
+  await page.keyboard.press('Meta+Shift+z')
+  await expect(rows).toHaveCount(1)
+  await page.keyboard.press('Control+z')
+  await expect(rows).toHaveCount(2)
+
+  await page.keyboard.press('?')
+  const dialog = page.getByRole('dialog', { name: 'Tastaturkürzel' })
+  await expect(dialog.locator('kbd').first()).toHaveText('⌘')
+})

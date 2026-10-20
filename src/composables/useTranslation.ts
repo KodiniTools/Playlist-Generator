@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import { modifierLabel } from '../utils/platform'
 
 export type Language = 'de' | 'en'
 
@@ -63,7 +64,7 @@ const de = {
     'Visualisieren und bearbeiten Sie Ihre Wiedergabeliste in Echtzeit mit unserer Canvas-basierten Oberfläche.',
   detail3_title: 'Schnelle Tastenkombinationen',
   detail3_desc:
-    'Strg+O zum Öffnen, Strg+S zum Speichern, Strg+C zum Kopieren – arbeiten Sie wie ein Profi.',
+    '{mod}+O zum Öffnen, {mod}+S zum Speichern, {mod}+C zum Kopieren – arbeiten Sie wie ein Profi.',
   detail4_title: 'Theme-Wechsler',
   detail4_desc: 'Wechseln Sie zwischen hellem und dunklem Design – perfekt für jede Umgebung.',
   detail5_title: 'Mehrsprachig',
@@ -193,10 +194,10 @@ const de = {
   undo_redo_group: 'Rückgängig / Wiederholen',
   undo_btn: 'Rückgängig',
   redo_btn: 'Wiederholen',
-  undo_title: 'Nichts rückgängig zu machen (Strg+Z)',
-  redo_title: 'Nichts zu wiederholen (Strg+Y)',
-  undo_title_with_action: 'Rückgängig: {action} (Strg+Z)',
-  redo_title_with_action: 'Wiederholen: {action} (Strg+Y)',
+  undo_title: 'Nichts rückgängig zu machen ({mod}+Z)',
+  redo_title: 'Nichts zu wiederholen ({mod}+Y)',
+  undo_title_with_action: 'Rückgängig: {action} ({mod}+Z)',
+  redo_title_with_action: 'Wiederholen: {action} ({mod}+Y)',
   history_files_added: 'Dateien hinzugefügt',
   history_files_cleared: 'Liste geleert',
   history_file_removed: 'Track entfernt',
@@ -234,7 +235,7 @@ const de = {
   replace_list_option: 'Bestehende Liste ersetzen',
   files_panel_title: 'Dateien',
   drop_zone_title: 'Dateien oder Ordner hierher ziehen',
-  drop_zone_hint: 'oder Strg+V zum Einfügen',
+  drop_zone_hint: 'oder {mod}+V zum Einfügen',
   file_list_label: 'Dateiliste',
   file_list_include: 'In Wiedergabeliste aufnehmen',
   file_list_drag_handle: 'Verschieben, auch mit Alt und Pfeiltasten',
@@ -254,9 +255,9 @@ const de = {
   sharedFilesNormalizerEmpty: 'Keine normalisierten Dateien gefunden',
 
   // Shortcuts
-  shortcut_open: 'Dateien öffnen (Strg+O)',
-  shortcut_save: 'Speichern (Strg+S)',
-  shortcut_copy: 'Kopieren (Strg+C)',
+  shortcut_open: 'Dateien öffnen ({mod}+O)',
+  shortcut_save: 'Speichern ({mod}+S)',
+  shortcut_copy: 'Kopieren ({mod}+C)',
 
   // Onboarding Banner
   onboarding_aria: 'Kurzanleitung',
@@ -403,7 +404,7 @@ const en: Record<TranslationKey, string> = {
   detail2_title: 'Interactive Track List',
   detail2_desc: 'Visualize and edit your playlist in real-time with our canvas-based interface.',
   detail3_title: 'Fast Keyboard Shortcuts',
-  detail3_desc: 'Ctrl+O to open, Ctrl+S to save, Ctrl+C to copy – work like a pro.',
+  detail3_desc: '{mod}+O to open, {mod}+S to save, {mod}+C to copy – work like a pro.',
   detail4_title: 'Theme Switcher',
   detail4_desc: 'Switch between light and dark design – perfect for any environment.',
   detail5_title: 'Multilingual',
@@ -532,10 +533,10 @@ const en: Record<TranslationKey, string> = {
   undo_redo_group: 'Undo / Redo',
   undo_btn: 'Undo',
   redo_btn: 'Redo',
-  undo_title: 'Nothing to undo (Ctrl+Z)',
-  redo_title: 'Nothing to redo (Ctrl+Y)',
-  undo_title_with_action: 'Undo: {action} (Ctrl+Z)',
-  redo_title_with_action: 'Redo: {action} (Ctrl+Y)',
+  undo_title: 'Nothing to undo ({mod}+Z)',
+  redo_title: 'Nothing to redo ({mod}+Y)',
+  undo_title_with_action: 'Undo: {action} ({mod}+Z)',
+  redo_title_with_action: 'Redo: {action} ({mod}+Y)',
   history_files_added: 'Files added',
   history_files_cleared: 'List cleared',
   history_file_removed: 'Track removed',
@@ -573,7 +574,7 @@ const en: Record<TranslationKey, string> = {
   replace_list_option: 'Replace existing list',
   files_panel_title: 'Files',
   drop_zone_title: 'Drop files or folders here',
-  drop_zone_hint: 'or Ctrl+V to paste',
+  drop_zone_hint: 'or {mod}+V to paste',
   file_list_label: 'File list',
   file_list_include: 'Include in playlist',
   file_list_drag_handle: 'Move, also with Alt and arrow keys',
@@ -593,9 +594,9 @@ const en: Record<TranslationKey, string> = {
   sharedFilesNormalizerEmpty: 'No normalised files found',
 
   // Shortcuts
-  shortcut_open: 'Open files (Ctrl+O)',
-  shortcut_save: 'Save (Ctrl+S)',
-  shortcut_copy: 'Copy (Ctrl+C)',
+  shortcut_open: 'Open files ({mod}+O)',
+  shortcut_save: 'Save ({mod}+S)',
+  shortcut_copy: 'Copy ({mod}+C)',
 
   // Onboarding Banner
   onboarding_aria: 'Quick guide',
@@ -831,8 +832,11 @@ function syncExternalLangButtons(lang: string) {
  * and dispatches 'language-changed', which App.vue listens for.
  */
 export function useTranslation() {
-  const t = computed<Translate>(() => (key) => {
-    return translations[currentLanguage.value as Language]?.[key] || key
+  // {mod} wird zur Befehlstaste des Systems (⌘ auf Apple-Geräten, sonst Strg/Ctrl).
+  const t = computed<Translate>(() => {
+    const mod = modifierLabel(currentLanguage.value)
+    return (key) =>
+      translations[currentLanguage.value as Language]?.[key]?.split('{mod}').join(mod) || key
   })
 
   const setLanguage = (lang: string) => {
