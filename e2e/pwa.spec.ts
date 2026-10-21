@@ -23,6 +23,17 @@ test('Manifest ist verlinkt und beschreibt Icons und Dateizuordnungen', async ({
   )
 })
 
+test('nutzt ausschließlich die eigene favicon.ico', async ({ page, request }) => {
+  const href = '/playlist_generator/favicon.ico'
+  await page.goto('./')
+  const icons = page.locator('link[rel~="icon" i], link[rel~="mask-icon" i]')
+  await expect(icons).toHaveCount(1)
+  await expect(icons).toHaveAttribute('href', new RegExp(`${href}$`))
+  const response = await request.get(href)
+  expect(response.ok()).toBe(true)
+  expect(response.headers()['content-type']).toMatch(/icon/)
+})
+
 test('lädt die App nach dem ersten Besuch auch offline', async ({ page, context }) => {
   // Der Service Worker wird nur im Produktions-Build registriert (CI: vite preview).
   // eslint-disable-next-line playwright/no-skipped-test -- Dev-Server hat keinen Service Worker
