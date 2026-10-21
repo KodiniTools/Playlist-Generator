@@ -20,7 +20,9 @@ BRANCH="${DEPLOY_BRANCH:-main}"
 
 # Files that live in the web root but are NOT produced by the build. They are
 # preserved across deploys (never overwritten or removed by the sync below).
-KEEP=(favicon.ico README.md)
+# favicon.ico is NOT listed: it comes from public/favicon.ico and must always
+# be the deployed one.
+KEEP=(README.md)
 
 # Always operate from the repository this script lives in.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
