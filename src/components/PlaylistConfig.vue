@@ -44,7 +44,7 @@
         type="file"
         class="playlist-config__input"
         multiple
-        accept=".mp3,.wav,.flac,.ogg,.aac,.m4a,.wma,.opus,.m3u,.m3u8,.pls,.xspf"
+        accept=".mp3,.wav,.flac,.ogg,.aac,.m4a,.wma,.opus,.m3u,.m3u8,.pls,.xspf,.zip"
         tabindex="-1"
         @change="handleFileChange"
       />
@@ -276,6 +276,7 @@
   import type { AudioTags } from '../utils/audioTags'
   import { setRelativePath } from '../utils/trackPath'
   import { isPlaylistFile } from '../utils/playlistImport'
+  import { isZipFile } from '../utils/zipArchive'
 
   /**
    * Linkes Panel der App-Seite: Dateien hinzufügen (Dialog, Ordner, Drag & Drop),
@@ -549,7 +550,10 @@
       const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null
       if (!entry) {
         const file = item.getAsFile()
-        if (file && (AUDIO_EXTENSIONS.test(file.name) || isPlaylistFile(file.name))) {
+        if (
+          file &&
+          (AUDIO_EXTENSIONS.test(file.name) || isPlaylistFile(file.name) || isZipFile(file.name))
+        ) {
           collected.push(file)
         }
         return Promise.resolve()
@@ -562,8 +566,8 @@
               if (AUDIO_EXTENSIONS.test(file.name)) {
                 setRelativePath(file, entry.fullPath)
                 collected.push(file)
-              } else if (isPlaylistFile(file.name)) {
-                // Nur direkt gezogene Playlists öffnen, nicht solche aus Ordnern.
+              } else if (isPlaylistFile(file.name) || isZipFile(file.name)) {
+                // Nur direkt gezogene Playlists und ZIP-Archive öffnen, nicht solche aus Ordnern.
                 collected.push(file)
               }
               done()

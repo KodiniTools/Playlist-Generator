@@ -142,7 +142,7 @@ const de = {
     'XSPF (XML Shareable Wiedergabeliste Format) ist ein moderner, offener Standard für Wiedergabelisten. Im Gegensatz zu M3U ist sie im XML-Format strukturiert, was sie flexibler macht. Sie wird von vielen Playern wie VLC unterstützt und ist ideal, um Wiedergabelisten zwischen verschiedenen Programmen und Systemen auszutauschen.',
   faq_q2_title: 'Welche Audioformate werden unterstützt?',
   faq_q2_text:
-    'Der Generator unterstützt die gängigsten Audioformate: <strong>.mp3</strong>, <strong>.wav</strong> und <strong>.flac</strong>. Andere Dateitypen werden ignoriert.',
+    'Der Generator unterstützt die gängigsten Audioformate: <strong>.mp3</strong>, <strong>.wav</strong> und <strong>.flac</strong>. Andere Dateitypen werden ignoriert. ZIP-Archive werden direkt im Browser entpackt und die enthaltenen Audiodateien übernommen.',
   faq_q3_title: 'Werden meine Dateien irgendwo hochgeladen?',
   faq_q3_text:
     'Nein, absolut nicht. Die gesamte Verarbeitung geschieht ausschliesslich lokal in Ihrem Browser. Ihre Audio-Dateien verlassen zu keinem Zeitpunkt Ihren Computer.',
@@ -232,6 +232,15 @@ const de = {
   toast_playlist_no_match:
     'Keiner der {total} Titel aus „{name}“ ist in der Liste. Fügen Sie zuerst die Audiodateien hinzu.',
   toast_playlist_empty: 'In „{name}“ wurden keine Titel gefunden.',
+  toast_zip_extracting: '„{name}“ wird entpackt…',
+  toast_zip_no_audio: 'In „{name}“ wurden keine MP3-, WAV- oder FLAC-Dateien gefunden.',
+  toast_zip_skipped_unsupported:
+    '{count} Dateien aus „{name}“ übersprungen: nur MP3, WAV und FLAC werden übernommen.',
+  toast_zip_skipped_unreadable:
+    '{count} Audiodateien aus „{name}“ übersprungen: verschlüsselt, beschädigt oder zu groß.',
+  toast_zip_invalid: '„{name}“ ist kein lesbares ZIP-Archiv.',
+  toast_zip_too_large:
+    '„{name}“ ist zu groß zum Entpacken im Browser (höchstens 2 GB Audio und 5000 Dateien).',
   replace_list_option: 'Bestehende Liste ersetzen',
   files_panel_title: 'Dateien',
   drop_zone_title: 'Dateien oder Ordner hierher ziehen',
@@ -481,7 +490,7 @@ const en: Record<TranslationKey, string> = {
     'XSPF (XML Shareable Playlist Format) is a modern, open standard for playlists. Unlike M3U, it is structured in XML format, which makes it more flexible. It is supported by many players like VLC and is ideal for sharing playlists between different programs and systems.',
   faq_q2_title: 'Which audio formats are supported?',
   faq_q2_text:
-    'The generator supports the most common audio formats: <strong>.mp3</strong>, <strong>.wav</strong>, and <strong>.flac</strong>. Other file types will be ignored.',
+    'The generator supports the most common audio formats: <strong>.mp3</strong>, <strong>.wav</strong>, and <strong>.flac</strong>. Other file types will be ignored. ZIP archives are extracted right in the browser and the audio files inside are added.',
   faq_q3_title: 'Are my files uploaded anywhere?',
   faq_q3_text:
     'No, absolutely not. All processing happens exclusively locally in your browser. Your audio files never leave your computer.',
@@ -571,6 +580,15 @@ const en: Record<TranslationKey, string> = {
   toast_playlist_no_match:
     'None of the {total} tracks in “{name}” are in the list. Add the audio files first.',
   toast_playlist_empty: 'No tracks found in “{name}”.',
+  toast_zip_extracting: 'Extracting “{name}”…',
+  toast_zip_no_audio: 'No MP3, WAV or FLAC files found in “{name}”.',
+  toast_zip_skipped_unsupported:
+    '{count} files from “{name}” skipped: only MP3, WAV and FLAC are added.',
+  toast_zip_skipped_unreadable:
+    '{count} audio files from “{name}” skipped: encrypted, damaged or too large.',
+  toast_zip_invalid: '“{name}” is not a readable ZIP archive.',
+  toast_zip_too_large:
+    '“{name}” is too large to extract in the browser (at most 2 GB of audio and 5000 files).',
   replace_list_option: 'Replace existing list',
   files_panel_title: 'Files',
   drop_zone_title: 'Drop files or folders here',

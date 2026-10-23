@@ -5,6 +5,9 @@ import PlaylistConfig from '../../components/PlaylistConfig.vue'
 import PlaylistPreview from '../../components/PlaylistPreview.vue'
 import { usePlaylist } from '../../composables/usePlaylist'
 import { useTranslation } from '../../composables/useTranslation'
+import { useToast } from '../../composables/useToast'
+import { relativePathOf } from '../../utils/trackPath'
+import { ZipError, extractAudioFromZip } from '../../utils/zipArchive'
 
 const routeQuery: Record<string, string> = {}
 
@@ -20,7 +23,12 @@ vi.mock('../../utils/sharedFileRepository', () => ({
   shareFiles: vi.fn(async () => {}),
 }))
 
-const { files, playlistName, playlistContent, outputFormat } = usePlaylist()
+vi.mock('../../utils/zipArchive', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../utils/zipArchive')>()),
+  extractAudioFromZip: vi.fn(),
+}))
+
+const { files, playlistName, playlistContent, outputFormat, replaceMode } = usePlaylist()
 
 function mountPage() {
   return mount(AppPage, {
@@ -172,5 +180,74 @@ describe('AppPage – Übergabe an den Texteditor', () => {
     wrapper.findComponent(PlaylistPreview).vm.$emit('copied')
     await flushPromises()
     expect(wrapper.find('.ui-dialog').exists()).toBe(false)
+  })
+})
+
+describe('AppPage – ZIP-Archive', () => {
+  const { toasts } = useToast()
+  const extract = vi.mocked(extractAudioFromZip)
+  const audio = (name: string) => new File(['x'], name, { type: 'audio/mpeg' })
+
+  beforeEach(() => {
+    useTranslation().setLanguage('de')
+    files.value = []
+    replaceMode.value = false
+    toasts.value = []
+    extract.mockReset()
+  })
+
+  it('übernimmt Audiodateien aus dem Archiv mit Pfad und meldet Übersprungenes', async () => {
+    const inner = audio('01.mp3')
+    extract.mockResolvedValue({
+      files: [inner],
+      paths: new Map([[inner, 'Album/01.mp3']]),
+      skipped: [{ path: 'Album/cover.jpg', reason: 'unsupported' }],
+    })
+    const wrapper = mountPage()
+    const zip = new File(['PK'], 'Album.zip')
+    wrapper.findComponent(PlaylistConfig).vm.$emit('addFiles', [zip, audio('solo.mp3')])
+    await flushPromises()
+
+    expect(extract).toHaveBeenCalledWith(zip)
+    expect(files.value.map((f) => f.name)).toEqual(['01.mp3', 'solo.mp3'])
+    expect(relativePathOf(inner)).toBe('Album/01.mp3')
+    const messages = toasts.value.map((t) => t.message)
+    expect(messages).toContain('2 Dateien hinzugefügt')
+    expect(messages).toContain(
+      '1 Dateien aus „Album.zip“ übersprungen: nur MP3, WAV und FLAC werden übernommen.',
+    )
+    expect(messages.some((m) => m.includes('wird entpackt'))).toBe(false)
+  })
+
+  it('lässt die Liste bei unlesbarem Archiv auch im Ersetzen-Modus unverändert', async () => {
+    const existing = audio('bleibt.mp3')
+    files.value = [existing]
+    replaceMode.value = true
+    extract.mockRejectedValue(new ZipError('invalid'))
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const wrapper = mountPage()
+    wrapper.findComponent(PlaylistConfig).vm.$emit('addFiles', [new File(['x'], 'kaputt.zip')])
+    await flushPromises()
+
+    expect(files.value).toEqual([existing])
+    expect(toasts.value.map((t) => [t.type, t.message])).toEqual([
+      ['error', '„kaputt.zip“ ist kein lesbares ZIP-Archiv.'],
+    ])
+  })
+
+  it('meldet Archive ohne Audiodateien und zu große Archive', async () => {
+    extract.mockResolvedValueOnce({ files: [], paths: new Map(), skipped: [] })
+    extract.mockRejectedValueOnce(new ZipError('too_large'))
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const wrapper = mountPage()
+    wrapper
+      .findComponent(PlaylistConfig)
+      .vm.$emit('addFiles', [new File(['x'], 'leer.zip'), new File(['x'], 'riesig.zip')])
+    await flushPromises()
+
+    expect(toasts.value.map((t) => t.message)).toEqual([
+      'In „leer.zip“ wurden keine MP3-, WAV- oder FLAC-Dateien gefunden.',
+      '„riesig.zip“ ist zu groß zum Entpacken im Browser (höchstens 2 GB Audio und 5000 Dateien).',
+    ])
   })
 })
