@@ -1,3 +1,4 @@
+import { crc32, deflateRawSync } from 'node:zlib'
 import type { Page } from '@playwright/test'
 
 export type Locale = 'de' | 'en'
@@ -68,4 +69,43 @@ export function taggedAudioFile(
   const buffer = Buffer.concat([base, list, info])
   buffer.writeUInt32LE(buffer.length - 8, 4) // RIFF-Größe anpassen
   return { name, mimeType: 'audio/wav', buffer }
+}
+
+/** ZIP-Archiv (deflate, UTF-8-Namen) aus Pfad → Inhalt. */
+export function zipFile(name: string, entries: Record<string, Buffer | string>) {
+  const locals: Buffer[] = []
+  const centrals: Buffer[] = []
+  let offset = 0
+  for (const [path, content] of Object.entries(entries)) {
+    const fileName = Buffer.from(path, 'utf8')
+    const raw = Buffer.isBuffer(content) ? content : Buffer.from(content, 'utf8')
+    const data = deflateRawSync(raw)
+    const local = Buffer.alloc(30)
+    local.writeUInt32LE(0x04034b50, 0)
+    local.writeUInt16LE(20, 4)
+    local.writeUInt16LE(0x800, 6)
+    local.writeUInt16LE(8, 8)
+    local.writeUInt16LE(0x5821, 12) // 2024-01-01
+    local.writeUInt32LE(crc32(raw), 14)
+    local.writeUInt32LE(data.length, 18)
+    local.writeUInt32LE(raw.length, 22)
+    local.writeUInt16LE(fileName.length, 26)
+    const central = Buffer.alloc(46)
+    central.writeUInt32LE(0x02014b50, 0)
+    central.writeUInt16LE(20, 4)
+    central.writeUInt16LE(20, 6)
+    local.copy(central, 8, 6, 30) // Flags bis Namenslänge stimmen überein
+    central.writeUInt32LE(offset, 42)
+    locals.push(local, fileName, data)
+    centrals.push(central, fileName)
+    offset += local.length + fileName.length + data.length
+  }
+  const directory = Buffer.concat(centrals)
+  const end = Buffer.alloc(22)
+  end.writeUInt32LE(0x06054b50, 0)
+  end.writeUInt16LE(Object.keys(entries).length, 8)
+  end.writeUInt16LE(Object.keys(entries).length, 10)
+  end.writeUInt32LE(directory.length, 12)
+  end.writeUInt32LE(offset, 16)
+  return { name, mimeType: 'application/zip', buffer: Buffer.concat([...locals, directory, end]) }
 }

@@ -16,3 +16,16 @@ if (typeof Blob.prototype.arrayBuffer !== 'function') {
     })
   }
 }
+
+// jsdom kennt auch Blob.prototype.stream nicht.
+if (typeof Blob.prototype.stream !== 'function') {
+  Blob.prototype.stream = function (this: Blob) {
+    const buffer = this.arrayBuffer()
+    return new ReadableStream<Uint8Array>({
+      async start(controller) {
+        controller.enqueue(new Uint8Array(await buffer))
+        controller.close()
+      },
+    }) as ReturnType<Blob['stream']>
+  }
+}

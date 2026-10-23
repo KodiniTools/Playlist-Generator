@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { audioFile, prepare, taggedAudioFile, wav } from './helpers'
+import { audioFile, prepare, taggedAudioFile, wav, zipFile } from './helpers'
 
 /** Zeilentext der Vorschau, ohne die aria-hidden Zeilennummern. */
 const preview = (page: Page) =>
@@ -456,4 +456,29 @@ test('nutzt auf dem Mac ⌘ für Kürzel und zeigt ⌘ an', async ({ page }) => 
   await page.keyboard.press('?')
   const dialog = page.getByRole('dialog', { name: 'Tastaturkürzel' })
   await expect(dialog.locator('kbd').first()).toHaveText('⌘')
+})
+
+test('entpackt ein ZIP-Archiv und übernimmt nur MP3, WAV und FLAC', async ({ page }) => {
+  await prepare(page, 'de')
+  await page.goto('./app')
+  await page.locator('#fileInput').setInputFiles([
+    zipFile('Album.zip', {
+      'Album/01 Morgen.wav': wav(2),
+      'Album/02 Abend.wav': wav(3),
+      'Album/cover.jpg': 'kein Audio',
+      '__MACOSX/Album/._01 Morgen.wav': 'Systemdatei',
+    }),
+  ])
+
+  const rows = page.getByRole('list', { name: 'Dateiliste' }).getByRole('listitem')
+  await expect(rows).toHaveCount(2)
+  await expect(rows.nth(0)).toContainText('01 Morgen.wav')
+  await expect(page.getByText('2 Dateien hinzugefügt')).toBeVisible()
+  await expect(
+    page.getByText(
+      '1 Dateien aus „Album.zip“ übersprungen: nur MP3, WAV und FLAC werden übernommen.',
+    ),
+  ).toBeVisible()
+  // Echte Laufzeiten: die entpackten Daten sind abspielbar.
+  await expect(rows.nth(1)).toContainText('0:03')
 })
