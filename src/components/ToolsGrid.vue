@@ -37,6 +37,47 @@
             <line x1="17" y1="16" x2="23" y2="16" />
           </svg>
           <svg
+            v-else-if="tool.id === 'playlist-converter'"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="3" y1="6" x2="15" y2="6" />
+            <line x1="3" y1="12" x2="15" y2="12" />
+            <line x1="3" y1="18" x2="11" y2="18" />
+            <polyline points="17 15 20 18 23 15" />
+            <line x1="20" y1="6" x2="20" y2="18" />
+          </svg>
+          <svg
+            v-else-if="tool.id === 'cutter'"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="6" cy="6" r="3" />
+            <circle cx="6" cy="18" r="3" />
+            <line x1="20" y1="4" x2="8.12" y2="15.88" />
+            <line x1="14.47" y1="14.48" x2="20" y2="20" />
+            <line x1="8.12" y1="8.12" x2="12" y2="12" />
+          </svg>
+          <svg
+            v-else-if="tool.id === 'visualizer'"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          <svg
             v-else
             viewBox="0 0 24 24"
             fill="none"
@@ -99,6 +140,24 @@
       descKey: 'tool3_desc',
       href: 'https://kodinitools.com/audiokonverter/',
     },
+    {
+      id: 'playlist-converter',
+      titleKey: 'tool4_title',
+      descKey: 'tool4_desc',
+      href: 'https://kodinitools.com/playlistkonverter/',
+    },
+    {
+      id: 'cutter',
+      titleKey: 'tool5_title',
+      descKey: 'tool5_desc',
+      href: 'https://kodinitools.com/audio-cutter/',
+    },
+    {
+      id: 'visualizer',
+      titleKey: 'tool6_title',
+      descKey: 'tool6_desc',
+      href: 'https://kodinitools.com/visualizer/',
+    },
   ]
 </script>
 
@@ -119,7 +178,11 @@
 
   .tools__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* höchstens drei Spalten (zwei Reihen à drei Karten), schmaler bricht es auf zwei bzw. eine um */
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(240px, calc((100% - 2 * var(--ds-gap)) / 3)), 1fr)
+    );
     gap: var(--ds-gap);
   }
 

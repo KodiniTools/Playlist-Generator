@@ -8,7 +8,7 @@ describe('ToolsGrid', () => {
     useTranslation().setLanguage('de')
   })
 
-  it('verweist auf die drei anderen KodiniTools in neuen Tabs', () => {
+  it('verweist auf die sechs anderen KodiniTools in neuen Tabs', () => {
     const wrapper = mount(ToolsGrid)
     expect(wrapper.get('h2').text()).toBe('Entdecken Sie weitere Audio-Tools')
     expect(wrapper.attributes('aria-labelledby')).toBe(wrapper.get('h2').attributes('id'))
@@ -18,6 +18,9 @@ describe('ToolsGrid', () => {
       'Moderner Musikplayer',
       'Grafischer Equalizer',
       'Audio-Konverter',
+      'Wiedergabeliste-Konverter',
+      'Audio-Cutter',
+      'Audio-Visualizer',
     ])
 
     const links = wrapper.findAll('a.ui-button')
@@ -25,6 +28,9 @@ describe('ToolsGrid', () => {
       'https://kodinitools.com/ultimativermusikplayer/',
       'https://kodinitools.com/equaliser19/',
       'https://kodinitools.com/audiokonverter/',
+      'https://kodinitools.com/playlistkonverter/',
+      'https://kodinitools.com/audio-cutter/',
+      'https://kodinitools.com/visualizer/',
     ])
     for (const link of links) {
       expect(link.attributes('target')).toBe('_blank')
