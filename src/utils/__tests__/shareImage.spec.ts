@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { themeColors } from '../../design-system/tokens'
+import { estimateSeconds } from '../../components/ui/fileListFormat'
 import {
   BackgroundImageError,
   MAX_BACKGROUND_BYTES,
@@ -131,10 +132,10 @@ describe('summarizeTracks', () => {
     )
     expect(summary.tracks).toEqual([
       { title: 'Intro', artist: 'Band', seconds: 120 },
-      { title: 'b', artist: undefined, seconds: null },
+      { title: 'b', artist: undefined, seconds: estimateSeconds('b.mp3', b.size), estimated: true },
     ])
     expect(summary.approximate).toBe(true)
-    expect(summary.totalSeconds).toBeGreaterThan(120)
+    expect(summary.totalSeconds).toBe(120 + estimateSeconds('b.mp3', b.size))
   })
 })
 
@@ -161,6 +162,24 @@ describe('drawShareImage', () => {
     ])
     expect(texts.find((t) => t.text === 'Intro')?.fill).toBe(dark.text)
     expect(texts.find((t) => t.text === '01')?.fill).toBe(dark.accent)
+  })
+
+  it('kennzeichnet geschätzte Dauern mit ≈', () => {
+    const { ctx, texts } = recordingContext()
+    drawShareImage(
+      ctx,
+      data({
+        tracks: [
+          { title: 'A', seconds: 200 },
+          { title: 'B', seconds: 249, estimated: true },
+        ],
+      }),
+      'story',
+      'dark',
+    )
+    const all = texts.map((t) => t.text)
+    expect(all).toContain('3:20')
+    expect(all).toContain('≈ 4:09')
   })
 
   it('zeigt bei vielen Titeln „+ N weitere“ und nutzt helle Farben', () => {

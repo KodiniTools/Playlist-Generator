@@ -22,8 +22,10 @@ export const SHARE_IMAGE_ROWS: Record<ShareImageFormat, number> = { story: 12, p
 export interface ShareTrack {
   title: string
   artist?: string
-  /** Gemessene Dauer in Sekunden; null = unbekannt, wird nicht angezeigt. */
+  /** Dauer in Sekunden; null = unbekannt, wird nicht angezeigt. */
   seconds: number | null
+  /** true, wenn die Dauer aus der Dateigröße geschätzt ist (Anzeige mit „≈“). */
+  estimated?: boolean
 }
 
 export interface ShareImageData {
@@ -62,13 +64,16 @@ export function summarizeTracks(
   let approximate = false
   const tracks = files.map((file) => {
     const tags = getTags(file)
-    const seconds = getDuration(file.name)
-    if (seconds === null) approximate = true
-    totalSeconds += seconds ?? estimateSeconds(file.name, file.size)
+    const measured = getDuration(file.name)
+    const estimated = measured === null
+    if (estimated) approximate = true
+    const seconds = measured ?? estimateSeconds(file.name, file.size)
+    totalSeconds += seconds
     return {
       title: tags?.title?.trim() || file.name.replace(/\.[^.]+$/, ''),
       artist: tags?.artist?.trim() || undefined,
       seconds,
+      ...(estimated && { estimated }),
     }
   })
   return { tracks, totalSeconds, approximate }
@@ -460,7 +465,7 @@ export function drawShareImage(
       ctx.fillStyle = c.muted
       ctx.font = font(g.track * 0.8, 500)
       ctx.textAlign = 'right'
-      ctx.fillText(formatClock(track.seconds), right, titleY)
+      ctx.fillText(`${track.estimated ? '≈ ' : ''}${formatClock(track.seconds)}`, right, titleY)
       ctx.textAlign = 'left'
     }
 
