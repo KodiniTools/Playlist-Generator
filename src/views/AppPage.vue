@@ -138,6 +138,7 @@
   import { consumeLaunchedFiles } from '../utils/pwa'
   import { hasModifier } from '../utils/platform'
   import { FORMAT_MIME, openInTextEditor } from '../utils/textEditorHandoff'
+  import { fileExtensionOf } from '../utils/playlistFormats'
   import {
     isPlaylistFile,
     parsePlaylistEntries,
@@ -449,7 +450,7 @@
   const handoffOffer = ref<HandoffReason | null>(null)
 
   const handoffFileName = computed(
-    () => `${playlistName.value.trim() || 'playlist'}.${outputFormat.value}`,
+    () => `${playlistName.value.trim() || 'playlist'}.${fileExtensionOf(outputFormat.value)}`,
   )
 
   const handoffDescription = computed(() =>

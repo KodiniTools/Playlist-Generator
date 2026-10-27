@@ -30,6 +30,7 @@ export const FORMAT_MIME: Readonly<Record<OutputFormat, string>> = {
   csv: 'text/csv',
   json: 'application/json',
   xspf: 'application/xspf+xml',
+  youtube: 'text/plain',
 }
 
 /** Ziel-URL des Editors mit Quellkennung. */

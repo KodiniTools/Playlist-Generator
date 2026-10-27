@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { formatPlaylist, toXspfLocation, type PlaylistTrack } from '../playlistFormats'
+import {
+  fileExtensionOf,
+  formatChapterTime,
+  formatPlaylist,
+  toXspfLocation,
+  type PlaylistTrack,
+} from '../playlistFormats'
+import { estimateSeconds } from '../../components/ui/fileListFormat'
 import type { AudioTags } from '../audioTags'
 
 const track = (
@@ -185,6 +192,36 @@ describe('formatPlaylist', () => {
         },
       ])
     })
+  })
+})
+
+describe('YouTube-Kapitel', () => {
+  it('schreibt Startzeiten ab 00:00 mit Interpret - Titel', () => {
+    const list = [
+      track('intro.mp3', 184.4),
+      track('b.mp3', 200.6, 10, 'b.mp3', { artist: 'Band', title: 'Mittag' }),
+      track('c.mp3', 61),
+    ]
+    expect(formatPlaylist('youtube', list, 'x')).toBe('00:00 intro\n03:04 Band - Mittag\n06:25 c\n')
+  })
+
+  it('wechselt ab einer Stunde auf H:MM:SS', () => {
+    const list = [track('a.mp3', 3599.6), track('b.mp3', 3600), track('c.mp3', 10)]
+    expect(formatPlaylist('youtube', list, 'x')).toBe('00:00 a\n1:00:00 b\n2:00:00 c\n')
+  })
+
+  it('schätzt unbekannte Dauern aus der Dateigröße', () => {
+    const list = [track('a.mp3', null, 4_000_000), track('b.mp3', 10)]
+    const start = formatChapterTime(estimateSeconds('a.mp3', 4_000_000))
+    expect(formatPlaylist('youtube', list, 'x')).toBe(`00:00 a\n${start} b\n`)
+  })
+
+  it('formatiert Zeitmarken und nutzt .txt als Endung', () => {
+    expect(formatChapterTime(0)).toBe('00:00')
+    expect(formatChapterTime(59.5)).toBe('01:00')
+    expect(formatChapterTime(3723)).toBe('1:02:03')
+    expect(fileExtensionOf('youtube')).toBe('txt')
+    expect(fileExtensionOf('m3u8')).toBe('m3u8')
   })
 })
 

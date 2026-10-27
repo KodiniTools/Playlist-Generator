@@ -1,5 +1,6 @@
 import type { OutputFormat } from '../stores/playlist'
 import type { AudioTags } from './audioTags'
+import { estimateSeconds } from '../components/ui/fileListFormat'
 
 /**
  * Ein Eintrag der Playlist: Datei, Verweis für den Export (Dateiname, relativer Pfad
@@ -180,6 +181,37 @@ const generateXspf = (list: PlaylistTrack[], playlistName: string) => {
   </playlist>`
 }
 
+/** Dateiendung ohne Punkt; YouTube-Kapitel sind reiner Text. */
+export const fileExtensionOf = (format: OutputFormat): string =>
+  format === 'youtube' ? 'txt' : format
+
+/** Kapitel-Zeitmarke für YouTube: „03:04“, ab einer Stunde „1:02:09“. */
+export function formatChapterTime(seconds: number): string {
+  const total = Math.max(0, Math.round(seconds))
+  const h = Math.floor(total / 3600)
+  const m = String(Math.floor((total % 3600) / 60)).padStart(2, '0')
+  const s = String(total % 60).padStart(2, '0')
+  return h > 0 ? `${h}:${m}:${s}` : `${m}:${s}`
+}
+
+/**
+ * YouTube-Kapitel für die Videobeschreibung eines Mixes: „00:00 Intro“, je Titel eine
+ * Zeile mit seiner Startzeit. Unbekannte Dauern werden wie in der Dateiliste aus der
+ * Dateigröße geschätzt, damit die folgenden Marken nicht alle verrutschen.
+ */
+const generateYoutubeChapters = (list: PlaylistTrack[]) => {
+  let start = 0
+  return (
+    list
+      .map((track) => {
+        const line = `${formatChapterTime(start)} ${displayTitleOf(track)}`
+        start += track.duration ?? estimateSeconds(track.file.name, track.file.size)
+        return line
+      })
+      .join('\n') + '\n'
+  )
+}
+
 /** Erzeugt den Playlist-Text im gewünschten Format. Leere Liste → ''. */
 export function formatPlaylist(
   format: OutputFormat,
@@ -207,6 +239,8 @@ export function formatPlaylist(
       return generateJson(list)
     case 'xspf':
       return generateXspf(list, playlistName)
+    case 'youtube':
+      return generateYoutubeChapters(list)
     default: {
       const unsupported: never = format
       return `Unsupported format: ${String(unsupported)}`

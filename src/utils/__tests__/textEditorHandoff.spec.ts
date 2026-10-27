@@ -52,7 +52,7 @@ describe('textEditorHandoff', () => {
 
   it('kennt für jedes Ausgabeformat einen MIME-Typ', () => {
     expect(Object.keys(FORMAT_MIME).sort()).toEqual(
-      ['csv', 'cue', 'json', 'm3u', 'm3u8', 'pls', 'txt', 'xspf'].sort(),
+      ['csv', 'cue', 'json', 'm3u', 'm3u8', 'pls', 'txt', 'xspf', 'youtube'].sort(),
     )
   })
 })
