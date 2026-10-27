@@ -128,6 +128,7 @@ const de = {
     "Klicken Sie auf 'Wiedergabeliste erstellen', um hier eine Vorschau zu sehen...",
   button_save: 'Speichern',
   button_copy: 'Kopieren',
+  button_share: 'Teilen',
   button_share_image: 'Als Bild teilen',
   share_image_title: 'Als Bild teilen',
   share_image_description:
@@ -218,6 +219,7 @@ const de = {
   handoff_decline: 'Nicht jetzt',
   handoff_error: 'Übergabe nicht möglich: Der Browser-Speicher ist nicht verfügbar.',
   toast_copy_error: 'Kopieren fehlgeschlagen',
+  toast_share_error: 'Teilen fehlgeschlagen',
   toast_close: 'Schließen',
   toast_file_removed: 'Track entfernt',
   toast_files_cleared: 'Liste geleert',
@@ -522,6 +524,7 @@ const en: Record<TranslationKey, string> = {
   placeholder_output: "Click 'Create Playlist' to see a preview here...",
   button_save: 'Save As...',
   button_copy: 'Copy',
+  button_share: 'Share',
   button_share_image: 'Share as image',
   share_image_title: 'Share as image',
   share_image_description:
@@ -612,6 +615,7 @@ const en: Record<TranslationKey, string> = {
   handoff_decline: 'Not now',
   handoff_error: 'Handoff not possible: browser storage is unavailable.',
   toast_copy_error: 'Copy failed',
+  toast_share_error: 'Sharing failed',
   toast_close: 'Close',
   toast_file_removed: 'Track removed',
   toast_files_cleared: 'List cleared',

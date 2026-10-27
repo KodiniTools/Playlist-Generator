@@ -87,27 +87,51 @@
       </div>
 
       <div class="playlist-preview__actions">
-        <UiButton
+        <UiIconButton
+          v-if="canShare"
           variant="secondary"
+          :label="t('button_share')"
           :disabled="!hasContent"
+          data-action="share"
+          @click="handleShare"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+        </UiIconButton>
+        <UiIconButton
+          variant="secondary"
+          :label="t('button_copy')"
           :title="t('shortcut_copy')"
+          :disabled="!hasContent"
+          data-action="copy"
           @click="handleCopy"
         >
-          <template #icon>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.75"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg>
-          </template>
-          {{ t('button_copy') }}
-        </UiButton>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+        </UiIconButton>
         <UiButton
           variant="secondary"
           :disabled="!hasContent"
@@ -160,6 +184,7 @@
     UiButton,
     UiCallout,
     UiEmptyState,
+    UiIconButton,
     UiPanel,
     UiSegmentedControl,
     UiSelect,
@@ -168,6 +193,7 @@
   import type { SegmentedOption, SelectOption } from './ui'
   import type { OutputFormat, PathMode } from '../composables/usePlaylist'
   import { fileExtensionOf } from '../utils/playlistFormats'
+  import { FORMAT_MIME } from '../utils/textEditorHandoff'
   import { useToast } from '../composables/useToast'
   import { useTranslation } from '../composables/useTranslation'
 
@@ -262,6 +288,40 @@
       emit('copied')
     } catch {
       toast.error(t.value('toast_copy_error'))
+    }
+  }
+
+  // Ohne Web Share API (z. B. Firefox am Desktop) entfällt der Button.
+  const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+
+  /**
+   * Teilt die Playlist im gewählten Format als Datei. Viele Systeme lassen nur
+   * bestimmte Dateitypen zu (M3U, PLS, XSPF … meist nicht); dann wird der Inhalt
+   * als Text geteilt.
+   */
+  const handleShare = async () => {
+    if (!hasContent.value) {
+      toast.error(t.value('alert_create_first'))
+      return
+    }
+    const title = props.playlistName.trim() || 'playlist'
+    const file = new File([props.playlistContent], fileName.value, {
+      type: FORMAT_MIME[localFormat.value],
+    })
+    let asFile = false
+    try {
+      asFile = navigator.canShare?.({ files: [file] }) ?? false
+    } catch {
+      asFile = false
+    }
+    try {
+      await navigator.share(
+        asFile ? { files: [file], title } : { title, text: props.playlistContent },
+      )
+    } catch (err) {
+      if ((err as Error | null)?.name === 'AbortError') return
+      console.warn('Could not share playlist:', err)
+      toast.error(t.value('toast_share_error'))
     }
   }
 
@@ -376,8 +436,9 @@
     flex-wrap: wrap;
   }
 
+  /* Auf schmalen Bildschirmen volle Breite für Textbuttons; Icons bleiben quadratisch. */
   @media (max-width: 480px) {
-    .playlist-preview__actions > * {
+    .playlist-preview__actions > .ui-button {
       flex: 1 1 100%;
     }
   }
