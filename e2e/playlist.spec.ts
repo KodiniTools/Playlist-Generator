@@ -162,7 +162,7 @@ test.describe('Playlist erstellen', () => {
     expect(copied).toContain('b-song.wav')
   })
 
-  test('teilt die Playlist als Datei im gewählten Format', async ({ page }) => {
+  test('teilt CSV als Datei und PLS als Text', async ({ page }) => {
     // Headless-Chromium unter Linux hat keine Web Share API; aufgezeichnet wird der Aufruf.
     await page.addInitScript(() => {
       const shared: { title?: string; name?: string; type?: string; text?: string }[] = []
@@ -175,14 +175,14 @@ test.describe('Playlist erstellen', () => {
             title: data.title,
             name: file?.name,
             type: file?.type,
-            text: await file?.text(),
+            text: file ? await file.text() : data.text,
           })
         },
       })
     })
     await openWithFiles(page)
     await page.getByRole('textbox', { name: 'Wiedergabeliste benennen' }).fill('roadtrip')
-    await page.getByRole('combobox', { name: 'Vorschau-Format' }).selectOption('pls')
+    await page.getByRole('combobox', { name: 'Vorschau-Format' }).selectOption('csv')
     await page
       .getByRole('region', { name: 'Vorschau & Speichern' })
       .getByRole('button', { name: 'Teilen', exact: true })
@@ -197,8 +197,19 @@ test.describe('Playlist erstellen', () => {
       type: string
       text: string
     }[]
-    expect(entry).toMatchObject({ title: 'roadtrip', name: 'roadtrip.pls', type: 'audio/x-scpls' })
-    expect(entry!.text).toContain('[playlist]')
+    expect(entry).toMatchObject({ title: 'roadtrip', name: 'roadtrip.csv', type: 'text/csv' })
+    expect(entry!.text).toContain('a-song.wav')
+
+    // PLS lehnt Chrome als Datei ab, deshalb geht es als Text raus.
+    await page.getByRole('combobox', { name: 'Vorschau-Format' }).selectOption('pls')
+    await page
+      .getByRole('region', { name: 'Vorschau & Speichern' })
+      .getByRole('button', { name: 'Teilen', exact: true })
+      .click()
+    await expect.poll(shared).toHaveLength(2)
+    const [, asText] = (await shared()) as { name?: string; text: string }[]
+    expect(asText!.name).toBeUndefined()
+    expect(asText!.text).toContain('[playlist]')
   })
 
   test('behält Dateien und Einstellungen nach dem Neuladen', async ({ page }) => {
