@@ -508,3 +508,32 @@ test('erzeugt ein Story-Bild der Playlist und lädt es herunter', async ({ page 
   await dialog.getByRole('button', { name: 'Herunterladen' }).click()
   expect((await download).suggestedFilename()).toBe('meine_wiedergabeliste-post.png')
 })
+
+test('zeichnet das Bild in selbst gewählten Text- und Hintergrundfarben', async ({ page }) => {
+  await prepare(page, 'de')
+  await page.goto('./app')
+  await page.locator('#fileInput').setInputFiles([audioFile('a.wav', 2)])
+  await page.getByRole('button', { name: 'Als Bild teilen' }).click()
+
+  const dialog = page.getByRole('dialog', { name: 'Als Bild teilen' })
+  const preview = dialog.getByRole('img', { name: 'Vorschau des Bildes' })
+  await expect(preview).toBeVisible()
+  await dialog.getByLabel('Hintergrund').fill('#ff6600')
+  await dialog.getByLabel('Textfarbe').fill('#101010')
+
+  // Pixel oben links = Hintergrundfarbe (Start des Verlaufs).
+  const corner = () =>
+    preview.evaluate((img: HTMLImageElement) => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')!
+      ctx.drawImage(img, 0, 0)
+      return Array.from(ctx.getImageData(2, 2, 1, 1).data.slice(0, 3))
+    })
+  await expect.poll(corner).toEqual([255, 102, 0])
+  await expect(dialog.getByText(/Geringer Kontrast/)).toHaveCount(0)
+
+  await dialog.getByRole('button', { name: 'Farben zurücksetzen' }).click()
+  await expect.poll(corner).toEqual([9, 20, 40])
+})

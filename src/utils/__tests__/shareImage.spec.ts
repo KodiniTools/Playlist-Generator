@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest'
 import { themeColors } from '../../design-system/tokens'
 import {
   SHARE_IMAGE_ROWS,
+  contrastRatio,
+  defaultShareColors,
+  mixColors,
+  parseHex,
+  sharePalette,
   drawShareImage,
   fitText,
   formatClock,
@@ -162,5 +167,55 @@ describe('drawShareImage', () => {
     expect(all).not.toContain('06')
     expect(all).toContain('+ 5 weitere Titel')
     expect(texts.find((t) => t.text === 'Titel 1')?.fill).toBe(themeColors('light').text)
+  })
+})
+
+describe('Farben', () => {
+  it('liest und mischt Hex-Farben', () => {
+    expect(parseHex('#fff')).toEqual([255, 255, 255])
+    expect(parseHex('#0a1B2c')).toEqual([10, 27, 44])
+    expect(parseHex('rot')).toBeNull()
+    expect(mixColors('#000000', '#ffffff', 0.5)).toBe('#808080')
+  })
+
+  it('berechnet den Kontrast nach WCAG', () => {
+    expect(contrastRatio('#000000', '#ffffff')).toBeCloseTo(21)
+    expect(contrastRatio('#777777', '#777777')).toBe(1)
+  })
+
+  it('nutzt ohne eigene Farben genau die Theme-Farben', () => {
+    const dark = themeColors('dark')
+    expect(defaultShareColors('dark')).toEqual({ text: dark.text, background: dark.bg })
+    expect(sharePalette('dark', defaultShareColors('dark'))).toEqual({
+      bg: dark.bg,
+      bgEnd: dark.bgSecondary,
+      text: dark.text,
+      muted: dark.muted,
+      accent: dark.accent,
+      border: dark.border,
+    })
+  })
+
+  it('leitet Nebentöne aus eigenen Farben ab', () => {
+    const palette = sharePalette('dark', { text: '#ffffff', background: '#000000' })
+    expect(palette).toMatchObject({ bg: '#000000', text: '#ffffff', muted: '#a6a6a6' })
+    expect(palette.bgEnd).toBe('#0f0f0f')
+    expect(palette.accent).toBe(themeColors('dark').accent)
+  })
+
+  it('ersetzt den Akzent durch die Textfarbe, wenn er im Hintergrund verschwindet', () => {
+    const accent = themeColors('dark').accent
+    expect(sharePalette('dark', { text: '#000000', background: accent }).accent).toBe('#000000')
+  })
+
+  it('ignoriert ungültige Farben', () => {
+    expect(sharePalette('light', { text: 'blau', background: '' })).toEqual(sharePalette('light'))
+  })
+
+  it('zeichnet mit eigenen Farben', () => {
+    const { ctx, texts } = recordingContext()
+    drawShareImage(ctx, data(), 'post', 'dark', { text: '#ff0000', background: '#ffffff' })
+    expect(texts.find((t) => t.text === 'Sommer Mix')?.fill).toBe('#ff0000')
+    expect(texts.find((t) => t.text === 'Titel 1')?.fill).toBe('#ff0000')
   })
 })

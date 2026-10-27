@@ -191,23 +191,105 @@ const GEOMETRY: Record<ShareImageFormat, Geometry> = {
   },
 }
 
+/** Vom Nutzer gewählte Farben (#rrggbb); fehlende Werte kommen aus dem Theme. */
+export interface ShareColors {
+  text: string
+  background: string
+}
+
+export interface SharePalette {
+  bg: string
+  /** Ende des Hintergrund-Verlaufs. */
+  bgEnd: string
+  text: string
+  muted: string
+  accent: string
+  border: string
+}
+
+/** #rgb oder #rrggbb → [r, g, b]; null bei ungültigem Wert. */
+export function parseHex(color: string): [number, number, number] | null {
+  const match = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color.trim())
+  if (!match) return null
+  const hex = match[1]!.length === 3 ? match[1]!.replace(/./g, '$&$&') : match[1]!
+  return [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number]
+}
+
+const toHex = (rgb: number[]) =>
+  `#${rgb.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('')}`
+
+/** Mischt `a` mit `amount` (0–1) Anteil von `b`. */
+export function mixColors(a: string, b: string, amount: number): string {
+  const x = parseHex(a)
+  const y = parseHex(b)
+  if (!x || !y) return a
+  return toHex(x.map((v, i) => v + (y[i]! - v) * amount))
+}
+
+/** Kontrastverhältnis nach WCAG 2.1 (1–21); 1 bei ungültigen Farben. */
+export function contrastRatio(a: string, b: string): number {
+  const luminance = (color: string) => {
+    const rgb = parseHex(color)
+    if (!rgb) return null
+    const [r, g, bl] = rgb.map((v) => {
+      const c = v / 255
+      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+    })
+    return 0.2126 * r! + 0.7152 * g! + 0.0722 * bl!
+  }
+  const la = luminance(a)
+  const lb = luminance(b)
+  if (la === null || lb === null) return 1
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05)
+}
+
+/** Text- und Hintergrundfarbe des Themes, Startwerte für die Farbwähler. */
+export function defaultShareColors(theme: ThemeName): ShareColors {
+  const c = themeColors(theme)
+  return { text: c.text, background: c.bg }
+}
+
+/**
+ * Farben fürs Bild. Ohne eigene Farben exakt die Theme-Farben; mit eigenen
+ * Farben werden Nebentöne aus Text und Hintergrund gemischt. Der Akzent des
+ * Themes bleibt, solange er sich vom Hintergrund abhebt (≥ 3:1), sonst wird
+ * die Textfarbe genommen.
+ */
+export function sharePalette(theme: ThemeName, colors?: Partial<ShareColors>): SharePalette {
+  const c = themeColors(theme)
+  const text = colors?.text && parseHex(colors.text) ? colors.text : c.text
+  const bg = colors?.background && parseHex(colors.background) ? colors.background : c.bg
+  if (text.toLowerCase() === c.text.toLowerCase() && bg.toLowerCase() === c.bg.toLowerCase()) {
+    return { bg, bgEnd: c.bgSecondary, text, muted: c.muted, accent: c.accent, border: c.border }
+  }
+  return {
+    bg,
+    bgEnd: mixColors(bg, text, 0.06),
+    text,
+    muted: mixColors(text, bg, 0.35),
+    accent: contrastRatio(c.accent, bg) >= 3 ? c.accent : text,
+    border: mixColors(text, bg, 0.75),
+  }
+}
+
 /** Zeichnet das Bild in einen 2D-Kontext der Größe `SHARE_IMAGE_SIZES[format]`. */
 export function drawShareImage(
   ctx: CanvasRenderingContext2D,
   data: ShareImageData,
   format: ShareImageFormat,
   theme: ThemeName,
+  colors?: Partial<ShareColors>,
 ): void {
   const { width, height } = SHARE_IMAGE_SIZES[format]
   const g = GEOMETRY[format]
-  const c = themeColors(theme)
+  const c = sharePalette(theme, colors)
   const measure = (text: string) => ctx.measureText(text).width
   const font = (size: number, weight = 400) => `${weight} ${size}px ${FONT}`
 
   // Hintergrund mit leichtem Verlauf
   const background = ctx.createLinearGradient(0, 0, 0, height)
   background.addColorStop(0, c.bg)
-  background.addColorStop(1, c.bgSecondary)
+  background.addColorStop(1, c.bgEnd)
   ctx.fillStyle = background
   ctx.fillRect(0, 0, width, height)
 
@@ -337,6 +419,7 @@ export async function renderShareImage(
   format: ShareImageFormat,
   theme: ThemeName,
   type: ShareImageType = 'image/png',
+  colors?: Partial<ShareColors>,
 ): Promise<Blob> {
   const { width, height } = SHARE_IMAGE_SIZES[format]
   try {
@@ -349,7 +432,7 @@ export async function renderShareImage(
   canvas.height = height
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Canvas 2D nicht verfügbar')
-  drawShareImage(ctx, data, format, theme)
+  drawShareImage(ctx, data, format, theme, colors)
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error('Bild konnte nicht erzeugt werden'))),
