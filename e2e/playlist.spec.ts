@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { audioFile, prepare, taggedAudioFile, wav, zipFile } from './helpers'
+import { audioFile, pngFile, prepare, taggedAudioFile, wav, zipFile } from './helpers'
 
 /** Zeilentext der Vorschau, ohne die aria-hidden Zeilennummern. */
 const preview = (page: Page) =>
@@ -536,4 +536,37 @@ test('zeichnet das Bild in selbst gewählten Text- und Hintergrundfarben', async
 
   await dialog.getByRole('button', { name: 'Farben zurücksetzen' }).click()
   await expect.poll(corner).toEqual([9, 20, 40])
+})
+
+test('legt ein hochgeladenes Hintergrundbild mit Deckkraft unter das Bild', async ({ page }) => {
+  await prepare(page, 'de')
+  await page.goto('./app')
+  await page.locator('#fileInput').setInputFiles([audioFile('a.wav', 2)])
+  await page.getByRole('button', { name: 'Als Bild teilen' }).click()
+
+  const dialog = page.getByRole('dialog', { name: 'Als Bild teilen' })
+  const preview = dialog.getByRole('img', { name: 'Vorschau des Bildes' })
+  await expect(preview).toBeVisible()
+  await dialog
+    .locator('[data-input="background-image"]')
+    .setInputFiles([pngFile('rot.png', 40, 60, [255, 0, 0])])
+  await expect(dialog.getByText('rot.png')).toBeVisible()
+
+  const corner = () =>
+    preview.evaluate((img: HTMLImageElement) => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')!
+      ctx.drawImage(img, 0, 0)
+      return Array.from(ctx.getImageData(2, 2, 1, 1).data.slice(0, 3))
+    })
+  const slider = dialog.getByLabel('Deckkraft')
+  await slider.fill('100')
+  await expect.poll(corner).toEqual([255, 0, 0])
+  await slider.fill('0')
+  await expect.poll(corner).toEqual([9, 20, 40])
+
+  await dialog.getByRole('button', { name: 'Bild entfernen' }).click()
+  await expect(dialog.getByText('rot.png')).toHaveCount(0)
 })

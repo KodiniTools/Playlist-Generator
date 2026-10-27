@@ -4,14 +4,29 @@ import ShareImageDialog from '../ShareImageDialog.vue'
 import { usePlaylist } from '../../composables/usePlaylist'
 import { useToast } from '../../composables/useToast'
 import { useTranslation } from '../../composables/useTranslation'
-import { defaultShareColors, renderShareImage } from '../../utils/shareImage'
+import {
+  BackgroundImageError,
+  defaultShareColors,
+  loadBackgroundImage,
+  renderShareImage,
+} from '../../utils/shareImage'
 
 vi.mock('../../utils/shareImage', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../utils/shareImage')>()),
   renderShareImage: vi.fn(async () => new Blob(['png'], { type: 'image/png' })),
+  loadBackgroundImage: vi.fn(),
 }))
 
 const render = vi.mocked(renderShareImage)
+const loadImage = vi.mocked(loadBackgroundImage)
+
+/** Wählt eine Datei im versteckten Datei-Input. */
+async function pickFile(wrapper: ReturnType<typeof mountDialog>, file: File) {
+  const input = wrapper.get('[data-input="background-image"]')
+  Object.defineProperty(input.element, 'files', { value: [file], configurable: true })
+  await input.trigger('change')
+  await flushPromises()
+}
 const { files, playlistName, excludedFiles } = usePlaylist()
 const { toasts } = useToast()
 
@@ -122,5 +137,53 @@ describe('ShareImageDialog', () => {
     expect((wrapper.get('[data-color="text"]').element as HTMLInputElement).value).toBe(
       defaultShareColors('light').text,
     )
+  })
+
+  it('legt ein Hintergrundbild mit einstellbarer Deckkraft unter den Text', async () => {
+    const bitmap = { width: 1200, height: 1800, close: vi.fn() } as unknown as ImageBitmap
+    loadImage.mockResolvedValueOnce(bitmap)
+    const wrapper = mountDialog()
+    await flushPromises()
+    expect(wrapper.text()).toContain('PNG, JPEG oder WebP')
+
+    await pickFile(wrapper, new File(['x'], 'strand.jpg', { type: 'image/jpeg' }))
+    expect(render.mock.calls.at(-1)![5]).toEqual({ image: bitmap, opacity: 0.6 })
+    expect(wrapper.text()).toContain('strand.jpg')
+
+    await wrapper.get('[data-input="background-opacity"]').setValue('25')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![5]).toEqual({ image: bitmap, opacity: 0.25 })
+    expect(wrapper.text()).toContain('25 %')
+
+    await wrapper.get('[data-action="remove-background"]').trigger('click')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![5]).toBeNull()
+    expect(bitmap.close).toHaveBeenCalled()
+  })
+
+  it('meldet ungeeignete Bilder', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    loadImage.mockRejectedValueOnce(new BackgroundImageError('type'))
+    const wrapper = mountDialog()
+    await flushPromises()
+    await pickFile(wrapper, new File(['x'], 'bild.gif', { type: 'image/gif' }))
+    expect(toasts.value.map((t) => t.message)).toContain(
+      'Bitte ein PNG-, JPEG- oder WebP-Bild wählen.',
+    )
+    expect(wrapper.find('[data-action="remove-background"]').exists()).toBe(false)
+  })
+
+  it('blendet den Kontrast-Hinweis aus, solange ein Foto den Hintergrund bildet', async () => {
+    loadImage.mockResolvedValueOnce({
+      width: 10,
+      height: 10,
+      close: vi.fn(),
+    } as unknown as ImageBitmap)
+    const wrapper = mountDialog()
+    await wrapper.get('[data-color="text"]').setValue('#777777')
+    await wrapper.get('[data-color="background"]').setValue('#888888')
+    expect(wrapper.find('.ui-callout').exists()).toBe(true)
+    await pickFile(wrapper, new File(['x'], 'foto.png', { type: 'image/png' }))
+    expect(wrapper.find('.ui-callout').exists()).toBe(false)
   })
 })

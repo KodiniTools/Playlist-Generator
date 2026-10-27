@@ -272,6 +272,63 @@ export function sharePalette(theme: ThemeName, colors?: Partial<ShareColors>): S
   }
 }
 
+/** Eigenes Hintergrundbild; liegt über der Hintergrundfarbe, unter Text und Grafik. */
+export interface ShareBackground {
+  image: CanvasImageSource & { width: number; height: number }
+  /** Deckkraft 0–1; die Hintergrundfarbe scheint entsprechend durch. */
+  opacity: number
+}
+
+/** Erlaubte Dateitypen fürs Hintergrundbild. */
+export const BACKGROUND_TYPES = ['image/png', 'image/jpeg', 'image/webp'] as const
+/** Höchstgröße der hochgeladenen Datei. */
+export const MAX_BACKGROUND_BYTES = 20 * 1024 ** 2
+/** Höchstzahl Pixel (Breite × Höhe), schützt vor riesigen Bildern im Speicher. */
+export const MAX_BACKGROUND_PIXELS = 50_000_000
+
+export type BackgroundErrorCode = 'type' | 'size' | 'decode'
+
+export class BackgroundImageError extends Error {
+  constructor(readonly code: BackgroundErrorCode) {
+    super(`Hintergrundbild: ${code}`)
+    this.name = 'BackgroundImageError'
+  }
+}
+
+/** Prüft Typ und Größe und dekodiert das Bild. Wirft `BackgroundImageError`. */
+export async function loadBackgroundImage(file: File): Promise<ImageBitmap> {
+  if (!(BACKGROUND_TYPES as readonly string[]).includes(file.type)) {
+    throw new BackgroundImageError('type')
+  }
+  if (file.size > MAX_BACKGROUND_BYTES) throw new BackgroundImageError('size')
+  let bitmap: ImageBitmap
+  try {
+    bitmap = await createImageBitmap(file)
+  } catch {
+    throw new BackgroundImageError('decode')
+  }
+  if (bitmap.width * bitmap.height > MAX_BACKGROUND_PIXELS) {
+    bitmap.close()
+    throw new BackgroundImageError('size')
+  }
+  return bitmap
+}
+
+/** Ausschnitt der Quelle, der die Fläche wie `object-fit: cover` füllt (mittig zugeschnitten). */
+export function coverCrop(
+  srcWidth: number,
+  srcHeight: number,
+  dstWidth: number,
+  dstHeight: number,
+): { sx: number; sy: number; sw: number; sh: number } {
+  const target = dstWidth / dstHeight
+  // Breiter als das Ziel: volle Höhe, Seiten weg; sonst volle Breite, oben/unten weg.
+  const wider = srcWidth / srcHeight > target
+  const sw = wider ? srcHeight * target : srcWidth
+  const sh = wider ? srcHeight : srcWidth / target
+  return { sx: (srcWidth - sw) / 2, sy: (srcHeight - sh) / 2, sw, sh }
+}
+
 /** Zeichnet das Bild in einen 2D-Kontext der Größe `SHARE_IMAGE_SIZES[format]`. */
 export function drawShareImage(
   ctx: CanvasRenderingContext2D,
@@ -279,6 +336,7 @@ export function drawShareImage(
   format: ShareImageFormat,
   theme: ThemeName,
   colors?: Partial<ShareColors>,
+  backgroundImage?: ShareBackground | null,
 ): void {
   const { width, height } = SHARE_IMAGE_SIZES[format]
   const g = GEOMETRY[format]
@@ -292,6 +350,16 @@ export function drawShareImage(
   background.addColorStop(1, c.bgEnd)
   ctx.fillStyle = background
   ctx.fillRect(0, 0, width, height)
+
+  const hasPhoto = Boolean(backgroundImage && backgroundImage.opacity > 0)
+  if (backgroundImage && hasPhoto) {
+    const { image } = backgroundImage
+    const { sx, sy, sw, sh } = coverCrop(image.width, image.height, width, height)
+    ctx.save()
+    ctx.globalAlpha = Math.min(1, backgroundImage.opacity)
+    ctx.drawImage(image, sx, sy, sw, sh, 0, 0, width, height)
+    ctx.restore()
+  }
 
   // Schallplatte als Akzent oben rechts, angeschnitten
   const discR = format === 'story' ? 300 : 220
@@ -321,6 +389,13 @@ export function drawShareImage(
   ctx.arc(discX, discY, discR * 0.05, 0, Math.PI * 2)
   ctx.fill()
   ctx.restore()
+
+  // Auf einem Foto hebt ein weicher Schatten den Text ab: dunkel hinter hellem Text, hell hinter dunklem.
+  if (hasPhoto) {
+    const lightText = contrastRatio(c.text, '#000000') > contrastRatio(c.text, '#ffffff')
+    ctx.shadowColor = lightText ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)'
+    ctx.shadowBlur = 18
+  }
 
   const left = g.pad
   const right = width - g.pad
@@ -420,6 +495,7 @@ export async function renderShareImage(
   theme: ThemeName,
   type: ShareImageType = 'image/png',
   colors?: Partial<ShareColors>,
+  backgroundImage?: ShareBackground | null,
 ): Promise<Blob> {
   const { width, height } = SHARE_IMAGE_SIZES[format]
   try {
@@ -432,7 +508,7 @@ export async function renderShareImage(
   canvas.height = height
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Canvas 2D nicht verfügbar')
-  drawShareImage(ctx, data, format, theme, colors)
+  drawShareImage(ctx, data, format, theme, colors, backgroundImage)
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error('Bild konnte nicht erzeugt werden'))),
