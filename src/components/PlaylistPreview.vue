@@ -295,9 +295,15 @@
   const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
 
   /**
-   * Teilt die Playlist im gewählten Format als Datei. Viele Systeme lassen nur
-   * bestimmte Dateitypen zu (M3U, PLS, XSPF … meist nicht); dann wird der Inhalt
-   * als Text geteilt.
+   * Endungen, die Chrome beim Teilen von Dateien zulässt. `canShare` meldet auf dem
+   * Desktop auch für andere Typen true, `share` lehnt sie dann mit NotAllowedError
+   * („Permission denied“) ab. Alle übrigen Formate werden deshalb als Text geteilt.
+   */
+  const FILE_SHARE_EXTENSIONS = new Set(['txt', 'csv'])
+
+  /**
+   * Teilt die Playlist: TXT, CSV und YouTube-Kapitel als Datei, alle anderen Formate
+   * als Text. Lehnt das System ab, landet der Inhalt in der Zwischenablage.
    */
   const handleShare = async () => {
     if (!hasContent.value) {
@@ -308,9 +314,9 @@
     const file = new File([props.playlistContent], fileName.value, {
       type: FORMAT_MIME[localFormat.value],
     })
-    let asFile = false
+    let asFile = FILE_SHARE_EXTENSIONS.has(fileExtensionOf(localFormat.value))
     try {
-      asFile = navigator.canShare?.({ files: [file] }) ?? false
+      asFile &&= navigator.canShare?.({ files: [file] }) ?? false
     } catch {
       asFile = false
     }
@@ -321,7 +327,12 @@
     } catch (err) {
       if ((err as Error | null)?.name === 'AbortError') return
       console.warn('Could not share playlist:', err)
-      toast.error(t.value('toast_share_error'))
+      try {
+        await navigator.clipboard.writeText(props.playlistContent)
+        toast.info(t.value('toast_share_copied'))
+      } catch {
+        toast.error(t.value('toast_share_error'))
+      }
     }
   }
 

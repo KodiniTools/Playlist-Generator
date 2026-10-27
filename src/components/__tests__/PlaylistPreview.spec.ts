@@ -118,38 +118,64 @@ describe('PlaylistPreview', () => {
       Reflect.deleteProperty(navigator, 'canShare')
     })
 
-    it('teilt die Playlist als Datei im gewählten Format', async () => {
-      const wrapper = mountPreview({ playlistName: 'Sommer Mix', outputFormat: 'xspf' })
+    it.each([
+      ['txt', 'Sommer Mix.txt', 'text/plain'],
+      ['csv', 'Sommer Mix.csv', 'text/csv'],
+      ['youtube', 'Sommer Mix.txt', 'text/plain'],
+    ] as const)('teilt %s als Datei', async (format, name, type) => {
+      const wrapper = mountPreview({ playlistName: 'Sommer Mix', outputFormat: format })
       await wrapper.get('[data-action="share"]').trigger('click')
       await flushPromises()
       const data = share.mock.calls[0]![0] as ShareData
       expect(data.title).toBe('Sommer Mix')
       const file = data.files![0]!
-      expect(file.name).toBe('Sommer Mix.xspf')
-      expect(file.type).toBe('application/xspf+xml')
+      expect([file.name, file.type]).toEqual([name, type])
       expect(await new Response(file).text()).toBe(content)
     })
 
-    it('teilt als Text, wenn das System den Dateityp nicht annimmt', async () => {
+    it.each(['m3u', 'm3u8', 'pls', 'cue', 'xspf', 'json'] as const)(
+      'teilt %s als Text, weil Chrome den Dateityp ablehnt',
+      async (format) => {
+        const wrapper = mountPreview({ outputFormat: format })
+        await wrapper.get('[data-action="share"]').trigger('click')
+        await flushPromises()
+        expect(share).toHaveBeenCalledWith({ title: 'playlist', text: content })
+        expect(canShare).not.toHaveBeenCalled()
+      },
+    )
+
+    it('teilt als Text, wenn das System auch TXT nicht annimmt', async () => {
       canShare.mockReturnValue(false)
-      const wrapper = mountPreview()
+      const wrapper = mountPreview({ outputFormat: 'txt' })
       await wrapper.get('[data-action="share"]').trigger('click')
       await flushPromises()
       expect(share).toHaveBeenCalledWith({ title: 'playlist', text: content })
     })
 
-    it('meldet Fehler, aber nicht den Abbruch durch den Nutzer', async () => {
+    it('kopiert bei Ablehnung in die Zwischenablage, schweigt beim Abbruch', async () => {
       vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const writeText = vi.fn().mockResolvedValue(undefined)
+      Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
       const wrapper = mountPreview()
       share.mockRejectedValueOnce(new DOMException('abgebrochen', 'AbortError'))
       await wrapper.get('[data-action="share"]').trigger('click')
       await flushPromises()
       expect(toasts.value).toEqual([])
+      expect(writeText).not.toHaveBeenCalled()
 
+      share.mockRejectedValueOnce(new DOMException('Permission denied', 'NotAllowedError'))
+      await wrapper.get('[data-action="share"]').trigger('click')
+      await flushPromises()
+      expect(writeText).toHaveBeenCalledWith(content)
+      expect(toasts.value.map((t) => [t.type, t.message])).toEqual([
+        ['info', 'Teilen hier nicht möglich – die Playlist liegt in der Zwischenablage.'],
+      ])
+
+      writeText.mockRejectedValueOnce(new Error('kein Fokus'))
       share.mockRejectedValueOnce(new Error('kaputt'))
       await wrapper.get('[data-action="share"]').trigger('click')
       await flushPromises()
-      expect(toasts.value.map((t) => t.message)).toEqual(['Teilen fehlgeschlagen'])
+      expect(toasts.value.at(-1)?.message).toBe('Teilen fehlgeschlagen')
     })
 
     it('ist ohne Inhalt gesperrt und fehlt ohne Web Share API', () => {
