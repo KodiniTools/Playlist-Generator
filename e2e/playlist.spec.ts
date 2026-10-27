@@ -482,3 +482,29 @@ test('entpackt ein ZIP-Archiv und übernimmt nur MP3, WAV und FLAC', async ({ pa
   // Echte Laufzeiten: die entpackten Daten sind abspielbar.
   await expect(rows.nth(1)).toContainText('0:03')
 })
+
+test('erzeugt ein Story-Bild der Playlist und lädt es herunter', async ({ page }) => {
+  await prepare(page, 'de')
+  await page.goto('./app')
+  await page
+    .locator('#fileInput')
+    .setInputFiles([
+      taggedAudioFile('a.wav', { title: 'Morgenlicht', artist: 'Die Band' }, 2),
+      audioFile('b.wav', 3),
+    ])
+  await page.getByRole('button', { name: 'Als Bild teilen' }).click()
+
+  const dialog = page.getByRole('dialog', { name: 'Als Bild teilen' })
+  const preview = dialog.getByRole('img', { name: 'Vorschau des Bildes' })
+  await expect(preview).toBeVisible()
+  await expect
+    .poll(() => preview.evaluate((img: HTMLImageElement) => [img.naturalWidth, img.naturalHeight]))
+    .toEqual([1080, 1920])
+
+  await dialog.getByRole('radio', { name: 'Post 1:1' }).click()
+  await expect.poll(() => preview.evaluate((img: HTMLImageElement) => img.naturalHeight)).toBe(1080)
+
+  const download = page.waitForEvent('download')
+  await dialog.getByRole('button', { name: 'Herunterladen' }).click()
+  expect((await download).suggestedFilename()).toBe('meine_wiedergabeliste-post.png')
+})
