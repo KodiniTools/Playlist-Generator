@@ -330,6 +330,15 @@ const de = {
   tool3_title: 'Audio-Konverter',
   tool3_desc:
     'Konvertieren Sie Ihre Audiodateien schnell und einfach zwischen Formaten wie MP3, WAV und FLAC direkt in Ihrem Browser – ohne Uploads.',
+  tool4_title: 'Wiedergabeliste-Konverter',
+  tool4_desc:
+    'Fügen Sie beliebig viele MP3- oder WAV-Dateien zu einer durchgehenden Audiodatei zusammen und exportieren Sie sie als MP3, OGG oder WebM.',
+  tool5_title: 'Audio-Cutter',
+  tool5_desc:
+    'Schneiden Sie Audiodateien millisekundengenau zu, mit Fade-In und Fade-Out, und exportieren Sie als MP3, WAV, OGG, AAC oder FLAC.',
+  tool6_title: 'Audio-Visualizer',
+  tool6_desc:
+    'Verwandeln Sie Ihre Musik in animierte Visualisierungen mit Text, Bild und eigenen Farben und exportieren Sie das Ergebnis als MP4-Video.',
   tool_button: 'Ausprobieren',
 
   // Landing Page – KodiniTools Section
@@ -677,6 +686,15 @@ const en: Record<TranslationKey, string> = {
   tool3_title: 'Audio Converter',
   tool3_desc:
     'Quickly and easily convert your audio files between formats like MP3, WAV, and FLAC directly in your browser—no uploads required.',
+  tool4_title: 'Playlist Converter',
+  tool4_desc:
+    'Merge any number of MP3 or WAV files into one continuous audio file and export it as MP3, OGG or WebM.',
+  tool5_title: 'Audio Cutter',
+  tool5_desc:
+    'Trim audio files with millisecond precision, add fade-in and fade-out, and export as MP3, WAV, OGG, AAC or FLAC.',
+  tool6_title: 'Audio Visualizer',
+  tool6_desc:
+    'Turn your music into animated visualizations with text, an image and your own colours, and export the result as an MP4 video.',
   tool_button: 'Try It Out',
 
   // Landing Page – KodiniTools Section
