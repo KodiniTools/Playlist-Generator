@@ -125,7 +125,7 @@ const de = {
     'Pfade beginnen beim gemeinsamen Ordner aller Titel. Speichern Sie die Wiedergabeliste in diesem Ordner.',
   placeholder_output:
     "Klicken Sie auf 'Wiedergabeliste erstellen', um hier eine Vorschau zu sehen...",
-  button_save: 'Speichern unter...',
+  button_save: 'Speichern',
   button_copy: 'Kopieren',
   button_share_image: 'Als Bild teilen',
   share_image_title: 'Als Bild teilen',

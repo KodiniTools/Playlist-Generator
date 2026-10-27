@@ -125,7 +125,7 @@ test.describe('Playlist erstellen', () => {
     await openWithFiles(page)
     await page.getByRole('textbox', { name: 'Wiedergabeliste benennen' }).fill('roadtrip')
 
-    await page.getByRole('button', { name: 'Speichern unter...' }).click()
+    await page.getByRole('button', { name: 'Speichern', exact: true }).click()
 
     await expect
       .poll(() => page.evaluate(() => (window as { __saved?: unknown }).__saved))
