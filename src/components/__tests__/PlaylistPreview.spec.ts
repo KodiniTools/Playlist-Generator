@@ -1,5 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import PlaylistPreview from '../PlaylistPreview.vue'
 import { useToast } from '../../composables/useToast'
 import { useTranslation } from '../../composables/useTranslation'
@@ -71,7 +71,7 @@ describe('PlaylistPreview', () => {
     const wrapper = mountPreview({ playlistContent: '' })
     expect(wrapper.find('.playlist-preview__lines').exists()).toBe(false)
     expect(wrapper.get('.ui-empty__title').text()).toBe('Noch keine Vorschau')
-    expect(wrapper.get('.ui-button--secondary').attributes('disabled')).toBeDefined()
+    expect(wrapper.get('[data-action="copy"]').attributes('disabled')).toBeDefined()
     expect(wrapper.get('.ui-button--primary').attributes('disabled')).toBeUndefined()
   })
 
@@ -80,14 +80,14 @@ describe('PlaylistPreview', () => {
     Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
 
     const wrapper = mountPreview()
-    await wrapper.get('.ui-button--secondary').trigger('click')
+    await wrapper.get('[data-action="copy"]').trigger('click')
     await flushPromises()
     expect(writeText).toHaveBeenCalledWith(content)
     expect(toasts.value.map((toast) => toast.type)).toEqual(['success'])
     expect(wrapper.emitted('copied')).toHaveLength(1)
 
     writeText.mockRejectedValueOnce(new Error('denied'))
-    await wrapper.get('.ui-button--secondary').trigger('click')
+    await wrapper.get('[data-action="copy"]').trigger('click')
     await flushPromises()
     expect(toasts.value.map((toast) => toast.type)).toEqual(['success', 'error'])
     expect(wrapper.emitted('copied')).toHaveLength(1)
@@ -96,9 +96,69 @@ describe('PlaylistPreview', () => {
   it('bietet Kopieren nur einmal an, in der Aktionsleiste', () => {
     const wrapper = mountPreview()
     expect(wrapper.find('.playlist-preview__code-header .ui-icon-button').exists()).toBe(false)
-    const copyButtons = wrapper.findAll('button').filter((button) => button.text() === 'Kopieren')
+    const copyButtons = wrapper.findAll('button[aria-label="Kopieren"]')
     expect(copyButtons).toHaveLength(1)
-    expect(copyButtons[0]?.classes()).toContain('ui-button--secondary')
+    expect(wrapper.find('.playlist-preview__actions [aria-label="Kopieren"]').exists()).toBe(true)
+    expect(copyButtons[0]?.attributes('title')).toMatch(/^Kopieren \(/)
+    expect(copyButtons[0]?.text()).toBe('')
+  })
+
+  describe('Teilen', () => {
+    const share = vi.fn()
+    const canShare = vi.fn()
+
+    beforeEach(() => {
+      share.mockReset().mockResolvedValue(undefined)
+      canShare.mockReset().mockReturnValue(true)
+      Object.assign(navigator, { share, canShare })
+    })
+
+    afterEach(() => {
+      Reflect.deleteProperty(navigator, 'share')
+      Reflect.deleteProperty(navigator, 'canShare')
+    })
+
+    it('teilt die Playlist als Datei im gewählten Format', async () => {
+      const wrapper = mountPreview({ playlistName: 'Sommer Mix', outputFormat: 'xspf' })
+      await wrapper.get('[data-action="share"]').trigger('click')
+      await flushPromises()
+      const data = share.mock.calls[0]![0] as ShareData
+      expect(data.title).toBe('Sommer Mix')
+      const file = data.files![0]!
+      expect(file.name).toBe('Sommer Mix.xspf')
+      expect(file.type).toBe('application/xspf+xml')
+      expect(await new Response(file).text()).toBe(content)
+    })
+
+    it('teilt als Text, wenn das System den Dateityp nicht annimmt', async () => {
+      canShare.mockReturnValue(false)
+      const wrapper = mountPreview()
+      await wrapper.get('[data-action="share"]').trigger('click')
+      await flushPromises()
+      expect(share).toHaveBeenCalledWith({ title: 'playlist', text: content })
+    })
+
+    it('meldet Fehler, aber nicht den Abbruch durch den Nutzer', async () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const wrapper = mountPreview()
+      share.mockRejectedValueOnce(new DOMException('abgebrochen', 'AbortError'))
+      await wrapper.get('[data-action="share"]').trigger('click')
+      await flushPromises()
+      expect(toasts.value).toEqual([])
+
+      share.mockRejectedValueOnce(new Error('kaputt'))
+      await wrapper.get('[data-action="share"]').trigger('click')
+      await flushPromises()
+      expect(toasts.value.map((t) => t.message)).toEqual(['Teilen fehlgeschlagen'])
+    })
+
+    it('ist ohne Inhalt gesperrt und fehlt ohne Web Share API', () => {
+      expect(
+        mountPreview({ playlistContent: '' }).get('[data-action="share"]').attributes('disabled'),
+      ).toBeDefined()
+      Reflect.deleteProperty(navigator, 'share')
+      expect(mountPreview().find('[data-action="share"]').exists()).toBe(false)
+    })
   })
 
   it('meldet Speichern an die AppPage', async () => {
