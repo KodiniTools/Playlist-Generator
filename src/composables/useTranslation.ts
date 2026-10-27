@@ -138,6 +138,11 @@ const de = {
   share_image_dark: 'Dunkel',
   share_image_light: 'Hell',
   share_image_type: 'Dateityp',
+  share_image_text_color: 'Textfarbe',
+  share_image_background_color: 'Hintergrund',
+  share_image_reset_colors: 'Farben zurücksetzen',
+  share_image_low_contrast:
+    'Geringer Kontrast zwischen Text und Hintergrund: Das Bild ist auf dem Handy schwer lesbar.',
   share_image_preview_alt: 'Vorschau des Bildes',
   share_image_rendering: 'Bild wird erzeugt…',
   share_image_download: 'Herunterladen',
@@ -516,6 +521,11 @@ const en: Record<TranslationKey, string> = {
   share_image_dark: 'Dark',
   share_image_light: 'Light',
   share_image_type: 'File type',
+  share_image_text_color: 'Text color',
+  share_image_background_color: 'Background',
+  share_image_reset_colors: 'Reset colors',
+  share_image_low_contrast:
+    'Low contrast between text and background: the image will be hard to read on a phone.',
   share_image_preview_alt: 'Image preview',
   share_image_rendering: 'Creating image…',
   share_image_download: 'Download',

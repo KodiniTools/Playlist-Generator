@@ -4,7 +4,7 @@ import ShareImageDialog from '../ShareImageDialog.vue'
 import { usePlaylist } from '../../composables/usePlaylist'
 import { useToast } from '../../composables/useToast'
 import { useTranslation } from '../../composables/useTranslation'
-import { renderShareImage } from '../../utils/shareImage'
+import { defaultShareColors, renderShareImage } from '../../utils/shareImage'
 
 vi.mock('../../utils/shareImage', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../utils/shareImage')>()),
@@ -87,5 +87,40 @@ describe('ShareImageDialog', () => {
     await flushPromises()
     expect(wrapper.find('img').exists()).toBe(false)
     expect(toasts.value.map((t) => t.type)).toEqual(['error'])
+  })
+
+  it('übernimmt eigene Text- und Hintergrundfarben und setzt sie zurück', async () => {
+    const wrapper = mountDialog()
+    await flushPromises()
+    expect(wrapper.get('[data-action="reset-colors"]').attributes('disabled')).toBeDefined()
+
+    await wrapper.get('[data-color="text"]').setValue('#222222')
+    await wrapper.get('[data-color="background"]').setValue('#ffcc00')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![4]).toEqual({ text: '#222222', background: '#ffcc00' })
+    expect(wrapper.find('.ui-callout').exists()).toBe(false)
+
+    await wrapper.get('[data-action="reset-colors"]').trigger('click')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![4]).toEqual(defaultShareColors('dark'))
+  })
+
+  it('warnt bei zu wenig Kontrast', async () => {
+    const wrapper = mountDialog()
+    await wrapper.get('[data-color="text"]').setValue('#777777')
+    await wrapper.get('[data-color="background"]').setValue('#888888')
+    expect(wrapper.get('.ui-callout').text()).toContain('Geringer Kontrast')
+  })
+
+  it('startet beim Wechsel des Farbschemas mit dessen Farben', async () => {
+    const wrapper = mountDialog()
+    await wrapper.get('[data-color="text"]').setValue('#123456')
+    const light = wrapper.findAll('[role="radio"]').find((r) => r.text() === 'Hell')!
+    await light.trigger('click')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![4]).toEqual(defaultShareColors('light'))
+    expect((wrapper.get('[data-color="text"]').element as HTMLInputElement).value).toBe(
+      defaultShareColors('light').text,
+    )
   })
 })
