@@ -21,7 +21,16 @@ import type { SharedFileRecord } from '../utils/sharedFileRepository'
 export type SortOption = 'alphabetical' | 'date' | 'artist' | 'random' | 'manual'
 export type { PathMode } from '../utils/trackPath'
 export type { FillMode } from '../utils/targetLength'
-export type OutputFormat = 'm3u' | 'm3u8' | 'pls' | 'txt' | 'cue' | 'csv' | 'json' | 'xspf'
+export type OutputFormat =
+  | 'm3u'
+  | 'm3u8'
+  | 'pls'
+  | 'txt'
+  | 'cue'
+  | 'csv'
+  | 'json'
+  | 'xspf'
+  | 'youtube'
 
 export interface OpenPlaylistResult {
   /** Einträge der Playlist, zu denen es eine Datei in der Liste gibt. */
@@ -429,6 +438,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
       csv: { ext: '.csv', mime: 'text/csv' },
       json: { ext: '.json', mime: 'application/json' },
       xspf: { ext: '.xspf', mime: 'application/xspf+xml' },
+      youtube: { ext: '.txt', mime: 'text/plain' },
     }
 
     const details = formatDetails[outputFormat.value]
@@ -438,7 +448,10 @@ export const usePlaylistStore = defineStore('playlist', () => {
       suggestedName: `${playlistName.value}${details.ext}`,
       types: [
         {
-          description: `${outputFormat.value.toUpperCase()} Playlist`,
+          description:
+            outputFormat.value === 'youtube'
+              ? 'YouTube chapters'
+              : `${outputFormat.value.toUpperCase()} Playlist`,
           accept: { [details.mime]: [details.ext] },
         },
       ],

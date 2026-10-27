@@ -56,6 +56,17 @@ describe('PlaylistPreview', () => {
     expect(wrapper.get<HTMLSelectElement>('#outputFormat').element.value).toBe('xspf')
   })
 
+  it('bietet YouTube-Kapitel als Textdatei ohne Pfad-Einstellungen an', async () => {
+    const wrapper = mountPreview({ playlistName: 'Mix' })
+    expect(wrapper.find('#outputFormat option[value="youtube"]').text()).toBe('YouTube-Kapitel')
+    await wrapper.get('#outputFormat').setValue('youtube')
+    expect(wrapper.emitted('update:outputFormat')).toEqual([['youtube']])
+    expect(wrapper.get('.playlist-preview__file-name').text()).toBe('Mix.txt')
+    expect(wrapper.get('.playlist-preview__format-desc').text()).toContain('YouTube')
+    expect(wrapper.text()).not.toContain('Pfade in der Wiedergabeliste')
+    expect(wrapper.find('.ui-callout').exists()).toBe(false)
+  })
+
   it('zeigt ohne Inhalt den Leerzustand und sperrt Kopieren', () => {
     const wrapper = mountPreview({ playlistContent: '' })
     expect(wrapper.find('.playlist-preview__lines').exists()).toBe(false)

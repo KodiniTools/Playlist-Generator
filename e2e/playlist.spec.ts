@@ -71,6 +71,17 @@ test.describe('Playlist erstellen', () => {
     expect(xspf).toContain('<duration>2000</duration>')
   })
 
+  test('schreibt YouTube-Kapitel mit Startzeiten aus den Laufzeiten', async ({ page }) => {
+    await openWithFiles(page)
+    await expect.poll(() => preview(page).allTextContents()).toContain('#EXTINF:3,a-song')
+
+    await page.getByRole('combobox', { name: 'Vorschau-Format' }).selectOption('youtube')
+    await expect
+      .poll(() => preview(page).allTextContents())
+      .toEqual(['00:00 a-song', '00:03 b-song', ''])
+    await expect(page.getByText('Pfade in der Wiedergabeliste')).toHaveCount(0)
+  })
+
   test('wechselt das Format und schreibt PLS und JSON', async ({ page }) => {
     await openWithFiles(page)
     const format = page.getByRole('combobox', { name: 'Vorschau-Format' })

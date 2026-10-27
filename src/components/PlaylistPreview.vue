@@ -16,7 +16,7 @@
         {{ t(`format_desc_${localFormat}`) }}
       </p>
 
-      <div class="tw:flex tw:flex-wrap tw:items-end tw:gap-4">
+      <div v-if="usesPaths" class="tw:flex tw:flex-wrap tw:items-end tw:gap-4">
         <div class="tw:flex tw:flex-col tw:gap-1">
           <span class="tw:text-sm tw:font-medium tw:text-text-2" aria-hidden="true">
             {{ t('label_path_mode') }}
@@ -167,6 +167,7 @@
   } from './ui'
   import type { SegmentedOption, SelectOption } from './ui'
   import type { OutputFormat, PathMode } from '../composables/usePlaylist'
+  import { fileExtensionOf } from '../utils/playlistFormats'
   import { useToast } from '../composables/useToast'
   import { useTranslation } from '../composables/useTranslation'
 
@@ -198,7 +199,7 @@
   const { t } = useTranslation()
   const toast = useToast()
 
-  const formats: SelectOption[] = [
+  const formats = computed<SelectOption[]>(() => [
     { value: 'm3u', label: 'M3U' },
     { value: 'm3u8', label: 'M3U8' },
     { value: 'pls', label: 'PLS' },
@@ -207,10 +208,11 @@
     { value: 'csv', label: 'CSV' },
     { value: 'xspf', label: 'XSPF' },
     { value: 'json', label: 'JSON' },
-  ]
+    { value: 'youtube', label: t.value('format_youtube') },
+  ])
 
   // Formate ohne Pfadbezug brauchen den Hinweis "im selben Ordner speichern" nicht.
-  const formatsWithoutPaths: OutputFormat[] = ['json', 'csv']
+  const formatsWithoutPaths: OutputFormat[] = ['json', 'csv', 'youtube']
 
   const localFormat = ref<OutputFormat>(props.outputFormat)
   const shareImageOpen = ref(false)
@@ -236,11 +238,16 @@
   ])
 
   // Mit Basis-Pfad/URL sind die Verweise absolut, ein Ablage-Hinweis entfällt.
+  // YouTube-Kapitel enthalten gar keine Verweise; Pfad-Modus und Basis entfallen.
+  const usesPaths = computed(() => localFormat.value !== 'youtube')
+
   const pathNotice = computed(() => {
     if (formatsWithoutPaths.includes(localFormat.value) || props.basePath.trim()) return null
     return props.pathMode === 'relative' ? 'notice_paths_relative' : 'notice_m3u'
   })
-  const fileName = computed(() => `${props.playlistName.trim() || 'playlist'}.${localFormat.value}`)
+  const fileName = computed(
+    () => `${props.playlistName.trim() || 'playlist'}.${fileExtensionOf(localFormat.value)}`,
+  )
 
   const isDirective = (line: string) => line.startsWith('#')
 
