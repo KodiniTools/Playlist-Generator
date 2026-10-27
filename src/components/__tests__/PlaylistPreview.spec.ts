@@ -95,4 +95,15 @@ describe('PlaylistPreview', () => {
     await wrapper.get('.ui-button--primary').trigger('click')
     expect(wrapper.emitted('save')).toHaveLength(1)
   })
+
+  it('öffnet den Bild-Dialog nur mit Inhalt', async () => {
+    const empty = mountPreview({ playlistContent: '' })
+    expect(empty.get('[data-action="share-image"]').attributes('disabled')).toBeDefined()
+
+    const wrapper = mountPreview()
+    const dialog = wrapper.findComponent({ name: 'ShareImageDialog' })
+    expect(dialog.props('open')).toBe(false)
+    await wrapper.get('[data-action="share-image"]').trigger('click')
+    expect(dialog.props('open')).toBe(true)
+  })
 })

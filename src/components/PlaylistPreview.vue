@@ -108,6 +108,28 @@
           </template>
           {{ t('button_copy') }}
         </UiButton>
+        <UiButton
+          variant="secondary"
+          :disabled="!hasContent"
+          data-action="share-image"
+          @click="shareImageOpen = true"
+        >
+          <template #icon>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+          </template>
+          {{ t('button_share_image') }}
+        </UiButton>
         <UiButton variant="primary" :title="t('shortcut_save')" @click="handleSave">
           <template #icon>
             <svg
@@ -127,11 +149,13 @@
         </UiButton>
       </div>
     </div>
+    <ShareImageDialog :open="shareImageOpen" @close="shareImageOpen = false" />
   </UiPanel>
 </template>
 
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
+  import ShareImageDialog from './ShareImageDialog.vue'
   import {
     UiButton,
     UiCallout,
@@ -189,6 +213,7 @@
   const formatsWithoutPaths: OutputFormat[] = ['json', 'csv']
 
   const localFormat = ref<OutputFormat>(props.outputFormat)
+  const shareImageOpen = ref(false)
 
   watch(
     () => props.outputFormat,
