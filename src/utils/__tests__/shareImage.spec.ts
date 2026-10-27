@@ -1,7 +1,11 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { themeColors } from '../../design-system/tokens'
 import {
+  BackgroundImageError,
+  MAX_BACKGROUND_BYTES,
   SHARE_IMAGE_ROWS,
+  coverCrop,
+  loadBackgroundImage,
   contrastRatio,
   defaultShareColors,
   mixColors,
@@ -217,5 +221,89 @@ describe('Farben', () => {
     drawShareImage(ctx, data(), 'post', 'dark', { text: '#ff0000', background: '#ffffff' })
     expect(texts.find((t) => t.text === 'Sommer Mix')?.fill).toBe('#ff0000')
     expect(texts.find((t) => t.text === 'Titel 1')?.fill).toBe('#ff0000')
+  })
+})
+
+describe('Hintergrundbild', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('schneidet mittig zu wie object-fit: cover', () => {
+    // 2:3 in Story 9:16: volle Höhe, Seiten werden abgeschnitten.
+    expect(coverCrop(1200, 1800, 1080, 1920)).toEqual({
+      sx: 93.75,
+      sy: 0,
+      sw: 1012.5,
+      sh: 1800,
+    })
+    expect(coverCrop(1000, 1000, 1080, 1080)).toEqual({ sx: 0, sy: 0, sw: 1000, sh: 1000 })
+    // Querformat im Post: volle Höhe, mittig.
+    expect(coverCrop(2000, 1000, 1080, 1080)).toEqual({ sx: 500, sy: 0, sw: 1000, sh: 1000 })
+  })
+
+  it('nimmt nur PNG, JPEG und WebP bis zur Höchstgröße an', async () => {
+    const bitmap = { width: 100, height: 100, close: vi.fn() }
+    vi.stubGlobal(
+      'createImageBitmap',
+      vi.fn(async () => bitmap),
+    )
+
+    await expect(
+      loadBackgroundImage(new File(['x'], 'a.webp', { type: 'image/webp' })),
+    ).resolves.toBe(bitmap)
+    await expect(
+      loadBackgroundImage(new File(['<svg/>'], 'a.svg', { type: 'image/svg+xml' })),
+    ).rejects.toMatchObject({ code: 'type' })
+    const big = new File(['x'], 'a.png', { type: 'image/png' })
+    Object.defineProperty(big, 'size', { value: MAX_BACKGROUND_BYTES + 1 })
+    await expect(loadBackgroundImage(big)).rejects.toMatchObject({ code: 'size' })
+  })
+
+  it('meldet unlesbare und zu große Bilder', async () => {
+    const huge = { width: 10_000, height: 10_000, close: vi.fn() }
+    vi.stubGlobal(
+      'createImageBitmap',
+      vi.fn().mockRejectedValueOnce(new Error('kaputt')).mockResolvedValueOnce(huge),
+    )
+    const file = () => new File(['x'], 'a.jpg', { type: 'image/jpeg' })
+    await expect(loadBackgroundImage(file())).rejects.toBeInstanceOf(BackgroundImageError)
+    await expect(loadBackgroundImage(file())).rejects.toMatchObject({ code: 'size' })
+    expect(huge.close).toHaveBeenCalled()
+  })
+
+  it('zeichnet das Bild mit Deckkraft über die Hintergrundfarbe', () => {
+    const { ctx, texts } = recordingContext()
+    const calls: { alpha: number; args: unknown[] }[] = []
+    let alpha = 1
+    const spy = new Proxy(ctx as unknown as Record<string, unknown>, {
+      get: (target, key: string) =>
+        key === 'drawImage'
+          ? (...args: unknown[]) => calls.push({ alpha, args })
+          : key === 'globalAlpha'
+            ? alpha
+            : target[key],
+      set: (target, key: string, value) => {
+        if (key === 'globalAlpha') alpha = value
+        else target[key] = value
+        return true
+      },
+    }) as unknown as CanvasRenderingContext2D
+    const image = { width: 2000, height: 1000 } as unknown as ImageBitmap
+    drawShareImage(spy, data(), 'post', 'dark', undefined, { image, opacity: 0.4 })
+
+    expect(spy.shadowBlur).toBe(18)
+    // Heller Text im dunklen Theme → dunkler Schatten.
+    expect(spy.shadowColor).toBe('rgba(0, 0, 0, 0.6)')
+    expect(calls).toHaveLength(1)
+    expect(calls[0]).toEqual({ alpha: 0.4, args: [image, 500, 0, 1000, 1000, 0, 0, 1080, 1080] })
+    expect(texts.length).toBeGreaterThan(0)
+  })
+
+  it('lässt das Bild bei Deckkraft 0 weg', () => {
+    const { ctx } = recordingContext()
+    const drawImage = vi.fn()
+    ;(ctx as unknown as Record<string, unknown>).drawImage = drawImage
+    const image = { width: 10, height: 10 } as unknown as ImageBitmap
+    drawShareImage(ctx, data(), 'post', 'dark', undefined, { image, opacity: 0 })
+    expect(drawImage).not.toHaveBeenCalled()
   })
 })

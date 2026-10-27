@@ -1,4 +1,4 @@
-import { crc32, deflateRawSync } from 'node:zlib'
+import { crc32, deflateRawSync, deflateSync } from 'node:zlib'
 import type { Page } from '@playwright/test'
 
 export type Locale = 'de' | 'en'
@@ -108,4 +108,35 @@ export function zipFile(name: string, entries: Record<string, Buffer | string>) 
   end.writeUInt32LE(directory.length, 12)
   end.writeUInt32LE(offset, 16)
   return { name, mimeType: 'application/zip', buffer: Buffer.concat([...locals, directory, end]) }
+}
+
+/** Einfarbiges PNG (RGB) der angegebenen Größe. */
+export function pngFile(
+  name: string,
+  width: number,
+  height: number,
+  rgb: [number, number, number],
+) {
+  const chunk = (type: string, data: Buffer) => {
+    const head = Buffer.alloc(8)
+    head.writeUInt32BE(data.length, 0)
+    head.write(type, 4)
+    const crc = Buffer.alloc(4)
+    crc.writeUInt32BE(crc32(Buffer.concat([Buffer.from(type), data])), 0)
+    return Buffer.concat([head, data, crc])
+  }
+  const ihdr = Buffer.alloc(13)
+  ihdr.writeUInt32BE(width, 0)
+  ihdr.writeUInt32BE(height, 4)
+  ihdr[8] = 8 // Bittiefe
+  ihdr[9] = 2 // RGB
+  const row = Buffer.concat([Buffer.from([0]), Buffer.from(Array(width).fill(rgb).flat())])
+  const raw = Buffer.concat(Array(height).fill(row))
+  const buffer = Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk('IHDR', ihdr),
+    chunk('IDAT', deflateSync(raw)),
+    chunk('IEND', Buffer.alloc(0)),
+  ])
+  return { name, mimeType: 'image/png', buffer }
 }
