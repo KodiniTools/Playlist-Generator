@@ -31,6 +31,10 @@ export type OutputFormat =
   | 'json'
   | 'xspf'
   | 'youtube'
+  | 'markdown'
+  | 'bbcode'
+
+const FORMATS_WITH_NAME: readonly OutputFormat[] = ['xspf', 'cue', 'markdown', 'bbcode']
 
 export interface OpenPlaylistResult {
   /** Einträge der Playlist, zu denen es eine Datei in der Liste gibt. */
@@ -439,6 +443,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
       json: { ext: '.json', mime: 'application/json' },
       xspf: { ext: '.xspf', mime: 'application/xspf+xml' },
       youtube: { ext: '.txt', mime: 'text/plain' },
+      markdown: { ext: '.md', mime: 'text/markdown' },
+      bbcode: { ext: '.txt', mime: 'text/plain' },
     }
 
     const details = formatDetails[outputFormat.value]
@@ -601,8 +607,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
   })
 
   watch(playlistName, () => {
-    // Only XSPF and CUE embed the playlist name in the output
-    if (files.value.length > 0 && (outputFormat.value === 'xspf' || outputFormat.value === 'cue')) {
+    // Only these formats embed the playlist name in the output
+    if (files.value.length > 0 && FORMATS_WITH_NAME.includes(outputFormat.value)) {
       generatePlaylist()
     }
   })

@@ -6,7 +6,7 @@ import {
   toXspfLocation,
   type PlaylistTrack,
 } from '../playlistFormats'
-import { estimateSeconds } from '../../components/ui/fileListFormat'
+import { estimateSeconds, formatClock } from '../../components/ui/fileListFormat'
 import type { AudioTags } from '../audioTags'
 
 const track = (
@@ -222,6 +222,40 @@ describe('YouTube-Kapitel', () => {
     expect(formatChapterTime(3723)).toBe('1:02:03')
     expect(fileExtensionOf('youtube')).toBe('txt')
     expect(fileExtensionOf('m3u8')).toBe('m3u8')
+  })
+})
+
+describe('Markdown und BBCode', () => {
+  const LIST_TIMED = [
+    track('intro.mp3', 184.4),
+    track('b.mp3', 3600, 10, 'b.mp3', { artist: '*NSYNC', title: 'Bye_Bye [Live]' }),
+  ]
+
+  it('Markdown: fetter Name mit Gesamtdauer, nummerierte Liste, Sonderzeichen maskiert', () => {
+    expect(formatPlaylist('markdown', LIST_TIMED, 'Sommer *Mix*')).toBe(
+      '**Sommer \\*Mix\\*** · 1:03:04\n\n1. intro `3:04`\n2. \\*NSYNC - Bye\\_Bye \\[Live\\] `1:00:00`\n',
+    )
+  })
+
+  it('BBCode: [list=1] mit kursiver Laufzeit', () => {
+    expect(formatPlaylist('bbcode', LIST_TIMED, 'Sommer Mix')).toBe(
+      '[b]Sommer Mix[/b] · 1:03:04\n[list=1]\n[*]intro [i](3:04)[/i]\n[*]*NSYNC - Bye_Bye [Live] [i](1:00:00)[/i]\n[/list]\n',
+    )
+  })
+
+  it('markiert geschätzte Dauern mit ≈ und lässt einen leeren Namen weg', () => {
+    const list = [track('a.mp3', null, 4_000_000), track('b.mp3', 10)]
+    const est = estimateSeconds('a.mp3', 4_000_000)
+    const md = formatPlaylist('markdown', list, '  ')
+    expect(md.split('\n')[0]).toBe(`≈ ${formatClock(est + 10)}`)
+    expect(md).toContain(`1. a \`≈ ${formatClock(est)}\``)
+    expect(md).toContain('2. b `0:10`')
+    expect(formatPlaylist('bbcode', list, '').startsWith('≈ ')).toBe(true)
+  })
+
+  it('nutzt .md bzw. .txt als Endung', () => {
+    expect(fileExtensionOf('markdown')).toBe('md')
+    expect(fileExtensionOf('bbcode')).toBe('txt')
   })
 })
 

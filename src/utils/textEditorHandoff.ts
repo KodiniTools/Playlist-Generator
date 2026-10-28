@@ -31,6 +31,8 @@ export const FORMAT_MIME: Readonly<Record<OutputFormat, string>> = {
   json: 'application/json',
   xspf: 'application/xspf+xml',
   youtube: 'text/plain',
+  markdown: 'text/markdown',
+  bbcode: 'text/plain',
 }
 
 /** Ziel-URL des Editors mit Quellkennung. */

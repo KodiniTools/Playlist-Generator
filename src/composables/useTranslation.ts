@@ -117,6 +117,8 @@ const de = {
   preview_title: 'Vorschau & Speichern',
   label_format: 'Vorschau-Format',
   format_youtube: 'YouTube-Kapitel',
+  format_markdown: 'Markdown (Discord, Reddit)',
+  format_bbcode: 'BBCode (Foren)',
   label_path_mode: 'Pfade in der Wiedergabeliste',
   path_mode_name: 'Dateiname',
   path_mode_relative: 'Relativer Pfad',
@@ -342,6 +344,10 @@ const de = {
   format_desc_json: 'Für Entwickler und Webanwendungen – nicht für normale Mediaplayer geeignet.',
   format_desc_youtube:
     'Kapitel mit Startzeiten zum Einfügen in die YouTube-Videobeschreibung eines Mixes (mind. 3 Titel, je mind. 10 Sekunden).',
+  format_desc_markdown:
+    'Nummerierte Liste mit Laufzeiten zum Einfügen in Discord, Reddit, GitHub und andere Markdown-Seiten.',
+  format_desc_bbcode:
+    'Nummerierte Liste mit Laufzeiten für Foren mit BBCode (phpBB, vBulletin, XenForo, Steam).',
 
   // Audio Player
   player_title: 'Vorschau-Player',
@@ -515,6 +521,8 @@ const en: Record<TranslationKey, string> = {
   preview_title: 'Preview & Save',
   label_format: 'Preview Format',
   format_youtube: 'YouTube chapters',
+  format_markdown: 'Markdown (Discord, Reddit)',
+  format_bbcode: 'BBCode (forums)',
   label_path_mode: 'Paths in the playlist',
   path_mode_name: 'File name',
   path_mode_relative: 'Relative path',
@@ -738,6 +746,10 @@ const en: Record<TranslationKey, string> = {
   format_desc_json: 'For developers and web apps – not suitable for regular media players.',
   format_desc_youtube:
     'Chapters with start times to paste into the YouTube description of a mix (at least 3 tracks, each at least 10 seconds).',
+  format_desc_markdown:
+    'Numbered list with durations to paste into Discord, Reddit, GitHub and other Markdown sites.',
+  format_desc_bbcode:
+    'Numbered list with durations for BBCode forums (phpBB, vBulletin, XenForo, Steam).',
 
   // Audio Player
   player_title: 'Preview Player',
