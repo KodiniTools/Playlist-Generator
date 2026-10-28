@@ -235,10 +235,12 @@
     { value: 'xspf', label: 'XSPF' },
     { value: 'json', label: 'JSON' },
     { value: 'youtube', label: t.value('format_youtube') },
+    { value: 'markdown', label: t.value('format_markdown') },
+    { value: 'bbcode', label: t.value('format_bbcode') },
   ])
 
   // Formate ohne Pfadbezug brauchen den Hinweis "im selben Ordner speichern" nicht.
-  const formatsWithoutPaths: OutputFormat[] = ['json', 'csv', 'youtube']
+  const formatsWithoutPaths: OutputFormat[] = ['json', 'csv', 'youtube', 'markdown', 'bbcode']
 
   const localFormat = ref<OutputFormat>(props.outputFormat)
   const shareImageOpen = ref(false)
@@ -264,8 +266,10 @@
   ])
 
   // Mit Basis-Pfad/URL sind die Verweise absolut, ein Ablage-Hinweis entfällt.
-  // YouTube-Kapitel enthalten gar keine Verweise; Pfad-Modus und Basis entfallen.
-  const usesPaths = computed(() => localFormat.value !== 'youtube')
+  // Formate zum Posten (YouTube, Markdown, BBCode) enthalten gar keine Verweise;
+  // Pfad-Modus und Basis entfallen.
+  const formatsForPosting: OutputFormat[] = ['youtube', 'markdown', 'bbcode']
+  const usesPaths = computed(() => !formatsForPosting.includes(localFormat.value))
 
   const pathNotice = computed(() => {
     if (formatsWithoutPaths.includes(localFormat.value) || props.basePath.trim()) return null

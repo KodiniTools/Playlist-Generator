@@ -82,6 +82,30 @@ test.describe('Playlist erstellen', () => {
     await expect(page.getByText('Pfade in der Wiedergabeliste')).toHaveCount(0)
   })
 
+  test('schreibt Markdown und BBCode mit Laufzeiten', async ({ page }) => {
+    await openWithFiles(page)
+    await page.getByRole('textbox', { name: 'Wiedergabeliste benennen' }).fill('roadtrip')
+    await expect.poll(() => preview(page).allTextContents()).toContain('#EXTINF:3,a-song')
+    const format = page.getByRole('combobox', { name: 'Vorschau-Format' })
+
+    await format.selectOption('markdown')
+    await expect
+      .poll(() => preview(page).allTextContents())
+      .toEqual(['**roadtrip** · 0:05', '', '1. a-song `0:03`', '2. b-song `0:02`', ''])
+
+    await format.selectOption('bbcode')
+    await expect
+      .poll(() => preview(page).allTextContents())
+      .toEqual([
+        '[b]roadtrip[/b] · 0:05',
+        '[list=1]',
+        '[*]a-song [i](0:03)[/i]',
+        '[*]b-song [i](0:02)[/i]',
+        '[/list]',
+        '',
+      ])
+  })
+
   test('wechselt das Format und schreibt PLS und JSON', async ({ page }) => {
     await openWithFiles(page)
     const format = page.getByRole('combobox', { name: 'Vorschau-Format' })

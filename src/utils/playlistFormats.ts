@@ -1,6 +1,6 @@
 import type { OutputFormat } from '../stores/playlist'
 import type { AudioTags } from './audioTags'
-import { estimateSeconds } from '../components/ui/fileListFormat'
+import { estimateSeconds, formatClock } from '../components/ui/fileListFormat'
 
 /**
  * Ein Eintrag der Playlist: Datei, Verweis für den Export (Dateiname, relativer Pfad
@@ -181,9 +181,12 @@ const generateXspf = (list: PlaylistTrack[], playlistName: string) => {
   </playlist>`
 }
 
-/** Dateiendung ohne Punkt; YouTube-Kapitel sind reiner Text. */
-export const fileExtensionOf = (format: OutputFormat): string =>
-  format === 'youtube' ? 'txt' : format
+/** Dateiendung ohne Punkt; YouTube-Kapitel und BBCode sind reiner Text. */
+export const fileExtensionOf = (format: OutputFormat): string => {
+  if (format === 'youtube' || format === 'bbcode') return 'txt'
+  if (format === 'markdown') return 'md'
+  return format
+}
 
 /** Kapitel-Zeitmarke für YouTube: „03:04“, ab einer Stunde „1:02:09“. */
 export function formatChapterTime(seconds: number): string {
@@ -210,6 +213,47 @@ const generateYoutubeChapters = (list: PlaylistTrack[]) => {
       })
       .join('\n') + '\n'
   )
+}
+
+/**
+ * Laufzeit je Titel und gesamt für Markdown/BBCode. Unbekannte Dauern werden aus der
+ * Dateigröße geschätzt und mit „≈“ markiert, wie die Gesamtdauer in der Dateiliste.
+ */
+const timedTracks = (list: PlaylistTrack[]) => {
+  let total = 0
+  let approximate = false
+  const tracks = list.map((track) => {
+    const estimated = track.duration === null
+    const seconds = track.duration ?? estimateSeconds(track.file.name, track.file.size)
+    total += seconds
+    if (estimated) approximate = true
+    return { title: displayTitleOf(track), time: `${estimated ? '≈ ' : ''}${formatClock(seconds)}` }
+  })
+  return { tracks, total: `${approximate ? '≈ ' : ''}${formatClock(total)}` }
+}
+
+/** Markdown-Sonderzeichen maskieren, damit Titel wie „*NSYNC“ nicht fett werden. */
+const escapeMarkdown = (text: string) => text.replace(/[\\`*_~|[\]<>#]/g, '\\$&')
+
+/**
+ * Markdown für Discord, Reddit & Co.: fetter Name mit Gesamtdauer, darunter eine
+ * nummerierte Liste mit Laufzeiten als Inline-Code.
+ */
+const generateMarkdown = (list: PlaylistTrack[], playlistName: string) => {
+  const { tracks, total } = timedTracks(list)
+  const lines = tracks.map((t, i) => `${i + 1}. ${escapeMarkdown(t.title)} \`${t.time}\``)
+  const name = playlistName.trim()
+  const head = name ? `**${escapeMarkdown(name)}** · ${total}` : total
+  return `${head}\n\n${lines.join('\n')}\n`
+}
+
+/** BBCode für Foren (phpBB, vBulletin, XenForo …): nummerierte [list=1]. */
+const generateBbcode = (list: PlaylistTrack[], playlistName: string) => {
+  const { tracks, total } = timedTracks(list)
+  const items = tracks.map((t) => `[*]${t.title} [i](${t.time})[/i]`)
+  const name = playlistName.trim()
+  const head = name ? `[b]${name}[/b] · ${total}` : total
+  return `${head}\n[list=1]\n${items.join('\n')}\n[/list]\n`
 }
 
 /** Erzeugt den Playlist-Text im gewünschten Format. Leere Liste → ''. */
@@ -241,6 +285,10 @@ export function formatPlaylist(
       return generateXspf(list, playlistName)
     case 'youtube':
       return generateYoutubeChapters(list)
+    case 'markdown':
+      return generateMarkdown(list, playlistName)
+    case 'bbcode':
+      return generateBbcode(list, playlistName)
     default: {
       const unsupported: never = format
       return `Unsupported format: ${String(unsupported)}`
