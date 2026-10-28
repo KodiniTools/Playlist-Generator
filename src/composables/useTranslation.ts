@@ -303,6 +303,10 @@ const de = {
   sharedFilesNormalizerLoaded: '{count} normalisierte Datei(en) erfolgreich importiert',
   sharedFilesNormalizerEmpty: 'Keine normalisierten Dateien gefunden',
 
+  // Shared Files (audio-cutter)
+  sharedFilesCutterLoading: '{count} geschnittene Datei(en) vom Audio-Schneider werden importiert…',
+  sharedFilesCutterEmpty: 'Keine Dateien vom Audio-Schneider gefunden',
+
   // Shortcuts
   shortcut_open: 'Dateien öffnen ({mod}+O)',
   shortcut_save: 'Speichern ({mod}+S)',
@@ -705,6 +709,10 @@ const en: Record<TranslationKey, string> = {
   sharedFilesNormalizerLoading: 'Importing {count} normalised file(s)…',
   sharedFilesNormalizerLoaded: '{count} normalised file(s) successfully imported',
   sharedFilesNormalizerEmpty: 'No normalised files found',
+
+  // Shared Files (audio-cutter)
+  sharedFilesCutterLoading: 'Importing {count} edited file(s) from Audio Cutter…',
+  sharedFilesCutterEmpty: 'No files found from Audio Cutter',
 
   // Shortcuts
   shortcut_open: 'Open files ({mod}+O)',
