@@ -135,6 +135,7 @@
   import { useTranslation, type TranslationKey } from '../composables/useTranslation'
   import { useUndoRedo } from '../composables/useUndoRedo'
   import { clearSharedFiles, getSharedFiles } from '../utils/sharedFileRepository'
+  import { isSharedSource } from '../utils/sharedSources'
   import { consumeLaunchedFiles } from '../utils/pwa'
   import { hasModifier } from '../utils/platform'
   import { FORMAT_MIME, openInTextEditor } from '../utils/textEditorHandoff'
@@ -191,8 +192,6 @@
   const sharedBanner = ref<SharedBanner | null>(null)
   let sharedFilesHandled = false
 
-  const SHARED_SOURCES = ['audiokonverter', 'audionormalizer']
-
   const calloutType = (type: BannerType): CalloutType => (type === 'error' ? 'danger' : type)
 
   const querySource = (): string | null => {
@@ -204,17 +203,29 @@
     if (sharedFilesHandled) return
     sharedFilesHandled = true
 
-    const isNormalizer = querySource() === 'audionormalizer'
+    const source = querySource()
+    const isNormalizer = source === 'audionormalizer'
+    const isCutter = source === 'audio-cutter'
+    const loadingKey = isNormalizer
+      ? 'sharedFilesNormalizerLoading'
+      : isCutter
+        ? 'sharedFilesCutterLoading'
+        : 'sharedFilesLoading'
+    const emptyKey = isNormalizer
+      ? 'sharedFilesNormalizerEmpty'
+      : isCutter
+        ? 'sharedFilesCutterEmpty'
+        : 'sharedFilesEmpty'
 
     try {
       let records = await getSharedFiles()
 
       // Leere IndexedDB beim ersten Lesen: einmal nach 1 s erneut versuchen, falls
       // der Absender seinen Schreibvorgang noch nicht abgeschlossen hatte.
-      if (isNormalizer && (!records || records.length === 0)) {
+      if ((isNormalizer || isCutter) && (!records || records.length === 0)) {
         sharedBanner.value = {
           type: 'info',
-          message: t.value('sharedFilesNormalizerLoading').replace('{count}', '...'),
+          message: t.value(loadingKey).replace('{count}', '...'),
         }
         await new Promise((resolve) => setTimeout(resolve, 1000))
         records = await getSharedFiles()
@@ -223,9 +234,7 @@
       if (!records?.length) {
         sharedBanner.value = {
           type: 'warning',
-          message: isNormalizer
-            ? t.value('sharedFilesNormalizerEmpty')
-            : t.value('sharedFilesEmpty'),
+          message: t.value(emptyKey),
         }
         setTimeout(() => {
           sharedBanner.value = null
@@ -235,10 +244,7 @@
 
       sharedBanner.value = {
         type: 'info',
-        message: (isNormalizer
-          ? t.value('sharedFilesNormalizerLoading')
-          : t.value('sharedFilesLoading')
-        ).replace('{count}', String(records.length)),
+        message: t.value(loadingKey).replace('{count}', String(records.length)),
       }
 
       let loaded = 0
@@ -277,9 +283,7 @@
       } else {
         sharedBanner.value = {
           type: 'warning',
-          message: isNormalizer
-            ? t.value('sharedFilesNormalizerEmpty')
-            : t.value('sharedFilesEmpty'),
+          message: t.value(emptyKey),
         }
       }
     } catch (err) {
@@ -291,9 +295,6 @@
       sharedBanner.value = null
     }, 5000)
   }
-
-  const isSharedSource = (source: string | null) =>
-    source !== null && SHARED_SOURCES.includes(source)
 
   void router.isReady().then(() => {
     if (isSharedSource(querySource())) void loadSharedFiles()

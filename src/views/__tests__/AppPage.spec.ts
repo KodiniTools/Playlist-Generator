@@ -91,6 +91,23 @@ describe('AppPage', () => {
     expect(callout.text()).toBe(useTranslation().t.value('sharedFilesEmpty'))
   })
 
+  it('meldet eine leere Übergabe vom Audio-Schneider nach einem zweiten Leseversuch', async () => {
+    vi.useFakeTimers()
+    try {
+      routeQuery.source = 'audio-cutter'
+      const wrapper = mountPage()
+      await flushPromises()
+      expect(wrapper.get('.ui-callout').classes()).toContain('ui-callout--info')
+      await vi.advanceTimersByTimeAsync(1000)
+      await flushPromises()
+      const callout = wrapper.get('.ui-callout')
+      expect(callout.classes()).toContain('ui-callout--warning')
+      expect(callout.text()).toBe(useTranslation().t.value('sharedFilesCutterEmpty'))
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('reserviert Platz für den Player, sobald Dateien vorhanden sind', async () => {
     files.value = [new File([new Uint8Array(4)], 'a.mp3')]
     const wrapper = mountPage()

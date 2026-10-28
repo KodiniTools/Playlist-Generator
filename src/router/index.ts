@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LandingPage from '../views/LandingPage.vue'
+import { isSharedSource } from '../utils/sharedSources'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,10 +35,8 @@ const router = createRouter({
   },
 })
 
-const SHARED_SOURCES = ['audiokonverter', 'audionormalizer']
-
 router.beforeEach((to, from, next) => {
-  if (to.name === 'landing' && SHARED_SOURCES.includes(to.query.source as string)) {
+  if (to.name === 'landing' && isSharedSource(to.query.source)) {
     next({ name: 'app', query: { source: to.query.source } })
   } else {
     next()
