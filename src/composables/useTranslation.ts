@@ -889,10 +889,10 @@ const storedLang =
   localStorage.getItem('playlist-generator-locale') ||
   localStorage.getItem('language')
 // `?lang=` (Links aus Sitemap/hreflang) hat Vorrang vor der gespeicherten Sprache.
+// Ohne beides gilt Deutsch: die URL ohne Parameter ist die deutsche Fassung
+// (hreflang de/x-default), auch für Crawler mit englischer Browsersprache.
 const currentLanguage = ref<string>(
-  languageFromSearch(location.search) ||
-    storedLang ||
-    (navigator.language.startsWith('de') ? 'de' : 'en'),
+  languageFromSearch(location.search) || LANGUAGES.find((l) => l === storedLang) || 'de',
 )
 
 // Ensure both keys are in sync on initialization

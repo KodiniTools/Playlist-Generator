@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { defineComponent, nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { applyPageMeta, canonicalUrl, usePageMeta } from '../usePageMeta'
+import { alternateUrls, applyPageMeta, canonicalUrl, usePageMeta } from '../usePageMeta'
 import { languageFromSearch, useTranslation } from '../useTranslation'
 
 const description = () =>
@@ -39,6 +39,18 @@ describe('canonicalUrl', () => {
   it('hängt die Sprache nur an, wenn sie Teil der URL ist', () => {
     expect(canonicalUrl('/faq', null)).toBe('https://kodinitools.com/playlist_generator/faq')
     expect(canonicalUrl('/', 'en')).toBe('https://kodinitools.com/playlist_generator/?lang=en')
+    // Deutsch ist die URL ohne Parameter (keine Dublette ?lang=de)
+    expect(canonicalUrl('/', 'de')).toBe('https://kodinitools.com/playlist_generator/')
+  })
+})
+
+describe('alternateUrls', () => {
+  it('nennt de, en (?lang=en) und x-default', () => {
+    expect(alternateUrls('/faq')).toEqual([
+      { hreflang: 'de', href: 'https://kodinitools.com/playlist_generator/faq' },
+      { hreflang: 'en', href: 'https://kodinitools.com/playlist_generator/faq?lang=en' },
+      { hreflang: 'x-default', href: 'https://kodinitools.com/playlist_generator/faq' },
+    ])
   })
 })
 
@@ -83,7 +95,8 @@ describe('usePageMeta', () => {
 
   it('hält ?lang= in der URL beim Sprachwechsel aktuell und nimmt es ins canonical', async () => {
     const { router, wrapper } = await mountAt('/?lang=de')
-    expect(canonical()).toBe('https://kodinitools.com/playlist_generator/?lang=de')
+    expect(canonical()).toBe('https://kodinitools.com/playlist_generator/')
+    expect(document.head.querySelectorAll('link[rel="alternate"][hreflang]')).toHaveLength(3)
 
     useTranslation().setLanguage('en')
     await nextTick()

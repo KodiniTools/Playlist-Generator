@@ -19,11 +19,20 @@ const PAGES: Record<string, PageMeta> = {
 }
 
 /**
- * Kanonische URL einer Seite. Mit `?lang=` bleibt die Sprache Teil der URL,
+ * Kanonische URL einer Seite: Deutsch ohne Parameter, Englisch mit `?lang=en`,
  * damit die hreflang-Alternativen aus der Sitemap auf sich selbst verweisen.
  */
 export function canonicalUrl(path: string, lang: Language | null): string {
-  return `${SITE_URL}${path}${lang ? `?lang=${lang}` : ''}`
+  return `${SITE_URL}${path}${lang === 'en' ? '?lang=en' : ''}`
+}
+
+/** hreflang-Ziele einer Seite (de, en, x-default = de). */
+export function alternateUrls(path: string): { hreflang: string; href: string }[] {
+  return [
+    { hreflang: 'de', href: canonicalUrl(path, 'de') },
+    { hreflang: 'en', href: canonicalUrl(path, 'en') },
+    { hreflang: 'x-default', href: canonicalUrl(path, 'de') },
+  ]
 }
 
 /** Setzt `content`/`href` eines Head-Elements und legt es bei Bedarf an. */
@@ -36,7 +45,12 @@ function upsertHead(selector: string, create: () => HTMLElement, attr: string, v
   el.setAttribute(attr, value)
 }
 
-export function applyPageMeta(title: string, description: string, canonical: string): void {
+export function applyPageMeta(
+  title: string,
+  description: string,
+  canonical: string,
+  alternates: { hreflang: string; href: string }[] = [],
+): void {
   document.title = title
   upsertHead(
     'meta[name="description"]',
@@ -50,6 +64,14 @@ export function applyPageMeta(title: string, description: string, canonical: str
     'href',
     canonical,
   )
+  for (const { hreflang, href } of alternates) {
+    upsertHead(
+      `link[rel="alternate"][hreflang="${hreflang}"]`,
+      () => Object.assign(document.createElement('link'), { rel: 'alternate', hreflang }),
+      'href',
+      href,
+    )
+  }
 }
 
 const queryLang = (route: RouteLocationNormalizedLoaded) =>
@@ -80,6 +102,7 @@ export function usePageMeta(): void {
         t.value(page.title),
         t.value(page.description),
         canonicalUrl(page.path, inUrl === null ? null : lang),
+        alternateUrls(page.path),
       )
     },
     { immediate: true },
