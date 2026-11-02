@@ -69,18 +69,17 @@
         </UiButton>
         <template v-if="photo">
           <span class="share-image__photo-name" :title="photoName">{{ photoName }}</span>
-          <label class="share-image__opacity">
-            <span>{{ t('share_image_photo_opacity') }}</span>
-            <input
-              v-model.number="photoOpacity"
-              type="range"
-              min="0"
-              max="100"
-              step="5"
+          <div class="share-image__opacity">
+            <label>{{ t('share_image_photo_opacity') }} (%)</label>
+            <SliderField
+              v-model="photoOpacity"
+              :min="0"
+              :max="100"
+              :step="5"
+              :default-value="DEFAULT_PHOTO_OPACITY"
               data-input="background-opacity"
             />
-            <output>{{ photoOpacity }} %</output>
-          </label>
+          </div>
           <UiButton
             size="sm"
             variant="ghost"
@@ -126,7 +125,7 @@
 
 <script setup lang="ts">
   import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
-  import { UiButton, UiCallout, UiDialog, UiSegmentedControl } from './ui'
+  import { SliderField, UiButton, UiCallout, UiDialog, UiSegmentedControl } from './ui'
   import type { SegmentedOption } from './ui'
   import { usePlaylist } from '../composables/usePlaylist'
   import { useDurations } from '../composables/useDurations'
@@ -199,7 +198,8 @@
   const photoInput = ref<HTMLInputElement | null>(null)
   const photo = shallowRef<ImageBitmap | null>(null)
   const photoName = ref('')
-  const photoOpacity = ref(60)
+  const DEFAULT_PHOTO_OPACITY = 60
+  const photoOpacity = ref(DEFAULT_PHOTO_OPACITY)
   const background = computed<ShareBackground | null>(() =>
     photo.value ? { image: photo.value, opacity: photoOpacity.value / 100 } : null,
   )
@@ -409,16 +409,17 @@
     display: inline-flex;
     align-items: center;
     gap: var(--ds-space-2);
+    max-width: 100%;
   }
 
-  .share-image__opacity input {
-    width: 8rem;
-    accent-color: var(--ds-accent);
+  .share-image__opacity label {
+    white-space: nowrap;
   }
 
-  .share-image__opacity output {
-    min-width: 3.5em;
-    font-variant-numeric: tabular-nums;
+  .share-image__opacity .slider-field {
+    width: 16rem;
+    min-width: 0;
+    flex: 0 1 auto;
   }
 
   .share-image__hint {

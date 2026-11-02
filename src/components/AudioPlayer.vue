@@ -560,17 +560,9 @@
     gap: var(--ds-space-1);
   }
 
+  /* Spur und Daumen kommen aus ui/range.css (zweiter Style-Block unten). */
   .player__volume-slider {
     width: 80px;
-    height: 4px;
-    accent-color: var(--ds-accent);
-    cursor: pointer;
-  }
-
-  .player__volume-slider:focus-visible {
-    outline: none;
-    box-shadow: var(--ds-focus-ring);
-    border-radius: var(--ds-radius-full);
   }
 
   .player__sr-only {
@@ -720,3 +712,5 @@
     }
   }
 </style>
+
+<style scoped src="./ui/range.css"></style>
