@@ -153,7 +153,15 @@ describe('ShareImageDialog', () => {
     await wrapper.get('[data-input="background-opacity"]').setValue('25')
     await flushPromises()
     expect(render.mock.calls.at(-1)![5]).toEqual({ image: bitmap, opacity: 0.25 })
-    expect(wrapper.text()).toContain('25 %')
+    const opacityNumber = wrapper.get<HTMLInputElement>(
+      '.share-image__opacity input[type="number"]',
+    )
+    expect(opacityNumber.element.value).toBe('25')
+
+    await wrapper.get('.share-image__opacity .slider-field__reset').trigger('click')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![5]).toEqual({ image: bitmap, opacity: 0.6 })
+    expect(opacityNumber.element.value).toBe('60')
 
     await wrapper.get('[data-action="remove-background"]').trigger('click')
     await flushPromises()
