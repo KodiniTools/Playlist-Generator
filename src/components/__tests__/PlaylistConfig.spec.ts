@@ -80,7 +80,9 @@ describe('PlaylistConfig', () => {
     await wrapper.get('#playlistName').setValue('Sommer Mix 2026')
     expect(wrapper.emitted('update:playlistName')).toEqual([['Sommer Mix 2026']])
 
-    await wrapper.get('.playlist-config__replace input').setValue(true)
+    const replaceSwitch = wrapper.get('.playlist-config__replace [role="switch"]')
+    expect(replaceSwitch.attributes('aria-checked')).toBe('false')
+    await replaceSwitch.trigger('click')
     expect(wrapper.emitted('update:replaceMode')).toEqual([[true]])
   })
 
