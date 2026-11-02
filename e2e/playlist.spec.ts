@@ -603,8 +603,19 @@ test('zeichnet das Bild in selbst gewählten Text- und Hintergrundfarben', async
   const dialog = page.getByRole('dialog', { name: 'Als Bild teilen' })
   const preview = dialog.getByRole('img', { name: 'Vorschau des Bildes' })
   await expect(preview).toBeVisible()
-  await dialog.getByLabel('Hintergrund').fill('#ff6600')
-  await dialog.getByLabel('Textfarbe').fill('#101010')
+  // Farbfelder sind ColorFields: Swatch öffnet ein Panel (role=dialog) mit Hex-Eingabe.
+  const pickColor = async (label: string, hex: string) => {
+    await dialog.getByLabel(label).click()
+    const panel = page.getByRole('dialog', { name: label, exact: true })
+    const hexInput = panel.getByRole('textbox')
+    await hexInput.fill(hex)
+    await hexInput.press('Enter')
+    await hexInput.press('Escape')
+    await expect(panel).toHaveCount(0)
+    await expect(dialog).toBeVisible()
+  }
+  await pickColor('Hintergrund', '#ff6600')
+  await pickColor('Textfarbe', '#101010')
 
   // Pixel oben links = Hintergrundfarbe (Start des Verlaufs).
   const corner = () =>
