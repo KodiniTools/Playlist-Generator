@@ -27,6 +27,25 @@ async function pickFile(wrapper: ReturnType<typeof mountDialog>, file: File) {
   await input.trigger('change')
   await flushPromises()
 }
+/** Wählt eine Farbe über den ColorField: Panel öffnen, Hex eintragen, Feld verlassen. */
+async function pickColor(
+  wrapper: ReturnType<typeof mountDialog>,
+  which: 'text' | 'background',
+  hex: string,
+) {
+  const swatch = wrapper.get(`[data-color="${which}"]`)
+  await swatch.trigger('click')
+  const field = wrapper.get(`.color-field:has([data-color="${which}"]) .color-field__hex`)
+  await field.trigger('focus')
+  await field.setValue(hex)
+  await field.trigger('blur')
+  await swatch.trigger('click')
+}
+
+/** Aktuelle Farbe eines ColorField (der Swatch zeigt sie als title). */
+const colorOf = (wrapper: ReturnType<typeof mountDialog>, which: 'text' | 'background') =>
+  wrapper.get(`[data-color="${which}"]`).attributes('title')
+
 const { files, playlistName, excludedFiles } = usePlaylist()
 const { toasts } = useToast()
 
@@ -109,8 +128,8 @@ describe('ShareImageDialog', () => {
     await flushPromises()
     expect(wrapper.get('[data-action="reset-colors"]').attributes('disabled')).toBeDefined()
 
-    await wrapper.get('[data-color="text"]').setValue('#222222')
-    await wrapper.get('[data-color="background"]').setValue('#ffcc00')
+    await pickColor(wrapper, 'text', '#222222')
+    await pickColor(wrapper, 'background', '#ffcc00')
     await flushPromises()
     expect(render.mock.calls.at(-1)![4]).toEqual({ text: '#222222', background: '#ffcc00' })
     expect(wrapper.find('.ui-callout').exists()).toBe(false)
@@ -122,21 +141,19 @@ describe('ShareImageDialog', () => {
 
   it('warnt bei zu wenig Kontrast', async () => {
     const wrapper = mountDialog()
-    await wrapper.get('[data-color="text"]').setValue('#777777')
-    await wrapper.get('[data-color="background"]').setValue('#888888')
+    await pickColor(wrapper, 'text', '#777777')
+    await pickColor(wrapper, 'background', '#888888')
     expect(wrapper.get('.ui-callout').text()).toContain('Geringer Kontrast')
   })
 
   it('startet beim Wechsel des Farbschemas mit dessen Farben', async () => {
     const wrapper = mountDialog()
-    await wrapper.get('[data-color="text"]').setValue('#123456')
+    await pickColor(wrapper, 'text', '#123456')
     const light = wrapper.findAll('[role="radio"]').find((r) => r.text() === 'Hell')!
     await light.trigger('click')
     await flushPromises()
     expect(render.mock.calls.at(-1)![4]).toEqual(defaultShareColors('light'))
-    expect((wrapper.get('[data-color="text"]').element as HTMLInputElement).value).toBe(
-      defaultShareColors('light').text,
-    )
+    expect(colorOf(wrapper, 'text')).toBe(defaultShareColors('light').text)
   })
 
   it('legt ein Hintergrundbild mit einstellbarer Deckkraft unter den Text', async () => {
@@ -188,8 +205,8 @@ describe('ShareImageDialog', () => {
       close: vi.fn(),
     } as unknown as ImageBitmap)
     const wrapper = mountDialog()
-    await wrapper.get('[data-color="text"]').setValue('#777777')
-    await wrapper.get('[data-color="background"]').setValue('#888888')
+    await pickColor(wrapper, 'text', '#777777')
+    await pickColor(wrapper, 'background', '#888888')
     expect(wrapper.find('.ui-callout').exists()).toBe(true)
     await pickFile(wrapper, new File(['x'], 'foto.png', { type: 'image/png' }))
     expect(wrapper.find('.ui-callout').exists()).toBe(false)

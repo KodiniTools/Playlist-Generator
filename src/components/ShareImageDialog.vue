@@ -29,19 +29,26 @@
       </div>
 
       <div class="share-image__colors">
-        <label class="share-image__color">
-          <input v-model="textColor" type="color" class="share-image__swatch" data-color="text" />
-          <span>{{ t('share_image_text_color') }}</span>
-        </label>
-        <label class="share-image__color">
-          <input
+        <div class="share-image__color">
+          <ColorField
+            id="share-image-text-color"
+            v-model="textColor"
+            class="share-image__swatch"
+            data-color="text"
+            :label="t('share_image_text_color')"
+          />
+          <label for="share-image-text-color">{{ t('share_image_text_color') }}</label>
+        </div>
+        <div class="share-image__color">
+          <ColorField
+            id="share-image-background-color"
             v-model="backgroundColor"
-            type="color"
             class="share-image__swatch"
             data-color="background"
+            :label="t('share_image_background_color')"
           />
-          <span>{{ t('share_image_background_color') }}</span>
-        </label>
+          <label for="share-image-background-color">{{ t('share_image_background_color') }}</label>
+        </div>
         <UiButton
           size="sm"
           variant="ghost"
@@ -125,7 +132,7 @@
 
 <script setup lang="ts">
   import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
-  import { SliderField, UiButton, UiCallout, UiDialog, UiSegmentedControl } from './ui'
+  import { ColorField, SliderField, UiButton, UiCallout, UiDialog, UiSegmentedControl } from './ui'
   import type { SegmentedOption } from './ui'
   import { usePlaylist } from '../composables/usePlaylist'
   import { useDurations } from '../composables/useDurations'
@@ -375,13 +382,14 @@
     cursor: pointer;
   }
 
+  /* Größe und Radius des ColorField (Wurzel trägt die Klasse, der Swatch erbt den Radius). */
   .share-image__swatch {
     width: 2.25rem;
     height: 2.25rem;
-    padding: 2px;
-    border: 1px solid var(--ds-border);
     border-radius: var(--ds-radius-sm);
-    background: var(--ds-surface-1);
+  }
+
+  .share-image__color label {
     cursor: pointer;
   }
 
