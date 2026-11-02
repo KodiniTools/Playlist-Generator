@@ -15,7 +15,7 @@ const SKIP = ['design-system', '__tests__']
 /** Bewusste Ausnahmen, je mit Begründung. Format: `datei: fund` wie in den Treffern. */
 const ALLOWED_FONT_SIZES = new Set([
   // Ziffer „1“ als Badge in der Ecke des Wiederholen-Icons; 12 px (kleinstes Token) wäre größer als das Icon.
-  'components/AudioPlayer.vue: font-size: 9px',
+  'components/player/PlayerTransport.vue: font-size: 9px',
 ])
 
 function collect(dir: string, out: string[] = []): string[] {
