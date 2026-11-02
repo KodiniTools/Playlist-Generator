@@ -30,6 +30,21 @@
         <line x1="9" y1="9" x2="15" y2="15" />
       </svg>
       <svg
+        v-else-if="type === 'warning'"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+        />
+        <line x1="12" y1="9" x2="12" y2="13" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </svg>
+      <svg
         v-else
         viewBox="0 0 24 24"
         fill="none"
@@ -47,7 +62,7 @@
     <UiButton v-if="actionLabel" size="sm" variant="secondary" @click="emit('action')">
       {{ actionLabel }}
     </UiButton>
-    <UiIconButton :label="dismissLabel" size="sm" @click="emit('dismiss')">
+    <UiIconButton :label="resolvedDismissLabel" size="sm" @click="emit('dismiss')">
       <svg
         viewBox="0 0 24 24"
         fill="none"
@@ -63,6 +78,8 @@
 </template>
 
 <script setup lang="ts">
+  import { computed } from 'vue'
+  import { useTranslation } from '@/composables/useTranslation'
   import UiButton from './UiButton.vue'
   import UiIconButton from './UiIconButton.vue'
   import type { ToastType } from './types'
@@ -72,6 +89,7 @@
    * optionale Aktion. Fehler sind role=alert, alles andere role=status.
    * `dismissOnClick` schließt zusätzlich bei Klick auf die Fläche; der
    * Schließen-Button bleibt der Weg für Tastatur und Screenreader.
+   * Ohne `dismissLabel` gilt die Übersetzung `toast_close`.
    */
   const props = withDefaults(
     defineProps<{
@@ -81,13 +99,16 @@
       dismissLabel?: string
       dismissOnClick?: boolean
     }>(),
-    { type: 'info', dismissLabel: 'Schließen', dismissOnClick: false },
+    { type: 'info', dismissLabel: undefined, dismissOnClick: false },
   )
 
   const emit = defineEmits<{
     action: []
     dismiss: []
   }>()
+
+  const { t } = useTranslation()
+  const resolvedDismissLabel = computed(() => props.dismissLabel ?? t.value('toast_close'))
 
   function onRootClick(event: MouseEvent) {
     if (!props.dismissOnClick) return
@@ -141,6 +162,14 @@
 
   .ui-toast--success .ui-toast__icon {
     color: var(--ds-success);
+  }
+
+  .ui-toast--warning {
+    border-left-color: var(--ds-warning);
+  }
+
+  .ui-toast--warning .ui-toast__icon {
+    color: var(--ds-warning);
   }
 
   .ui-toast--error {

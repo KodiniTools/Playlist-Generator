@@ -12,14 +12,15 @@ Es gibt zwei Sets, die parallel geladen werden:
 
 ## Dateien
 
-| Datei                            | Zweck                                                                                    |
-| -------------------------------- | ---------------------------------------------------------------------------------------- |
-| `tokens.css` / `tokens-v2.css`   | **Laufzeit-Quellen.** CSS Custom Properties, Dark auf `:root`, Light auf `.light-theme`. |
-| `tokens.json` / `tokens-v2.json` | Maschinenlesbare Fassung (W3C-Design-Tokens-nah), `$extensions.css` nennt die Variable.  |
-| `tokens.ts` / `tokens-v2.ts`     | Typisierter Zugriff für JS/TS.                                                           |
-| `__tests__/tokens.spec.ts`       | Konsistenz v1: JSON ↔ CSS ↔ `main.css`, `var()`-Nutzung in Komponenten.                  |
-| `__tests__/tokens-v2.spec.ts`    | Konsistenz v2 plus Namespace-Schutz und Kontrast-Audit (WCAG AA).                        |
-| `__tests__/tokenTestUtils.ts`    | Gemeinsame Helfer: CSS-Block-Parser, Token-Walker, Kontrastberechnung.                   |
+| Datei                            | Zweck                                                                                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `tokens.css` / `tokens-v2.css`   | **Laufzeit-Quellen.** CSS Custom Properties, Dark auf `:root`, Light auf `.light-theme`.                                                   |
+| `tokens.json` / `tokens-v2.json` | Maschinenlesbare Fassung (W3C-Design-Tokens-nah), `$extensions.css` nennt die Variable.                                                    |
+| `tokens.ts` / `tokens-v2.ts`     | Typisierter Zugriff für JS/TS.                                                                                                             |
+| `__tests__/tokens.spec.ts`       | Konsistenz v1: JSON ↔ CSS ↔ `main.css`, `var()`-Nutzung in Komponenten.                                                                    |
+| `__tests__/tokens-v2.spec.ts`    | Konsistenz v2 plus Namespace-Schutz und Kontrast-Audit (WCAG AA).                                                                          |
+| `__tests__/designTokens.spec.ts` | Alle Styles in `src/`: keine Farb-/Schrift-/Radius-Literale, Schatten nur Fokus-Ring/Overlay, nur definierte `--ds-*`, keine Token-Zyklen. |
+| `__tests__/tokenTestUtils.ts`    | Gemeinsame Helfer: CSS-Block-Parser, Token-Walker, Kontrastberechnung.                                                                     |
 
 `main.css` bindet beide CSS-Dateien per `@import` ein, definiert selbst keine Variablen und enthält
 nur noch globale Basis-Regeln (Reset, Body, SSI-Footer, Bewegung, Druck) auf `--ds-*`.

@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
+import { useTranslation } from '@/composables/useTranslation'
 import UiToast from '../UiToast.vue'
 
 describe('UiToast', () => {
@@ -43,5 +44,30 @@ describe('UiToast', () => {
     await wrapper.get('.ui-icon-button').trigger('click')
     expect(wrapper.emitted('action')).toHaveLength(1)
     expect(wrapper.emitted('dismiss')).toHaveLength(1)
+  })
+
+  it('kennt den Typ warning mit eigener Klasse und role=status', () => {
+    const wrapper = mount(UiToast, { props: { message: 'Achtung', type: 'warning' } })
+    expect(wrapper.attributes('role')).toBe('status')
+    expect(wrapper.classes()).toContain('ui-toast--warning')
+    expect(wrapper.find('.ui-toast__icon svg path').exists()).toBe(true)
+  })
+
+  describe('Schließen-Label', () => {
+    const { setLanguage } = useTranslation()
+    afterEach(() => setLanguage('de'))
+
+    it('fällt ohne dismissLabel auf die Übersetzung der aktuellen Sprache zurück', async () => {
+      const wrapper = mount(UiToast, { props: { message: 'Hinweis' } })
+      expect(wrapper.get('.ui-icon-button').attributes('aria-label')).toBe('Schließen')
+      setLanguage('en')
+      await wrapper.vm.$nextTick()
+      expect(wrapper.get('.ui-icon-button').attributes('aria-label')).toBe('Close')
+    })
+
+    it('nutzt ein übergebenes dismissLabel unverändert', () => {
+      const wrapper = mount(UiToast, { props: { message: 'Hinweis', dismissLabel: 'Weg damit' } })
+      expect(wrapper.get('.ui-icon-button').attributes('aria-label')).toBe('Weg damit')
+    })
   })
 })
