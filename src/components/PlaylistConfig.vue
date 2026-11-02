@@ -108,15 +108,13 @@
         </template>
       </div>
 
-      <label v-if="files.length > 0" class="playlist-config__replace">
-        <input
-          type="checkbox"
-          class="playlist-config__checkbox"
-          :checked="replaceMode"
-          @change="handleReplaceModeChange"
-        />
-        <span>{{ t('replace_list_option') }}</span>
-      </label>
+      <UiSwitch
+        v-if="files.length > 0"
+        class="playlist-config__replace"
+        :model-value="replaceMode"
+        :label="t('replace_list_option')"
+        @update:model-value="emit('update:replaceMode', $event)"
+      />
 
       <UiFileList
         :items="listItems"
@@ -267,7 +265,7 @@
   import { computed, ref, watch } from 'vue'
   import UndoRedoControls from './UndoRedoControls.vue'
   import DraftsDialog from './DraftsDialog.vue'
-  import { UiButton, UiFileList, UiPanel, UiSegmentedControl, UiTextField } from './ui'
+  import { UiButton, UiFileList, UiPanel, UiSegmentedControl, UiSwitch, UiTextField } from './ui'
   import type { FileListItem, FileListLabels, SegmentedOption } from './ui'
   import { useDurations } from '../composables/useDurations'
   import { usePlaylist, type FillMode, type SortOption } from '../composables/usePlaylist'
@@ -435,9 +433,6 @@
   // Die AppPage wendet die Option an und sortiert in einem (rückgängig machbaren) Schritt.
   const handleSortClick = (value: string) => emit('update:sortOption', value as SortOption)
   const handleNameChange = (value: string) => emit('update:playlistName', value)
-  const handleReplaceModeChange = (event: Event) =>
-    emit('update:replaceMode', (event.target as HTMLInputElement).checked)
-
   // --- Dateien hinzufügen --------------------------------------------------------
 
   const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -701,25 +696,6 @@
   }
 
   .playlist-config__replace {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--ds-space-2);
     align-self: flex-start;
-    font-size: var(--ds-text-sm);
-    color: var(--ds-text-2);
-    cursor: pointer;
-  }
-
-  .playlist-config__checkbox {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    accent-color: var(--ds-accent);
-    cursor: pointer;
-  }
-
-  .playlist-config__checkbox:focus-visible {
-    outline: none;
-    box-shadow: var(--ds-focus-ring);
   }
 </style>
