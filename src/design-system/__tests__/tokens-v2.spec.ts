@@ -112,6 +112,11 @@ describe('Kontrast (WCAG AA, mindestens 4.5:1)', () => {
     expect(contrastRatio(colors.onAccent, colors.accentHover)).toBeGreaterThanOrEqual(AA)
   })
 
+  it.each(THEMES)('%s: Text auf gefüllter Erfolgs-Fläche', (theme) => {
+    const colors = themeColorsV2(theme)
+    expect(contrastRatio(colors.onSuccess, colors.success)).toBeGreaterThanOrEqual(AA)
+  })
+
   it.each(THEMES)('%s: Status- und Linkfarben als Text auf Panel', (theme) => {
     const colors = themeColorsV2(theme)
     const failures = STATUS_TOKENS.flatMap((status) => {

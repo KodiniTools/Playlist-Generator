@@ -15,7 +15,7 @@
         >
           <header class="ui-dialog__header">
             <h2 :id="titleId" class="ui-dialog__title">{{ title }}</h2>
-            <UiIconButton :label="closeLabel" size="sm" @click="emit('close')">
+            <UiIconButton :label="resolvedCloseLabel" size="sm" @click="emit('close')">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -45,12 +45,14 @@
 
 <script setup lang="ts">
   import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
+  import { useTranslation } from '@/composables/useTranslation'
   import UiIconButton from './UiIconButton.vue'
 
   /**
    * Modaler Dialog. Schließt über Escape, Klick auf den Hintergrund und den
    * Schließen-Button, jeweils per `close`-Event; der Aufrufer steuert `open`.
    * Fokus wandert beim Öffnen in den Dialog und beim Schließen zurück.
+   * Ohne `closeLabel` gilt die Übersetzung `toast_close`.
    */
   const props = withDefaults(
     defineProps<{
@@ -61,12 +63,15 @@
       /** Eigene id, z. B. für aria-controls am auslösenden Button. */
       id?: string
     }>(),
-    { closeLabel: 'Schließen' },
+    { closeLabel: undefined },
   )
 
   const emit = defineEmits<{
     close: []
   }>()
+
+  const { t } = useTranslation()
+  const resolvedCloseLabel = computed(() => props.closeLabel ?? t.value('toast_close'))
 
   const generatedId = useId()
   const dialogId = computed(() => props.id ?? `ui-dialog-${generatedId}`)

@@ -93,6 +93,12 @@
         "$value": "#5fcf8a",
         "$extensions": { "css": "--ds-success" }
       },
+      "onSuccess": {
+        "$type": "color",
+        "$value": "#0a1324",
+        "$description": "Text und Icons auf gefüllten Erfolgs-Flächen",
+        "$extensions": { "css": "--ds-on-success" }
+      },
       "warning": {
         "$type": "color",
         "$value": "#e3b341",
@@ -190,6 +196,12 @@
         "$type": "color",
         "$value": "#177a42",
         "$extensions": { "css": "--ds-success" }
+      },
+      "onSuccess": {
+        "$type": "color",
+        "$value": "#ffffff",
+        "$description": "Text und Icons auf gefüllten Erfolgs-Flächen",
+        "$extensions": { "css": "--ds-on-success" }
       },
       "warning": {
         "$type": "color",

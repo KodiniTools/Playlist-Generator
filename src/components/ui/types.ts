@@ -7,7 +7,7 @@ export type ButtonType = 'button' | 'submit' | 'reset'
 export type IconButtonVariant = 'ghost' | 'secondary' | 'primary'
 export type ControlSize = 'sm' | 'md'
 
-export type ToastType = 'success' | 'error' | 'info'
+export type ToastType = 'success' | 'error' | 'warning' | 'info'
 export type CalloutType = 'info' | 'success' | 'warning' | 'danger'
 
 export type TextFieldType = 'text' | 'search' | 'email' | 'url' | 'password'
