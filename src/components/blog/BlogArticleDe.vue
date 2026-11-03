@@ -112,14 +112,14 @@
 
       <div class="format-cards">
         <div class="format-card">
-          <h4>MP3 (.mp3)</h4>
+          <h3 class="blog-card-title">MP3 (.mp3)</h3>
           <p>
             Das weltweit verbreitetste Audioformat. MP3-Dateien bieten eine gute Balance zwischen
             Dateigröße und Audioqualität und werden von praktisch jedem Gerät unterstützt.
           </p>
         </div>
         <div class="format-card">
-          <h4>WAV (.wav)</h4>
+          <h3 class="blog-card-title">WAV (.wav)</h3>
           <p>
             Das unkomprimierte Audioformat für höchste Qualitätsansprüche. WAV-Dateien sind größer,
             bieten aber verlustfreie Audioqualität - ideal für Audiophile und professionelle
@@ -127,7 +127,7 @@
           </p>
         </div>
         <div class="format-card">
-          <h4>FLAC (.flac)</h4>
+          <h3 class="blog-card-title">FLAC (.flac)</h3>
           <p>
             Der goldene Mittelweg: FLAC komprimiert Audiodaten verlustfrei, sodass du Speicherplatz
             sparst, ohne an Qualität einzubüßen. Perfekt für hochwertige Musiksammlungen.
@@ -171,21 +171,21 @@
 
       <div class="feature-list">
         <div class="feature-item">
-          <h4>Alphabetische Sortierung</h4>
+          <h3 class="blog-card-title">Alphabetische Sortierung</h3>
           <p>
             Ordne deine Tracks von A bis Z nach Dateiname. Perfekt für übersichtliche Sammlungen.
           </p>
         </div>
         <div class="feature-item">
-          <h4>Sortierung nach Datum</h4>
+          <h3 class="blog-card-title">Sortierung nach Datum</h3>
           <p>Sortiere deine Dateien nach dem Änderungsdatum - ideal für neue Musikentdeckungen.</p>
         </div>
         <div class="feature-item">
-          <h4>Zufällige Sortierung</h4>
+          <h3 class="blog-card-title">Zufällige Sortierung</h3>
           <p>Per Klick werden alle Tracks in eine zufällige Reihenfolge gebracht.</p>
         </div>
         <div class="feature-item">
-          <h4>Manuelle Sortierung</h4>
+          <h3 class="blog-card-title">Manuelle Sortierung</h3>
           <p>Ziehe einzelne Tracks per Drag & Drop an die gewünschte Position.</p>
         </div>
       </div>

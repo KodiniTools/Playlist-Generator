@@ -11,7 +11,7 @@
             <path d="m9 14 3 3 3-3" />
           </svg>
         </div>
-        <h3>{{ t('feature1_title') }}</h3>
+        <h2>{{ t('feature1_title') }}</h2>
         <p>{{ t('feature1_desc') }}</p>
       </div>
 
@@ -22,7 +22,7 @@
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
         </div>
-        <h3>{{ t('feature2_title') }}</h3>
+        <h2>{{ t('feature2_title') }}</h2>
         <p>{{ t('feature2_desc') }}</p>
       </div>
 
@@ -35,7 +35,7 @@
             <line x1="16" y1="3" x2="14" y2="21" />
           </svg>
         </div>
-        <h3>{{ t('feature3_title') }}</h3>
+        <h2>{{ t('feature3_title') }}</h2>
         <p>{{ t('feature3_desc') }}</p>
       </div>
     </div>
@@ -94,7 +94,7 @@
     height: var(--ds-space-6);
   }
 
-  .feature-card h3 {
+  .feature-card h2 {
     margin: 0 0 var(--ds-space-2);
     font-size: var(--ds-text-lg);
     font-weight: var(--ds-weight-semibold);
