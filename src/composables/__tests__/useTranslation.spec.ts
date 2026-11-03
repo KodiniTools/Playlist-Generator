@@ -55,6 +55,12 @@ describe('useTranslation', () => {
     expect(empty).toEqual([])
   })
 
+  it('Beschriftungen tragen keine veralteten Schritt-Nummern („2. …“)', () => {
+    for (const table of Object.values(translations)) {
+      expect(Object.values(table).filter((text) => /^\d+\.\s/.test(text))).toEqual([])
+    }
+  })
+
   it('jeder im Code literal verwendete Schlüssel ist in beiden Sprachen übersetzt', () => {
     const used = literalKeysInSource()
     expect(used.size).toBeGreaterThan(50)

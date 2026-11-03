@@ -73,14 +73,18 @@ src/
 │   ├── PlaylistConfig.vue
 │   ├── PlaylistPreview.vue
 │   ├── ToolsGrid.vue
+│   ├── app/             # Teile der App-Seite (Footer, Texteditor-Dialog)
 │   ├── blog/            # Blog-Artikel DE/EN
 │   ├── landing/         # Abschnitte der Landing-Seite
+│   ├── player/          # Teile der Player-Leiste (AudioPlayer)
+│   ├── playlist-config/ # Teile des Dateien-Panels (PlaylistConfig)
 │   └── ui/              # Design-System-Komponenten (Ui*)
 ├── stores/              # Pinia-Stores (playlist, toast)
 ├── composables/         # Wiederverwendbare Logik
 │   ├── usePlaylist.ts
 │   ├── useTheme.ts
 │   └── useTranslation.ts
+├── i18n/                # Texte je Sprache (de.ts = Referenz, en.ts, nav.ts)
 ├── assets/
 │   └── main.css        # Globale Styles
 ├── App.vue             # Haupt-Komponente
