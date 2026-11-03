@@ -63,6 +63,9 @@ Playlist-Generator/
 │   │   ├── __tests__/            # Komponenten-Tests
 │   │   ├── blog/                 # Blog-Artikel DE/EN + gemeinsames blogArticle.css
 │   │   ├── landing/              # Abschnitte der Landing-Seite (Hero, Features, Details, Tools, CTA)
+│   │   ├── app/                  # Teile der App-Seite (Footer, Texteditor-Dialog)
+│   │   ├── player/               # Teile der Player-Leiste (AudioPlayer)
+│   │   ├── playlist-config/      # Teile des Dateien-Panels (PlaylistConfig)
 │   │   └── ui/                   # Design-System-Komponenten (Ui*)
 │   │
 │   ├── stores/                   # Pinia-Stores
@@ -77,7 +80,14 @@ Playlist-Generator/
 │   │   ├── useDurations.ts       # Laufzeit-Messung der Tracks
 │   │   ├── useTheme.ts           # Theme-Verwaltung
 │   │   ├── useToast.ts           # Ref-Zugriff auf den Toast-Store
-│   │   └── useTranslation.ts     # Internationalisierung (DE/EN)
+│   │   ├── useFileImport.ts      # Dateien/ZIP/Playlist übernehmen
+│   │   ├── useSharedFilesImport.ts # Übergabe aus anderen KodiniTools
+│   │   ├── useTextEditorHandoff.ts # Angebot „Im Texteditor öffnen?“
+│   │   ├── useUndoToast.ts       # Rückgängig-Toast
+│   │   ├── useAppShortcuts.ts    # Globale Kurzbefehle der App-Seite
+│   │   └── useTranslation.ts     # Sprache, t(), Nav-Übersetzung
+│   │
+│   ├── i18n/                     # Texte je Sprache: de.ts (Referenz), en.ts, nav.ts (SSI-Nav)
 │   │
 │   ├── views/                    # Seiten-Komponenten
 │   │   ├── AppPage.vue           # Haupt-Anwendungsseite
