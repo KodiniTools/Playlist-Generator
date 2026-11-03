@@ -55,41 +55,7 @@
 
       <ToolsGrid />
 
-      <footer class="app-page__footer">
-        <form
-          action="https://www.paypal.com/donate"
-          method="post"
-          target="_top"
-          class="app-page__donate"
-        >
-          <input type="hidden" name="hosted_button_id" value="8RGLGQ2BFMHU6" />
-          <UiButton type="submit" variant="ghost" size="sm" :title="t('donate_title')">
-            <template #icon>
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .757-.62h6.597c2.179 0 3.893.603 5.091 1.791.602.598 1.014 1.291 1.223 2.063.219.796.264 1.724.13 2.758l-.015.1v.46l.358.205c.302.167.543.361.729.583.306.366.508.815.601 1.333.096.532.086 1.166-.028 1.884-.13.828-.355 1.551-.668 2.147a4.467 4.467 0 0 1-1.081 1.393c-.426.37-.932.653-1.504.84-.559.182-1.192.273-1.882.273H14.1a.947.947 0 0 0-.937.803l-.036.21-.604 3.832-.028.168a.947.947 0 0 1-.936.803H7.076Z"
-                />
-              </svg>
-            </template>
-            {{ t('donate_button') }}
-          </UiButton>
-        </form>
-        <UiButton
-          variant="ghost"
-          size="sm"
-          :title="t('facebook_share_title')"
-          @click="shareOnFacebook"
-        >
-          <template #icon>
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-              />
-            </svg>
-          </template>
-          {{ t('facebook_share') }}
-        </UiButton>
-      </footer>
+      <AppFooter />
     </main>
 
     <AudioPlayer
@@ -99,28 +65,17 @@
       @update:selected-index="selectedFileIndex = $event"
     />
 
-    <UiDialog
+    <TextEditorHandoffDialog
       :open="handoffOffer !== null"
-      :title="t('handoff_title')"
       :description="handoffDescription"
-      :close-label="t('toast_close')"
-      @close="declineHandoff"
-    >
-      <template #footer>
-        <UiButton variant="secondary" data-action="handoff-decline" @click="declineHandoff">
-          {{ t('handoff_decline') }}
-        </UiButton>
-        <UiButton variant="primary" data-action="handoff-accept" @click="acceptHandoff">
-          {{ t('handoff_accept') }}
-        </UiButton>
-      </template>
-    </UiDialog>
+      @accept="acceptHandoff"
+      @decline="declineHandoff"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
+  import { computed, onMounted, onUnmounted, ref } from 'vue'
   import AppHeader from '../components/AppHeader.vue'
   import AudioPlayer from '../components/AudioPlayer.vue'
   import KeyboardShortcutsPanel from '../components/KeyboardShortcutsPanel.vue'
@@ -128,39 +83,27 @@
   import PlaylistConfig from '../components/PlaylistConfig.vue'
   import PlaylistPreview from '../components/PlaylistPreview.vue'
   import ToolsGrid from '../components/ToolsGrid.vue'
-  import { UiButton, UiCallout, UiDialog } from '../components/ui'
-  import type { CalloutType } from '../components/ui'
+  import AppFooter from '../components/app/AppFooter.vue'
+  import TextEditorHandoffDialog from '../components/app/TextEditorHandoffDialog.vue'
+  import { UiCallout } from '../components/ui'
+  import { useAppShortcuts } from '../composables/useAppShortcuts'
+  import { isImportableFileName, useFileImport } from '../composables/useFileImport'
   import { usePlaylist, type OutputFormat } from '../composables/usePlaylist'
+  import { calloutType, useSharedFilesImport } from '../composables/useSharedFilesImport'
+  import { useTextEditorHandoff } from '../composables/useTextEditorHandoff'
   import { useToast } from '../composables/useToast'
-  import { useTranslation, type TranslationKey } from '../composables/useTranslation'
-  import { useUndoRedo } from '../composables/useUndoRedo'
-  import { clearSharedFiles, getSharedFiles } from '../utils/sharedFileRepository'
-  import { isSharedSource } from '../utils/sharedSources'
+  import { useTranslation } from '../composables/useTranslation'
+  import { useUndoToast } from '../composables/useUndoToast'
   import { consumeLaunchedFiles } from '../utils/pwa'
-  import { hasModifier } from '../utils/platform'
-  import { FORMAT_MIME, openInTextEditor } from '../utils/textEditorHandoff'
-  import { fileExtensionOf } from '../utils/playlistFormats'
-  import {
-    isPlaylistFile,
-    parsePlaylistEntries,
-    playlistFormatOf,
-    playlistNameOf,
-    readPlaylistText,
-  } from '../utils/playlistImport'
-  import { setRelativePath } from '../utils/trackPath'
-  import { extractAudioFromZip, isZipFile, ZipError } from '../utils/zipArchive'
 
-  type BannerType = 'success' | 'error' | 'warning' | 'info'
-
-  interface SharedBanner {
-    type: BannerType
-    message: string
-  }
-
+  /**
+   * App-Seite: verdrahtet Dateien-Panel, Vorschau, Player und Dialoge mit
+   * usePlaylist. Die Abläufe liegen in Composables (Datei-Import, geteilte
+   * Dateien, Texteditor-Übergabe, Undo-Toast, Kurzbefehle), Fußzeile und
+   * Übergabe-Dialog in components/app/.
+   */
   const { t } = useTranslation()
   const toast = useToast()
-  const route = useRoute()
-  const router = useRouter()
   const {
     files,
     sortOption,
@@ -171,8 +114,6 @@
     pathMode,
     basePath,
     selectedFileIndex,
-    addFiles,
-    openPlaylist,
     clearFiles,
     removeFile,
     moveFile,
@@ -183,129 +124,13 @@
     setPathMode,
     setBasePath,
     savePlaylist,
-    handleSharedFiles,
   } = usePlaylist()
-  const { performUndo, performRedo } = useUndoRedo()
 
-  // --- Geteilte Dateien aus anderen KodiniTools ---------------------------------
-
-  const sharedBanner = ref<SharedBanner | null>(null)
-  let sharedFilesHandled = false
-
-  const calloutType = (type: BannerType): CalloutType => (type === 'error' ? 'danger' : type)
-
-  const querySource = (): string | null => {
-    const source = route.query.source
-    return typeof source === 'string' ? source : null
-  }
-
-  async function loadSharedFiles() {
-    if (sharedFilesHandled) return
-    sharedFilesHandled = true
-
-    const source = querySource()
-    const isNormalizer = source === 'audionormalizer'
-    const isCutter = source === 'audio-cutter'
-    const loadingKey = isNormalizer
-      ? 'sharedFilesNormalizerLoading'
-      : isCutter
-        ? 'sharedFilesCutterLoading'
-        : 'sharedFilesLoading'
-    const emptyKey = isNormalizer
-      ? 'sharedFilesNormalizerEmpty'
-      : isCutter
-        ? 'sharedFilesCutterEmpty'
-        : 'sharedFilesEmpty'
-
-    try {
-      let records = await getSharedFiles()
-
-      // Leere IndexedDB beim ersten Lesen: einmal nach 1 s erneut versuchen, falls
-      // der Absender seinen Schreibvorgang noch nicht abgeschlossen hatte.
-      if ((isNormalizer || isCutter) && (!records || records.length === 0)) {
-        sharedBanner.value = {
-          type: 'info',
-          message: t.value(loadingKey).replace('{count}', '...'),
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        records = await getSharedFiles()
-      }
-
-      if (!records?.length) {
-        sharedBanner.value = {
-          type: 'warning',
-          message: t.value(emptyKey),
-        }
-        setTimeout(() => {
-          sharedBanner.value = null
-        }, 5000)
-        return
-      }
-
-      sharedBanner.value = {
-        type: 'info',
-        message: t.value(loadingKey).replace('{count}', String(records.length)),
-      }
-
-      let loaded = 0
-
-      if (isNormalizer) {
-        // Normalizer-Dateien sind bereits gültige WAVs: direkt als File übernehmen.
-        const normFiles = records
-          .map((record) => {
-            const blob =
-              record.blob instanceof Blob
-                ? record.blob
-                : new Blob([record.blob], { type: record.mimeType || 'audio/wav' })
-            if (blob.size === 0) return null
-            return new File([blob], record.name, {
-              type: record.mimeType || blob.type || 'audio/wav',
-              lastModified: Date.now(),
-            })
-          })
-          .filter((file): file is File => file !== null)
-
-        loaded = addFiles(normFiles).added
-      } else {
-        const { processed } = await handleSharedFiles(records)
-        loaded = processed
-      }
-
-      if (loaded > 0) {
-        await clearSharedFiles()
-        sharedBanner.value = {
-          type: 'success',
-          message: (isNormalizer
-            ? t.value('sharedFilesNormalizerLoaded')
-            : t.value('sharedFilesLoaded')
-          ).replace('{count}', String(loaded)),
-        }
-      } else {
-        sharedBanner.value = {
-          type: 'warning',
-          message: t.value(emptyKey),
-        }
-      }
-    } catch (err) {
-      console.error('Error loading shared files:', err)
-      sharedBanner.value = { type: 'error', message: t.value('sharedFilesError') }
-    }
-
-    setTimeout(() => {
-      sharedBanner.value = null
-    }, 5000)
-  }
-
-  void router.isReady().then(() => {
-    if (isSharedSource(querySource())) void loadSharedFiles()
-  })
-
-  watch(
-    () => route.query.source,
-    () => {
-      if (isSharedSource(querySource())) void loadSharedFiles()
-    },
-  )
+  const { sharedBanner } = useSharedFilesImport()
+  const { handleAddFiles } = useFileImport()
+  const { handoffOffer, handoffDescription, offerTextEditor, declineHandoff, acceptHandoff } =
+    useTextEditorHandoff()
+  const { showUndoToast, undo, redo } = useUndoToast()
 
   // --- Kind-Komponenten -----------------------------------------------------------
 
@@ -323,94 +148,11 @@
     audioPlayerRef.value?.playTrack(index)
   }
 
-  const shareOnFacebook = () => {
-    const url = encodeURIComponent(window.location.origin + window.location.pathname)
-    window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-      '_blank',
-      'width=600,height=400,noopener,noreferrer',
-    )
-  }
-
-  /** Audiodateien hinzufügen; eine mitgegebene Playlist danach öffnen (Reihenfolge, Auswahl). */
-  /** Entpackt ein ZIP-Archiv und meldet Übersprungenes oder Fehler per Toast. */
-  const unpackZip = async (zip: File): Promise<File[]> => {
-    const fill = (key: TranslationKey, count = 0) =>
-      t.value(key).replace('{name}', zip.name).replace('{count}', String(count))
-    const busy = toast.addToast(fill('toast_zip_extracting'), 'info', 0)
-    try {
-      const { files, paths, skipped } = await extractAudioFromZip(zip)
-      for (const file of files) setRelativePath(file, paths.get(file) ?? file.name)
-      const unsupported = skipped.filter((entry) => entry.reason === 'unsupported').length
-      const unreadable = skipped.length - unsupported
-      if (files.length === 0 && unreadable === 0) {
-        toast.error(fill('toast_zip_no_audio'))
-        return files
-      }
-      if (unsupported > 0) toast.info(fill('toast_zip_skipped_unsupported', unsupported), 5000)
-      if (unreadable > 0) toast.error(fill('toast_zip_skipped_unreadable', unreadable))
-      return files
-    } catch (err) {
-      console.warn('Could not extract ZIP:', zip.name, err)
-      const tooLarge = err instanceof ZipError && err.code !== 'invalid'
-      toast.error(fill(tooLarge ? 'toast_zip_too_large' : 'toast_zip_invalid'))
-      return []
-    } finally {
-      toast.removeToast(busy)
-    }
-  }
-
-  const handleAddFiles = async (fileList: File[] | FileList) => {
-    const all = Array.from(fileList)
-    const zips = all.filter((file) => isZipFile(file.name))
-    const unpacked: File[] = []
-    // Nacheinander entpacken, damit nie mehrere Archive gleichzeitig im Speicher landen.
-    for (const zip of zips) unpacked.push(...(await unpackZip(zip)))
-    const rest = all.filter((file) => !isZipFile(file.name))
-    const playlist = rest.find((file) => isPlaylistFile(file.name))
-    const audio = [...rest.filter((file) => !isPlaylistFile(file.name)), ...unpacked]
-    // Leere Archive sollen im Ersetzen-Modus nicht die Liste leeren.
-    if (zips.length > 0 && audio.length === 0) {
-      if (playlist) await handleOpenPlaylist(playlist)
-      return
-    }
-    const { added, skipped } = addFiles(audio)
-    if (added > 0) {
-      toast.info(t.value('toast_files_added').replace('{count}', String(added)))
-    }
-    if (skipped > 0) {
-      toast.info(t.value('toast_duplicates_skipped').replace('{count}', String(skipped)))
-    }
-    if (playlist) await handleOpenPlaylist(playlist)
-  }
-
-  const handleOpenPlaylist = async (file: File) => {
-    const format = playlistFormatOf(file.name)
-    if (!format) return
-    const name = playlistNameOf(file.name)
-    let entries: string[] = []
-    try {
-      entries = parsePlaylistEntries(await readPlaylistText(file), format)
-    } catch (err) {
-      console.warn('Could not read playlist:', file.name, err)
-    }
-    const fill = (key: TranslationKey, values: Record<string, number> = {}) =>
-      Object.entries({ ...values, name }).reduce(
-        (text, [k, v]) => text.replace(`{${k}}`, String(v)),
-        t.value(key),
-      )
-    if (entries.length === 0) {
-      toast.error(fill('toast_playlist_empty'))
-      return
-    }
-    const { matched, total } = openPlaylist(entries, name, format)
-    if (matched === 0) toast.error(fill('toast_playlist_no_match', { total }))
-    else toast.success(fill('toast_playlist_opened', { matched, total }))
-  }
-
   const handleFormatChange = (format: OutputFormat) => {
     setOutputFormat(format)
   }
+
+  // --- Speichern und Kopieren -------------------------------------------------------
 
   const handleSave = async () => {
     if (!playlistContent.value) {
@@ -443,71 +185,7 @@
     }
   }
 
-  // --- Übergabe an den Kodini Texteditor ---------------------------------------
-  // Nach Kopieren oder Speichern fragt ein Dialog, ob die Datei im Texteditor
-  // weiterbearbeitet werden soll. Annehmen legt sie ab und öffnet den Editor.
-  type HandoffReason = 'saved' | 'copied'
-
-  const handoffOffer = ref<HandoffReason | null>(null)
-
-  const handoffFileName = computed(
-    () => `${playlistName.value.trim() || 'playlist'}.${fileExtensionOf(outputFormat.value)}`,
-  )
-
-  const handoffDescription = computed(() =>
-    t
-      .value(handoffOffer.value === 'saved' ? 'handoff_text_saved' : 'handoff_text_copied')
-      .replace('{name}', handoffFileName.value),
-  )
-
-  const offerTextEditor = (reason: HandoffReason) => {
-    if (!playlistContent.value) return
-    handoffOffer.value = reason
-  }
-
-  const declineHandoff = () => {
-    handoffOffer.value = null
-  }
-
-  const acceptHandoff = () => {
-    const opened = openInTextEditor({
-      name: handoffFileName.value,
-      content: playlistContent.value,
-      mimeType: FORMAT_MIME[outputFormat.value],
-    })
-    handoffOffer.value = null
-    if (!opened) toast.error(t.value('handoff_error'))
-  }
-
-  // Toast mit "Rückgängig"-Button nach destruktiven Aktionen; immer nur einer,
-  // damit der Button sich stets auf den letzten Schritt bezieht.
-  let undoToastId: number | null = null
-
-  const dismissUndoToast = () => {
-    if (undoToastId !== null) toast.removeToast(undoToastId)
-    undoToastId = null
-  }
-
-  const showUndoToast = (messageKey: TranslationKey) => {
-    dismissUndoToast()
-    undoToastId = toast.addToast(t.value(messageKey), 'info', 5000, {
-      label: t.value('toast_undo_btn'),
-      callback: () => {
-        undoToastId = null
-        performUndo()
-      },
-    })
-  }
-
-  const handleUndo = () => {
-    dismissUndoToast()
-    performUndo()
-  }
-
-  const handleRedo = () => {
-    dismissUndoToast()
-    performRedo()
-  }
+  // --- Entfernen mit Rückgängig-Toast ---------------------------------------------
 
   const handleDeleteFile = (index: number) => {
     if (index < 0 || index >= files.value.length) return
@@ -525,72 +203,32 @@
     showUndoToast('toast_files_cleared')
   }
 
-  const handleDeleteSelected = () => {
-    handleDeleteFile(selectedFileIndex.value)
-  }
+  // --- Kurzbefehle, Einfügen und „Öffnen mit“ ---------------------------------------
 
-  // Globale Kurzbefehle. Die Dateiliste verarbeitet Pfeile, Entf und Escape
-  // selbst, solange sie den Fokus hat, und reicht diese Tasten nicht weiter.
-  const handleKeyDown = (event: KeyboardEvent) => {
-    const activeEl = document.activeElement
-    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
-      return
-    }
-
-    if (hasModifier(event) && event.key === 'o') {
-      event.preventDefault()
-      playlistConfigRef.value?.openFileDialog()
-    }
-
-    if (hasModifier(event) && event.key === 's') {
-      event.preventDefault()
-      void handleSave()
-    }
-
-    if (hasModifier(event) && event.key === 'c' && !window.getSelection()?.toString()) {
-      event.preventDefault()
-      void handleCopy()
-    }
-
-    if (event.key === 'Delete') {
-      event.preventDefault()
-      handleDeleteSelected()
-    }
-
-    const key = event.key.toLowerCase()
-    if (hasModifier(event) && key === 'z') {
-      event.preventDefault()
-      if (event.shiftKey) handleRedo()
-      else handleUndo()
-    } else if (hasModifier(event) && key === 'y') {
-      event.preventDefault()
-      handleRedo()
-    }
-
-    if (event.key === 'ArrowDown' && files.value.length > 0) {
-      event.preventDefault()
-      selectedFileIndex.value = Math.min(selectedFileIndex.value + 1, files.value.length - 1)
-    }
-
-    if (event.key === 'ArrowUp' && files.value.length > 0) {
-      event.preventDefault()
-      selectedFileIndex.value = Math.max(selectedFileIndex.value - 1, 0)
-    }
-
-    if (event.key === 'Escape') {
+  useAppShortcuts({
+    openFiles: () => playlistConfigRef.value?.openFileDialog(),
+    save: () => void handleSave(),
+    copy: () => void handleCopy(),
+    deleteSelected: () => handleDeleteFile(selectedFileIndex.value),
+    undo,
+    redo,
+    moveSelection: (delta) => {
+      if (files.value.length === 0) return false
+      selectedFileIndex.value =
+        delta > 0
+          ? Math.min(selectedFileIndex.value + 1, files.value.length - 1)
+          : Math.max(selectedFileIndex.value - 1, 0)
+      return true
+    },
+    clearSelection: () => {
       selectedFileIndex.value = -1
-    }
-  }
-
-  const AUDIO_EXTENSIONS = /\.(mp3|wav|flac|ogg|aac|m4a|wma|opus)$/i
+    },
+  })
 
   const handlePaste = (event: ClipboardEvent) => {
     const items = event.clipboardData?.files
     if (!items || items.length === 0) return
-    const usable = Array.from(items).filter(
-      (file) =>
-        AUDIO_EXTENSIONS.test(file.name) || isPlaylistFile(file.name) || isZipFile(file.name),
-    )
+    const usable = Array.from(items).filter((file) => isImportableFileName(file.name))
     if (usable.length > 0) {
       event.preventDefault()
       void handleAddFiles(usable)
@@ -598,14 +236,12 @@
   }
 
   onMounted(() => {
-    window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('paste', handlePaste)
     // Installierte App: per „Öffnen mit“ übergebene Audio- und Playlist-Dateien
     consumeLaunchedFiles(handleAddFiles)
   })
 
   onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeyDown)
     window.removeEventListener('paste', handlePaste)
   })
 </script>
@@ -657,20 +293,6 @@
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     gap: var(--ds-gap);
     align-items: start;
-  }
-
-  .app-page__footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: var(--ds-space-3);
-    flex-wrap: wrap;
-    padding-top: var(--ds-space-5);
-    border-top: var(--ds-border-width) solid var(--ds-border);
-  }
-
-  .app-page__donate {
-    display: inline-flex;
   }
 
   @media (max-width: 768px) {
