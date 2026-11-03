@@ -40,6 +40,7 @@
       <!-- Versteckte Inputs: webkitdirectory muss beim Parsen im HTML stehen -->
       <input
         id="fileInput"
+        :aria-label="t('button_add_files')"
         ref="fileInputRef"
         type="file"
         class="playlist-config__input"
@@ -50,6 +51,7 @@
       />
       <input
         id="playlistInput"
+        :aria-label="t('button_open_playlist')"
         ref="playlistInputRef"
         type="file"
         class="playlist-config__input"
@@ -59,6 +61,7 @@
       />
       <input
         id="folderInput"
+        :aria-label="t('button_add_folder')"
         ref="folderInputRef"
         type="file"
         class="playlist-config__input"

@@ -22,7 +22,7 @@ describe('AppHeader', () => {
     expect(wrapper.get('nav').attributes('aria-label')).toBe('Seiten')
     const links = wrapper.findAll('a.app-header__link')
     expect(links.map((link) => link.attributes('href'))).toEqual(['/', '/app', '/faq', '/blog'])
-    expect(links.map((link) => link.text())).toEqual(['Start', 'App', 'FAQ', 'Blog'])
+    expect(links.map((link) => link.text())).toEqual(['Startseite', 'App', 'FAQ', 'Blog'])
     expect(wrapper.find('.app-header__actions').exists()).toBe(false)
   })
 

@@ -92,7 +92,9 @@
   color: var(--ds-text);
 }
 
-.blog-section h4 {
+/* Karten-Titel sind h3 (Gliederung), sehen aber kleiner aus als Abschnitts-h3. */
+.blog-section .blog-card-title {
+  line-height: inherit;
   margin: 0 0 var(--ds-space-2);
   font-size: var(--ds-text-lg);
   font-weight: var(--ds-weight-semibold);
@@ -111,7 +113,7 @@
   color: var(--ds-text);
 }
 
-.blog-section a {
+.blog-section a:not(.ui-button) {
   color: var(--ds-link);
 }
 
@@ -147,7 +149,7 @@
   border-color: var(--ds-border-strong);
 }
 
-.format-card h4 {
+.format-card .blog-card-title {
   color: var(--ds-accent);
 }
 
@@ -171,7 +173,7 @@
   background: var(--ds-surface-1);
 }
 
-.feature-item h4 {
+.feature-item .blog-card-title {
   margin-bottom: var(--ds-space-2);
 }
 

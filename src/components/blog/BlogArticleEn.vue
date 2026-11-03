@@ -109,21 +109,21 @@
 
       <div class="format-cards">
         <div class="format-card">
-          <h4>MP3 (.mp3)</h4>
+          <h3 class="blog-card-title">MP3 (.mp3)</h3>
           <p>
             The world's most widely used audio format. MP3 files offer a good balance between file
             size and audio quality and are supported by virtually every device.
           </p>
         </div>
         <div class="format-card">
-          <h4>WAV (.wav)</h4>
+          <h3 class="blog-card-title">WAV (.wav)</h3>
           <p>
             The uncompressed audio format for highest quality demands. WAV files are larger but
             offer lossless audio quality - ideal for audiophiles and professional applications.
           </p>
         </div>
         <div class="format-card">
-          <h4>FLAC (.flac)</h4>
+          <h3 class="blog-card-title">FLAC (.flac)</h3>
           <p>
             The golden middle ground: FLAC compresses audio data losslessly, so you save storage
             space without sacrificing quality. Perfect for high-quality music collections.
@@ -167,19 +167,19 @@
 
       <div class="feature-list">
         <div class="feature-item">
-          <h4>Alphabetical Sorting</h4>
+          <h3 class="blog-card-title">Alphabetical Sorting</h3>
           <p>Sort your tracks from A to Z by filename. Perfect for clear collections.</p>
         </div>
         <div class="feature-item">
-          <h4>Sort by Date</h4>
+          <h3 class="blog-card-title">Sort by Date</h3>
           <p>Sort your files by modification date - ideal for new music discoveries.</p>
         </div>
         <div class="feature-item">
-          <h4>Random Sorting</h4>
+          <h3 class="blog-card-title">Random Sorting</h3>
           <p>With one click, all tracks are put in random order.</p>
         </div>
         <div class="feature-item">
-          <h4>Manual Sorting</h4>
+          <h3 class="blog-card-title">Manual Sorting</h3>
           <p>Drag individual tracks to the desired position via drag & drop.</p>
         </div>
       </div>

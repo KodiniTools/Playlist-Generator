@@ -4,7 +4,7 @@
  */
 const de = {
   // Navigation
-  nav_home: 'Start',
+  nav_home: 'Startseite',
   nav_app: 'App',
   nav_faq: 'FAQ',
   nav_blog: 'Blog',

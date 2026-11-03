@@ -91,7 +91,7 @@ describe('useTranslation', () => {
     // Laufzeit-Fallback für Schlüssel, die der Typ nicht kennt (z. B. aus alten Daten).
     const unknownKey = 'kein_solcher_schluessel' as TranslationKey
     expect(t.value(unknownKey)).toBe('kein_solcher_schluessel')
-    expect(t.value('nav_home')).toBe('Start')
+    expect(t.value('nav_home')).toBe('Startseite')
 
     setLanguage('en')
     expect(t.value('nav_home')).toBe('Home')
