@@ -9,6 +9,13 @@ const en: Record<TranslationKey, string> = {
   nav_blog: 'Blog',
   nav_label: 'Pages',
 
+  // Desktop app: bar instead of the server navigation
+  desktop_bar_label: 'Settings',
+  desktop_language: 'Language',
+  desktop_theme: 'Theme',
+  desktop_theme_dark: 'Dark',
+  desktop_theme_light: 'Light',
+
   // Page title and description (document.title, meta description)
   meta_title_landing: 'Audio Playlist Generator – Create M3U, PLS, XSPF & JSON',
   meta_description_landing:

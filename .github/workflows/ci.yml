@@ -36,7 +36,9 @@ jobs:
 
   e2e:
     name: E2E (Chromium)
-    runs-on: ubuntu-latest
+    # Fest auf 24.04: ubuntu-latest ist inzwischen 26.04, dafür hat Playwright 1.56
+    # keine Chromium-Builds („Playwright does not support chromium on ubuntu26.04-x64“)
+    runs-on: ubuntu-24.04
     needs: checks
     steps:
       - uses: actions/checkout@v4

@@ -1,6 +1,6 @@
 {
   "name": "playlist-generator-vue",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -8,7 +8,9 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:desktop": "vite --mode desktop",
     "build": "vite build",
+    "build:desktop": "vite build --mode desktop",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json && vue-tsc --noEmit -p tsconfig.vitest.json && tsc -p e2e/tsconfig.json",
     "preview": "vite preview",
     "test:unit": "vitest",
@@ -16,7 +18,8 @@
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "tauri": "tauri"
   },
   "dependencies": {
     "pinia": "^3.0.4",
@@ -27,6 +30,7 @@
     "@playwright/test": "^1.55.1",
     "@tailwindcss/node": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
+    "@tauri-apps/cli": "^2.12.4",
     "@tsconfig/node22": "^22.0.2",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.18.6",

@@ -10,6 +10,13 @@ const de = {
   nav_blog: 'Blog',
   nav_label: 'Seiten',
 
+  // Desktop-App: Leiste statt der Server-Navigation
+  desktop_bar_label: 'Einstellungen',
+  desktop_language: 'Sprache',
+  desktop_theme: 'Farbschema',
+  desktop_theme_dark: 'Dunkel',
+  desktop_theme_light: 'Hell',
+
   // Seitentitel und Beschreibung (document.title, meta description)
   meta_title_landing: 'Audio Wiedergabeliste Generator – M3U, PLS, XSPF & JSON erstellen',
   meta_description_landing:

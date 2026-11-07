@@ -2,12 +2,22 @@
   <div class="app-wrapper">
     <router-view />
     <ToastContainer />
+    <!-- Desktop-App: Leiste an der Stelle der SSI-Navigation (deren Höhe misst updateExternalNavHeight) -->
+    <Teleport v-if="DesktopBar" to=".external-nav-wrapper">
+      <DesktopBar />
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, onUnmounted } from 'vue'
+  import { defineAsyncComponent, onMounted, onUnmounted } from 'vue'
   import ToastContainer from './components/ToastContainer.vue'
+  import { IS_DESKTOP } from './utils/desktop'
+
+  // Nur in der Desktop-App geladen; der Web-Build lädt den Baustein nie
+  const DesktopBar = IS_DESKTOP
+    ? defineAsyncComponent(() => import('./components/app/DesktopBar.vue'))
+    : null
   import { usePageMeta } from './composables/usePageMeta'
   import { useTheme } from './composables/useTheme'
   import { useTranslation } from './composables/useTranslation'

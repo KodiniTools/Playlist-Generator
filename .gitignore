@@ -31,3 +31,8 @@ coverage
 
 test-results/
 playwright-report/
+
+# Desktop-App (Tauri, siehe DESKTOP.md)
+dist-desktop
+src-tauri/target
+src-tauri/gen

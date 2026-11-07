@@ -2,7 +2,7 @@
   <footer class="app-page__footer">
     <form
       action="https://www.paypal.com/donate"
-      method="post"
+      :method="IS_DESKTOP ? 'get' : 'post'"
       target="_top"
       class="app-page__donate"
     >
@@ -34,12 +34,21 @@
 <script setup lang="ts">
   import { UiButton } from '../ui'
   import { useTranslation } from '../../composables/useTranslation'
+  import { SITE_URL } from '../../composables/usePageMeta'
+  import { IS_DESKTOP } from '../../utils/desktop'
 
-  /** Fußzeile der App-Seite: Spenden (PayPal) und auf Facebook teilen. */
+  /**
+   * Fußzeile der App-Seite: Spenden (PayPal) und auf Facebook teilen.
+   * Desktop-App: PayPal per GET (die App öffnet die Adresse samt Button-ID im
+   * Standardbrowser) und geteilt wird die Web-Adresse statt tauri.localhost.
+   */
   const { t } = useTranslation()
 
   const shareOnFacebook = () => {
-    const url = encodeURIComponent(window.location.origin + window.location.pathname)
+    const page = IS_DESKTOP
+      ? SITE_URL + window.location.pathname
+      : window.location.origin + window.location.pathname
+    const url = encodeURIComponent(page)
     window.open(
       `https://www.facebook.com/sharer/sharer.php?u=${url}`,
       '_blank',
