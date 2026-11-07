@@ -3,6 +3,7 @@ import { modifierLabel } from '../utils/platform'
 import de, { type TranslationKey } from '../i18n/de'
 import en from '../i18n/en'
 import { navTranslations } from '../i18n/nav'
+import { IS_DESKTOP } from '../utils/desktop'
 
 export type Language = 'de' | 'en'
 
@@ -12,6 +13,11 @@ export const LANGUAGES: readonly Language[] = ['de', 'en']
 export function languageFromSearch(search: string): Language | null {
   const lang = new URLSearchParams(search).get('lang')
   return LANGUAGES.find((l) => l === lang) ?? null
+}
+
+/** Systemsprache für den ersten Start der Desktop-App: Deutsch bei `de-*`, sonst Englisch. */
+export function languageFromSystem(languages: readonly string[]): Language {
+  return languages[0]?.toLowerCase().startsWith('de') ? 'de' : 'en'
 }
 
 export type { TranslationKey }
@@ -33,8 +39,11 @@ const storedLang =
 // `?lang=` (Links aus Sitemap/hreflang) hat Vorrang vor der gespeicherten Sprache.
 // Ohne beides gilt Deutsch: die URL ohne Parameter ist die deutsche Fassung
 // (hreflang de/x-default), auch für Crawler mit englischer Browsersprache.
+// Die Desktop-App hat keine URL-Fassungen und folgt beim ersten Start der Systemsprache.
 const currentLanguage = ref<string>(
-  languageFromSearch(location.search) || LANGUAGES.find((l) => l === storedLang) || 'de',
+  languageFromSearch(location.search) ||
+    LANGUAGES.find((l) => l === storedLang) ||
+    (IS_DESKTOP ? languageFromSystem(navigator.languages ?? [navigator.language]) : 'de'),
 )
 
 // Ensure both keys are in sync on initialization

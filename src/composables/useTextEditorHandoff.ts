@@ -4,13 +4,15 @@ import { useToast } from './useToast'
 import { useTranslation } from './useTranslation'
 import { fileExtensionOf } from '../utils/playlistFormats'
 import { FORMAT_MIME, openInTextEditor } from '../utils/textEditorHandoff'
+import { IS_DESKTOP } from '../utils/desktop'
 
 export type HandoffReason = 'saved' | 'copied'
 
 /**
  * Übergabe an den Kodini Texteditor: Nach Kopieren oder Speichern fragt ein
  * Dialog, ob die Datei dort weiterbearbeitet werden soll. Annehmen legt sie ab
- * und öffnet den Editor; ohne Inhalt wird nichts angeboten.
+ * und öffnet den Editor; ohne Inhalt wird nichts angeboten. In der Desktop-App
+ * nie: Sie teilt keinen localStorage mit kodinitools.com, die Übergabe käme nicht an.
  */
 export function useTextEditorHandoff() {
   const { t } = useTranslation()
@@ -30,7 +32,7 @@ export function useTextEditorHandoff() {
   )
 
   const offerTextEditor = (reason: HandoffReason) => {
-    if (!playlistContent.value) return
+    if (IS_DESKTOP || !playlistContent.value) return
     handoffOffer.value = reason
   }
 
