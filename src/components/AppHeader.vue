@@ -22,6 +22,7 @@
 <script setup lang="ts">
   import { RouterLink } from 'vue-router'
   import { useTranslation, type TranslationKey } from '../composables/useTranslation'
+  import { IS_DESKTOP } from '../utils/desktop'
 
   /**
    * Gemeinsame Seitennavigation aller Vue-Seiten unterhalb der externen SSI-Navigation.
@@ -35,6 +36,8 @@
     { to: '/app', labelKey: 'nav_app' },
     { to: '/faq', labelKey: 'nav_faq' },
     { to: '/blog', labelKey: 'nav_blog' },
+    // Die Desktop-App bietet sich nicht selbst zum Download an
+    ...(IS_DESKTOP ? [] : [{ to: '/download', labelKey: 'nav_download' as const }]),
   ]
 </script>
 

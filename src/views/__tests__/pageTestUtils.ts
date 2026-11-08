@@ -12,4 +12,4 @@ export function mountPage(page: Component) {
 }
 
 /** Erwartete Reihenfolge der Seitenlinks im AppHeader. */
-export const PAGE_LINKS = ['/', '/app', '/faq', '/blog']
+export const PAGE_LINKS = ['/', '/app', '/faq', '/blog', '/download']

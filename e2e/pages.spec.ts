@@ -26,6 +26,10 @@ const PAGES: ReadonlyArray<{ path: string; heading: Record<Locale, string> }> = 
       en: 'The Ultimate Audio Playlist Generator: All Features in Detail',
     },
   },
+  {
+    path: './download',
+    heading: { de: 'Playlist Generator für Windows', en: 'Playlist Generator for Windows' },
+  },
 ]
 
 /** '#0a1324' → 'rgb(10, 19, 36)', wie getComputedStyle es liefert. */
@@ -73,6 +77,8 @@ test('Navigation im Header wechselt die Seiten', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Häufig gestellte Fragen')
   await nav.getByRole('link', { name: 'Blog' }).click()
   await expect(page).toHaveURL(/\/blog$/)
+  await nav.getByRole('link', { name: 'Download' }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Playlist Generator für Windows')
   await nav.getByRole('link', { name: 'Startseite' }).click()
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Audio Wiedergabeliste Generator',

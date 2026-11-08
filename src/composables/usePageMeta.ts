@@ -16,6 +16,11 @@ const PAGES: Record<string, PageMeta> = {
   app: { title: 'meta_title_app', description: 'meta_description_app', path: '/app' },
   faq: { title: 'meta_title_faq', description: 'meta_description_faq', path: '/faq' },
   blog: { title: 'meta_title_blog', description: 'meta_description_blog', path: '/blog' },
+  download: {
+    title: 'meta_title_download',
+    description: 'meta_description_download',
+    path: '/download',
+  },
 }
 
 /**

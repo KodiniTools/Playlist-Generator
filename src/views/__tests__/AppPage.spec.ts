@@ -59,7 +59,7 @@ describe('AppPage', () => {
 
   it('baut Kopfzeile, Einleitung, Arbeitsbereich und Footer auf', () => {
     const wrapper = mountPage()
-    expect(wrapper.findAll('.app-header__link')).toHaveLength(4)
+    expect(wrapper.findAll('.app-header__link')).toHaveLength(5)
     expect(wrapper.get('.app-page__title').text()).toBe('Audio Wiedergabeliste Generator')
     expect(wrapper.get('.app-page__subtitle').text().length).toBeGreaterThan(0)
 

@@ -29,6 +29,23 @@ Das Release enthält Dateien mit festen Namen, die sich über
 
 Die Versionsnummer kommt aus `package.json` (`version`, für MSI nur `X.Y.Z`).
 
+## Dateien auf den eigenen Server legen
+
+Die Seite `/playlist_generator/download` (Tab „Download“ in der Navigation) verlinkt
+`/playlist_generator/downloads/<Datei>` auf dem VPS. Nach jedem neuen Release auf dem VPS
+(im Git-Klon, aus dem auch `deploy.sh` läuft):
+
+```bash
+sudo ./deploy-downloads.sh                   # neuestes GitHub-Release holen
+sudo ./deploy-downloads.sh desktop-v1.0.1    # oder ein bestimmtes
+sudo ./deploy-downloads.sh --from-dir ~/playlist-generator-windows   # oder entpacktes Artefakt-ZIP
+```
+
+Das Skript legt `/var/www/kodinitools.com/playlist_generator/downloads/` an (falls nötig) und
+ersetzt die Dateien erst, wenn alle drei vollständig und plausibel groß sind.
+`deploy.sh` lässt `downloads/` beim Veröffentlichen stehen (`KEEP`), der Service Worker
+speichert die Installer nie zwischen. In der Desktop-App ist der Tab „Download“ ausgeblendet.
+
 ## Lokal bauen (nur unter Windows)
 
 Voraussetzungen: Node 22, Rust (stable, MSVC), Visual Studio Build Tools („Desktopentwicklung mit C++“).

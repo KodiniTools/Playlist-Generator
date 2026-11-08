@@ -25,6 +25,11 @@ const router = createRouter({
       name: 'blog',
       component: () => import('../views/BlogPage.vue'),
     },
+    {
+      path: '/download',
+      name: 'download',
+      component: () => import('../views/DownloadPage.vue'),
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
