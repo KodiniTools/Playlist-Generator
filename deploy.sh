@@ -22,7 +22,9 @@ BRANCH="${DEPLOY_BRANCH:-main}"
 # preserved across deploys (never overwritten or removed by the sync below).
 # favicon.ico is NOT listed: it comes from public/favicon.ico and must always
 # be the deployed one.
-KEEP=(README.md)
+# /downloads/ holds the Windows installers (.exe/.msi), placed there by
+# deploy-downloads.sh and linked from the /download page (see DESKTOP.md).
+KEEP=(README.md /downloads/)
 
 # Always operate from the repository this script lives in.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

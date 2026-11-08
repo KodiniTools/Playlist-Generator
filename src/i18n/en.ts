@@ -16,6 +16,39 @@ const en: Record<TranslationKey, string> = {
   desktop_theme_dark: 'Dark',
   desktop_theme_light: 'Light',
 
+  // Download page (Windows app)
+  nav_download: 'Download',
+  meta_title_download: 'Download Playlist Generator for Windows – free desktop app',
+  meta_description_download:
+    'The Audio Playlist Generator as a free Windows app: installer (.exe) or MSI package for Windows 10 and 11. Create playlists locally on your PC.',
+  download_eyebrow: 'Windows app',
+  download_title: 'Playlist Generator for Windows',
+  download_subtitle:
+    'All features of the playlist generator as an app on your PC – with its own window, a Start menu entry and no internet required.',
+  download_requirements: 'Windows 10 or 11 · 64-bit · about 10 MB of disk space',
+  download_files_label: 'Download files',
+  download_recommended: 'Recommended',
+  download_button: 'Download {ext}',
+  download_size_note:
+    'Each file is only about 2 MB and you only need one of them. For most people the installer (.exe) is the right one.',
+  download_exe_title: 'Installer (.exe)',
+  download_exe_desc:
+    'For most users: installs without administrator rights, choose German or English.',
+  download_msi_de_title: 'MSI package German',
+  download_msi_de_desc: 'For IT departments and software deployment, setup dialog in German.',
+  download_msi_en_title: 'MSI package English',
+  download_msi_en_desc: 'For IT departments and software deployment, setup dialog in English.',
+  download_notes_title: 'Good to know',
+  download_note_smartscreen_title: 'Windows SmartScreen notice',
+  download_note_smartscreen_text:
+    'The app is not digitally signed yet. On first launch Windows shows “Windows protected your PC”: click “More info”, then “Run anyway”. If your browser blocks the download, choose “Keep” in the download list.',
+  download_note_offline_title: 'Local and offline',
+  download_note_offline_text:
+    'Adding, sorting, playing and saving files as M3U, XSPF, JSON and more runs entirely on your computer. Nothing is uploaded.',
+  download_note_webview_title: 'Microsoft Edge WebView2',
+  download_note_webview_text:
+    'The app uses the WebView2 runtime, which is usually already installed on Windows 10 and 11. If it is missing, the installer downloads it automatically.',
+
   // Page title and description (document.title, meta description)
   meta_title_landing: 'Audio Playlist Generator – Create M3U, PLS, XSPF & JSON',
   meta_description_landing:

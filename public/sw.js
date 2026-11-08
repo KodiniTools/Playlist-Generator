@@ -5,6 +5,7 @@
  * - Seitenaufrufe: zuerst Netzwerk (aktueller Stand), offline aus dem Cache.
  * - Gehashte Vite-Assets (/assets/): Cache zuerst, sie ändern sich nie.
  * - Sonstiges (Icons, Fonts, SSI-Partials): Cache sofort, im Hintergrund erneuern.
+ * - Installer unter downloads/: immer direkt vom Server, nie im Cache.
  */
 const CACHE = 'playlist-generator-v1'
 const SCOPE = new URL(self.registration.scope).pathname
@@ -86,6 +87,9 @@ self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
   if (request.method !== 'GET' || url.origin !== self.location.origin) return
+  // Installer der Windows-App (downloads/): nie zwischenspeichern, sonst
+  // bekäme man nach einem neuen Release weiter die alte Datei aus dem Cache
+  if (url.pathname.startsWith(SCOPE + 'downloads/')) return
 
   if (request.mode === 'navigate') {
     event.respondWith(networkFirst(request))

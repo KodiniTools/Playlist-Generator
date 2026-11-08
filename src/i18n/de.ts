@@ -17,6 +17,41 @@ const de = {
   desktop_theme_dark: 'Dunkel',
   desktop_theme_light: 'Hell',
 
+  // Download-Seite (Windows-App)
+  nav_download: 'Download',
+  meta_title_download: 'Playlist Generator für Windows herunterladen – kostenlose Desktop-App',
+  meta_description_download:
+    'Den Audio Wiedergabeliste Generator als kostenlose Windows-App: Installer (.exe) oder MSI-Paket für Windows 10 und 11. Wiedergabelisten lokal auf dem PC erstellen.',
+  download_eyebrow: 'Windows-App',
+  download_title: 'Playlist Generator für Windows',
+  download_subtitle:
+    'Alle Funktionen des Wiedergabeliste Generators als App auf Ihrem PC – mit eigenem Fenster, Startmenü-Eintrag und ohne Internet nutzbar.',
+  download_requirements: 'Windows 10 oder 11 · 64-Bit · ca. 10 MB Speicherplatz',
+  download_files_label: 'Download-Dateien',
+  download_recommended: 'Empfohlen',
+  download_button: '{ext} herunterladen',
+  download_size_note:
+    'Jede Datei ist nur rund 2 MB groß, Sie brauchen nur eine davon. Für die meisten ist der Installer (.exe) richtig.',
+  download_exe_title: 'Installer (.exe)',
+  download_exe_desc:
+    'Für die meisten Nutzer: Installation ohne Administratorrechte, Sprache Deutsch oder Englisch wählbar.',
+  download_msi_de_title: 'MSI-Paket Deutsch',
+  download_msi_de_desc:
+    'Für IT-Abteilungen und Softwareverteilung, Installationsdialog auf Deutsch.',
+  download_msi_en_title: 'MSI-Paket Englisch',
+  download_msi_en_desc:
+    'Für IT-Abteilungen und Softwareverteilung, Installationsdialog auf Englisch.',
+  download_notes_title: 'Gut zu wissen',
+  download_note_smartscreen_title: 'Windows-SmartScreen-Hinweis',
+  download_note_smartscreen_text:
+    'Die App ist noch nicht digital signiert. Beim ersten Start zeigt Windows „Der Computer wurde durch Windows geschützt“: Klicken Sie auf „Weitere Informationen“ und dann auf „Trotzdem ausführen“. Blockiert der Browser den Download, wählen Sie in der Download-Liste „Behalten“.',
+  download_note_offline_title: 'Lokal und ohne Internet',
+  download_note_offline_text:
+    'Dateien hinzufügen, sortieren, anhören und als M3U, XSPF, JSON & Co. speichern läuft komplett auf Ihrem Rechner. Nichts wird hochgeladen.',
+  download_note_webview_title: 'Microsoft Edge WebView2',
+  download_note_webview_text:
+    'Die App nutzt die WebView2-Laufzeit, die unter Windows 10 und 11 meist schon installiert ist. Fehlt sie, lädt der Installer sie automatisch nach.',
+
   // Seitentitel und Beschreibung (document.title, meta description)
   meta_title_landing: 'Audio Wiedergabeliste Generator – M3U, PLS, XSPF & JSON erstellen',
   meta_description_landing:
