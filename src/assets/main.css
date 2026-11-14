@@ -59,6 +59,15 @@ body {
     color var(--ds-duration-slow) var(--ds-ease);
 }
 
+/* === Platz für die App vor dem Mounten (CLS) ===
+   #app ist bis zum Mounten von Vue leer; der SSI-Footer stünde beim ersten
+   Paint direkt unter der Navigation und würde danach aus dem Viewport
+   geschoben (Layout Shift ≈ 0,26). Dieselbe Mindesthöhe wie .app-wrapper
+   (App.vue), daher nach dem Mounten keine sichtbare Änderung. */
+#app {
+  min-height: 100vh;
+}
+
 /* === SSI-Footer (Partial außerhalb des Repos) ===
    Transparent auf der Seitenfläche, Textfarben aus den Tokens. Gilt nur
    außerhalb von #app, damit App-eigene <footer> (AppPage, UiDialog) unberührt
