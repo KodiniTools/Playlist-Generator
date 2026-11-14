@@ -53,9 +53,9 @@ const de = {
     'Die App nutzt die WebView2-Laufzeit, die unter Windows 10 und 11 meist schon installiert ist. Fehlt sie, lädt der Installer sie automatisch nach.',
 
   // Seitentitel und Beschreibung (document.title, meta description)
-  meta_title_landing: 'Audio Wiedergabeliste Generator – M3U, PLS, XSPF & JSON erstellen',
+  meta_title_landing: 'M3U Playlist erstellen – Wiedergabeliste Generator online | KodiniTools',
   meta_description_landing:
-    'Erstellen Sie Wiedergabelisten (.m3u, .m3u8, .pls, .xspf, .json, .csv) aus MP3-, WAV- und FLAC-Dateien. Alles läuft lokal im Browser, ohne Upload.',
+    'M3U Playlist erstellen aus MP3-, WAV- und FLAC-Dateien, auch als M3U8, PLS, XSPF, JSON oder CSV. Kostenlos, lokal im Browser, ohne Upload.',
   meta_title_app: 'Wiedergabeliste erstellen – Audio Wiedergabeliste Generator',
   meta_description_app:
     'Audiodateien hinzufügen, sortieren und als M3U, PLS, XSPF, JSON oder CSV speichern. Mit Laufzeiten, Metadaten und Entwürfen, direkt im Browser.',
@@ -68,7 +68,7 @@ const de = {
 
   // Landing Page - Hero
   hero_title: 'Audio Wiedergabeliste Generator',
-  hero_subtitle: 'Erstellen Sie professionelle Wiedergabelisten in Sekunden',
+  hero_subtitle: 'M3U Playlist erstellen – in Sekunden, direkt im Browser',
   hero_description:
     'Verwandeln Sie Ihre lokalen Audiodateien in perfekt organisierte Wiedergabelisten. Unterstützt M3U, XSPF und JSON – kostenlos und 100% lokal in Ihrem Browser.',
   hero_cta: 'Jetzt starten',
