@@ -50,9 +50,9 @@ const en: Record<TranslationKey, string> = {
     'The app uses the WebView2 runtime, which is usually already installed on Windows 10 and 11. If it is missing, the installer downloads it automatically.',
 
   // Page title and description (document.title, meta description)
-  meta_title_landing: 'Audio Playlist Generator – Create M3U, PLS, XSPF & JSON',
+  meta_title_landing: 'M3U Playlist Creator – Free Online Playlist Maker | KodiniTools',
   meta_description_landing:
-    'Create playlists (.m3u, .m3u8, .pls, .xspf, .json, .csv) from MP3, WAV and FLAC files. Everything runs locally in your browser, no upload.',
+    'Create an M3U playlist from MP3, WAV and FLAC files, or export as M3U8, PLS, XSPF, JSON or CSV. Free, runs locally in your browser, no upload.',
   meta_title_app: 'Create a Playlist – Audio Playlist Generator',
   meta_description_app:
     'Add audio files, sort them and save as M3U, PLS, XSPF, JSON or CSV. With durations, metadata and drafts, right in your browser.',
@@ -65,7 +65,7 @@ const en: Record<TranslationKey, string> = {
 
   // Landing Page - Hero
   hero_title: 'Audio Playlist Generator',
-  hero_subtitle: 'Create professional playlists in seconds',
+  hero_subtitle: 'Create an M3U playlist in seconds, right in your browser',
   hero_description:
     'Transform your local audio files into perfectly organized playlists. Supports M3U, XSPF, and JSON – free and 100% local in your browser.',
   hero_cta: 'Get Started',

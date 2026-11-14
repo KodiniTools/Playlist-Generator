@@ -104,7 +104,7 @@ describe('usePageMeta', () => {
     await new Promise((r) => setTimeout(r))
     expect(router.currentRoute.value.query.lang).toBe('en')
     expect(canonical()).toBe('https://kodinitools.com/playlist_generator/?lang=en')
-    expect(document.title).toBe('Audio Playlist Generator – Create M3U, PLS, XSPF & JSON')
+    expect(document.title).toBe('M3U Playlist Creator – Free Online Playlist Maker | KodiniTools')
     wrapper.unmount()
   })
 })
