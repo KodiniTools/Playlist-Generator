@@ -4,6 +4,9 @@ import { defineConfig, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import de from './src/i18n/de'
+import en from './src/i18n/en'
+import { applySsiHead } from './src/seo/ssiHead'
 
 /**
  * Desktop-Build (Windows-App, src-tauri/, siehe DESKTOP.md): `vite build --mode desktop`.
@@ -29,12 +32,28 @@ function desktopHtml(): Plugin {
   }
 }
 
+/**
+ * Nur Web-Build: `<head>` (Titel, Description, Canonical, hreflang, `<html lang>`)
+ * per Apache-SSI je Sprache und Route, damit Crawler ohne JavaScript unter
+ * `?lang=en` die englische Fassung sehen. Details: src/seo/ssiHead.ts.
+ */
+function ssiHead(): Plugin {
+  return {
+    name: 'playlist-generator:ssi-head',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler: (html) => applySsiHead(html, { de, en }),
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const desktop = mode === DESKTOP_MODE
   return {
     base: desktop ? '/' : '/playlist_generator/',
-    plugins: [vue(), tailwindcss(), vueDevTools(), ...(desktop ? [desktopHtml()] : [])],
+    plugins: [vue(), tailwindcss(), vueDevTools(), ...(desktop ? [desktopHtml()] : [ssiHead()])],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
