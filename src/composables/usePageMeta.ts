@@ -1,9 +1,44 @@
 import { watch } from 'vue'
 import { useRoute, useRouter, type RouteLocationNormalizedLoaded } from 'vue-router'
-import { useTranslation, type Language } from './useTranslation'
-import { PAGES, alternateUrls, canonicalUrl } from '../seo/pageMeta'
+import { useTranslation, type Language, type TranslationKey } from './useTranslation'
 
-export { SITE_URL, alternateUrls, canonicalUrl } from '../seo/pageMeta'
+/** Öffentliche Adresse der App (ohne abschließenden Schrägstrich). */
+export const SITE_URL = 'https://kodinitools.com/playlist_generator'
+
+interface PageMeta {
+  title: TranslationKey
+  description: TranslationKey
+  path: string
+}
+
+const PAGES: Record<string, PageMeta> = {
+  landing: { title: 'meta_title_landing', description: 'meta_description_landing', path: '/' },
+  app: { title: 'meta_title_app', description: 'meta_description_app', path: '/app' },
+  faq: { title: 'meta_title_faq', description: 'meta_description_faq', path: '/faq' },
+  blog: { title: 'meta_title_blog', description: 'meta_description_blog', path: '/blog' },
+  download: {
+    title: 'meta_title_download',
+    description: 'meta_description_download',
+    path: '/download',
+  },
+}
+
+/**
+ * Kanonische URL einer Seite: Deutsch ohne Parameter, Englisch mit `?lang=en`,
+ * damit die hreflang-Alternativen aus der Sitemap auf sich selbst verweisen.
+ */
+export function canonicalUrl(path: string, lang: Language | null): string {
+  return `${SITE_URL}${path}${lang === 'en' ? '?lang=en' : ''}`
+}
+
+/** hreflang-Ziele einer Seite (de, en, x-default = de). */
+export function alternateUrls(path: string): { hreflang: string; href: string }[] {
+  return [
+    { hreflang: 'de', href: canonicalUrl(path, 'de') },
+    { hreflang: 'en', href: canonicalUrl(path, 'en') },
+    { hreflang: 'x-default', href: canonicalUrl(path, 'de') },
+  ]
+}
 
 /** Setzt `content`/`href` eines Head-Elements und legt es bei Bedarf an. */
 function upsertHead(selector: string, create: () => HTMLElement, attr: string, value: string) {
