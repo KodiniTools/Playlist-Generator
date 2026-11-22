@@ -64,6 +64,7 @@ const en: Record<TranslationKey, string> = {
     'How the Audio Playlist Generator works: formats, sorting, keyboard shortcuts and tips for perfect playlists.',
 
   // Landing Page - Hero
+  hero_eyebrow: 'Free · Browser Playlist Generator',
   hero_title: 'Audio Playlist Generator',
   hero_subtitle: 'Create an M3U playlist in seconds, right in your browser',
   hero_description:

@@ -1,6 +1,7 @@
 <template>
   <section class="hero">
     <div class="hero-content">
+      <p class="hero-eyebrow">{{ t('hero_eyebrow') }}</p>
       <h1 class="hero-title">{{ t('hero_title') }}</h1>
       <p class="hero-subtitle">{{ t('hero_subtitle') }}</p>
       <p class="hero-description">{{ t('hero_description') }}</p>
@@ -140,6 +141,15 @@
   .hero-content {
     max-width: 760px;
     margin-bottom: var(--ds-space-12);
+  }
+
+  .hero-eyebrow {
+    margin: 0 0 var(--ds-space-4);
+    font-size: var(--ds-text-xs);
+    font-weight: var(--ds-weight-bold);
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--ds-tint) 50%, var(--ds-text) 50%);
   }
 
   /* Display-Größe nur hier: die Token-Skala endet bei 32 px. */
