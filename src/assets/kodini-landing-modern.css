@@ -1,0 +1,117 @@
+/* ==========================================================================
+   Playlist Generator · Landingpage im freigegebenen Erscheinungsbild
+   --------------------------------------------------------------------------
+   Rein visuelle Schicht, ausschließlich unter .landing-page. App, FAQ, Blog
+   und Download bleiben unberührt. Keine Änderung an Vue, Übersetzungen, SEO
+   oder der SSI-Navigation.
+
+   - Farben nur aus Tokens: Flächen/Rahmen mit --ds-tint gemischt, Gold bleibt
+     --ds-accent (Buttons), Verlauf aus --ds-app-glow (je Theme in tokens-v2.css).
+   - `body` vor dem Selektor hebt die Spezifität über die scoped Regeln der
+     Landing-Komponenten.
+   - Breiten nur ab 901 px, damit die schmaleren Raster der Komponenten für
+     Tablet und Handy gültig bleiben.
+   - Kein Blur-Schatten (Design-System); Karten heben sich beim Hover über
+     Rahmenfarbe und leichten Versatz ab. Fokus bleibt --ds-focus-ring.
+   ========================================================================== */
+
+/* === Seitenhintergrund ===
+   Klasse doppelt: die scoped Regel .landing-page[data-v] hat 0-2-0. */
+body .landing-page.landing-page {
+  background-image: var(--ds-app-glow);
+  background-repeat: no-repeat;
+}
+
+/* === App-Vorschau im Hero === */
+body .landing-page .preview-window {
+  border-color: color-mix(in srgb, var(--ds-border) 70%, var(--ds-tint) 30%);
+  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+}
+
+body .landing-page .preview-titlebar {
+  background: color-mix(in srgb, var(--ds-surface-1) 91%, var(--ds-tint) 9%);
+  border-bottom-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
+}
+
+/* === Karten: Funktionen, Details, weitere Tools === */
+body .landing-page .feature-card,
+body .landing-page .tool-link-card {
+  border-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+  transition:
+    border-color var(--ds-duration) var(--ds-ease),
+    background-color var(--ds-duration) var(--ds-ease),
+    transform var(--ds-duration) var(--ds-ease);
+}
+
+body .landing-page .detail-item {
+  border-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+  background: color-mix(in srgb, var(--ds-surface-0) 94%, var(--ds-tint) 6%);
+  transition:
+    border-color var(--ds-duration) var(--ds-ease),
+    transform var(--ds-duration) var(--ds-ease);
+}
+
+body .landing-page .feature-card:hover,
+body .landing-page .detail-item:hover,
+body .landing-page .tool-link-card:hover {
+  border-color: color-mix(in srgb, var(--ds-border-strong) 40%, var(--ds-tint) 60%);
+  transform: translateY(-3px);
+}
+
+body .landing-page .tool-link-card:hover {
+  background: color-mix(in srgb, var(--ds-surface-1) 92%, var(--ds-tint) 8%);
+}
+
+body .landing-page .detail-item:hover {
+  background: color-mix(in srgb, var(--ds-surface-0) 90%, var(--ds-tint) 10%);
+}
+
+/* === Icons und Verweise in Cyan (mit Textfarbe gemischt für Kontrast) === */
+body .landing-page .feature-card__icon,
+body .landing-page .tool-link-icon {
+  background: color-mix(in srgb, var(--ds-surface-2) 84%, var(--ds-tint) 16%);
+  color: color-mix(in srgb, var(--ds-tint) 62%, var(--ds-text) 38%);
+}
+
+body .landing-page .detail-icon {
+  color: color-mix(in srgb, var(--ds-tint) 62%, var(--ds-text) 38%);
+}
+
+body .landing-page .tool-link-cta {
+  color: color-mix(in srgb, var(--ds-tint) 50%, var(--ds-text) 50%);
+}
+
+/* === Abschnitt „Details“ === */
+body .landing-page .details-section {
+  border-top-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
+  border-bottom-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
+  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+}
+
+/* === Abschlussbereich (CTA-Box nutzt die Tailwind-Fläche surface-1) === */
+body .landing-page .tw\:bg-surface-1 {
+  border-color: color-mix(in srgb, var(--ds-border) 66%, var(--ds-tint) 34%);
+  background: color-mix(in srgb, var(--ds-surface-1) 91%, var(--ds-tint) 9%);
+}
+
+/* === Breiten nur auf dem Desktop === */
+@media (min-width: 901px) {
+  body .landing-page .feature-cards,
+  body .landing-page .details-grid,
+  body .landing-page .tools-cards {
+    max-width: 1180px;
+  }
+
+  body .landing-page .section-header {
+    max-width: 760px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .landing-page .feature-card:hover,
+  body .landing-page .detail-item:hover,
+  body .landing-page .tool-link-card:hover {
+    transform: none;
+  }
+}
