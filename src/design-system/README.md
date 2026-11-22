@@ -47,14 +47,14 @@ damit auch die Partials `--ds-*` nutzen können.
   height: var(--ds-control-md);
   padding: 0 var(--ds-space-4);
   border-radius: var(--ds-radius-md);
-  background: var(--ds-accent);
+  background: var(--ds-accent-fill);
   color: var(--ds-on-accent);
   font-weight: var(--ds-weight-semibold);
   transition: background var(--ds-duration) var(--ds-ease);
 }
 
 .button-primary:hover {
-  background: var(--ds-accent-hover);
+  background: var(--ds-accent-fill-hover);
 }
 
 .button-primary:focus-visible {
@@ -74,7 +74,7 @@ controlSizesV2.row // 44
 ## v2 Token-Gruppen
 
 - **color**: `--ds-surface-0…3`, `--ds-border`, `--ds-border-strong`, `--ds-text`, `--ds-text-2`,
-  `--ds-text-3`, `--ds-accent`, `--ds-accent-hover`, `--ds-accent-soft`, `--ds-on-accent`, `--ds-link`, `--ds-tint` (Blau-Cyan, nur gemischt per `color-mix`),
+  `--ds-text-3`, `--ds-accent`, `--ds-accent-hover`, `--ds-accent-soft`, `--ds-accent-fill`, `--ds-accent-fill-hover` (gefüllte Goldflächen mit Text), `--ds-on-accent`, `--ds-link`, `--ds-tint` (Blau-Cyan, nur gemischt per `color-mix`),
   `--ds-success | -warning | -danger | -info`.
 - **effect**: `--ds-focus-ring` (2 px Abstand, 2 px Gold), `--ds-shadow-overlay` (einziger Schatten),
   `--ds-app-glow` (dezente blau-cyan Verläufe der App-Fläche, als `background-image`).

@@ -32,7 +32,10 @@
   --ds-accent: #d4a257;
   --ds-accent-hover: #e0b06a;
   --ds-accent-soft: rgba(212, 162, 87, 0.14);
-  --ds-on-accent: #0a1324;
+  /* Gefüllte Goldflächen mit Text (Primär-Button, Abzeichen): dunkler, damit Weiß lesbar ist */
+  --ds-accent-fill: #8f6320;
+  --ds-accent-fill-hover: #9a6b24;
+  --ds-on-accent: #ffffff;
   --ds-link: #6aaef5;
   --ds-tint: #3c98b9; /* Blau-Cyan-Tönung, nur gemischt mit Flächen/Rahmen (color-mix) */
 
@@ -134,6 +137,8 @@
   --ds-accent: #8f6320;
   --ds-accent-hover: #7d561c;
   --ds-accent-soft: rgba(201, 152, 77, 0.16);
+  --ds-accent-fill: #8f6320;
+  --ds-accent-fill-hover: #7d561c;
   --ds-on-accent: #ffffff;
   --ds-link: #0f5aa8;
   --ds-tint: #3c98b9;
@@ -167,6 +172,8 @@
   --ds-accent: #8f6320;
   --ds-accent-hover: #7d561c;
   --ds-accent-soft: rgba(201, 152, 77, 0.16);
+  --ds-accent-fill: #8f6320;
+  --ds-accent-fill-hover: #7d561c;
   --ds-on-accent: #ffffff;
   --ds-link: #0f5aa8;
   --ds-tint: #3c98b9;

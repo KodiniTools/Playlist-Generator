@@ -90,13 +90,13 @@
   }
 
   .ui-button--primary {
-    background: var(--ds-accent);
+    background: var(--ds-accent-fill);
     color: var(--ds-on-accent);
     font-weight: var(--ds-weight-semibold);
   }
 
   .ui-button--primary:hover:not(:disabled) {
-    background: var(--ds-accent-hover);
+    background: var(--ds-accent-fill-hover);
   }
 
   .ui-button--secondary {

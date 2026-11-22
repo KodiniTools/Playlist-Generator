@@ -1,0 +1,174 @@
+/* ==========================================================================
+   Playlist Generator · FAQ, Blog und Download im freigegebenen Erscheinungsbild
+   --------------------------------------------------------------------------
+   Rein visuelle Schicht, ausschließlich unter .faq-page, .blog-page und
+   .download-page. Keine Änderung an Vue, Texten, Downloadlinks, SEO oder der
+   SSI-Navigation.
+
+   - Farben nur aus Tokens: Flächen/Rahmen mit --ds-tint gemischt, Gold bleibt
+     --ds-accent, Verlauf aus --ds-app-glow (je Theme in tokens-v2.css).
+   - `body` vor dem Selektor hebt die Spezifität über die scoped Regeln der
+     Seiten; der Seitenhintergrund braucht die Klasse doppelt (scoped 0-2-0).
+   - Breiten und große Überschriften nur ab 901 px, damit die Abstände und
+     Schriftgrößen der Komponenten für Tablet und Handy gültig bleiben.
+   - Kein Blur-Schatten (Design-System). Fokus bleibt --ds-focus-ring.
+   - Der Datenschutz-Hinweis (UiCallout) und die Kennzeichnung „Empfohlen“
+     behalten ihre eigenen Farben.
+   ========================================================================== */
+
+/* === Seitenhintergrund === */
+body .faq-page.faq-page,
+body .blog-page.blog-page,
+body .download-page.download-page {
+  background-image: var(--ds-app-glow);
+  background-repeat: no-repeat;
+}
+
+/* === FAQ: Fragenblock als Panel, Akkordeon mit Cyan-Rahmen === */
+body .faq-page .faq-questions {
+  padding: var(--ds-space-6);
+  border: var(--ds-border-width) solid color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+  border-radius: var(--ds-radius-lg);
+  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+}
+
+body .faq-page .faq-list details {
+  border-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+  background: color-mix(in srgb, var(--ds-surface-2) 92%, var(--ds-tint) 8%);
+}
+
+body .faq-page .faq-list details:hover,
+body .faq-page .faq-list details[open] {
+  border-color: color-mix(in srgb, var(--ds-border-strong) 40%, var(--ds-tint) 60%);
+}
+
+body .faq-page .faq-list summary:hover,
+body .faq-page .faq-list details[open] summary {
+  background: color-mix(in srgb, var(--ds-surface-2) 84%, var(--ds-tint) 16%);
+}
+
+body .faq-page .faq-list details p {
+  border-top-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+}
+
+body .faq-page .cta-content {
+  border-color: color-mix(in srgb, var(--ds-border) 66%, var(--ds-tint) 34%);
+  background: color-mix(in srgb, var(--ds-surface-1) 91%, var(--ds-tint) 9%);
+}
+
+/* === Blog: Inhaltsverzeichnis, Informationsbereiche, Fazit === */
+body .blog-page .blog-header {
+  border-bottom-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
+}
+
+body .blog-page .table-of-contents {
+  border-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+  border-left: 3px solid var(--ds-accent);
+  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+}
+
+body .blog-page .table-of-contents a {
+  color: color-mix(in srgb, var(--ds-tint) 50%, var(--ds-text) 50%);
+  text-underline-offset: 3px;
+}
+
+body .blog-page .table-of-contents a:hover {
+  color: var(--ds-text);
+}
+
+body .blog-page .blog-section h2 {
+  border-bottom-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
+}
+
+body .blog-page .format-card,
+body .blog-page .feature-item,
+body .blog-page .highlight-box {
+  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+}
+
+body .blog-page .format-card {
+  border-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+}
+
+body .blog-page .format-card:hover {
+  border-color: color-mix(in srgb, var(--ds-border-strong) 40%, var(--ds-tint) 60%);
+}
+
+body .blog-page .highlight-box {
+  border-top-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+  border-right-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+  border-bottom-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+}
+
+body .blog-page .conclusion {
+  border-color: color-mix(in srgb, var(--ds-border) 66%, var(--ds-tint) 34%);
+  background: color-mix(in srgb, var(--ds-surface-1) 91%, var(--ds-tint) 9%);
+}
+
+/* === Download: Karten, goldene Akzente, Installationshinweise === */
+body .download-page .download-hero__eyebrow {
+  border-color: color-mix(in srgb, var(--ds-border) 70%, var(--ds-tint) 30%);
+  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+  color: var(--ds-accent);
+}
+
+body .download-page .file-card {
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+  text-align: left;
+}
+
+body .download-page .file-card:not(.file-card--recommended) {
+  border-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+}
+
+body .download-page .file-card:not(.file-card--recommended):hover {
+  border-color: color-mix(in srgb, var(--ds-border-strong) 40%, var(--ds-tint) 60%);
+}
+
+body .download-page .download-notes {
+  padding: var(--ds-space-8) var(--ds-space-6);
+  border: var(--ds-border-width) solid color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+  border-radius: var(--ds-radius-lg);
+  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+}
+
+body .download-page .note-item {
+  border-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+  background: color-mix(in srgb, var(--ds-surface-0) 94%, var(--ds-tint) 6%);
+}
+
+/* === Breiten und Überschriften nur auf dem Desktop === */
+@media (min-width: 901px) {
+  body .faq-page .faq-container,
+  body .download-page .download-container {
+    max-width: 1164px;
+  }
+
+  body .blog-page .blog-container {
+    max-width: 900px;
+  }
+
+  body .faq-page .content-header,
+  body .download-page .download-hero {
+    max-width: 790px;
+    margin-inline: auto;
+  }
+
+  body .faq-page .content-header h1,
+  body .download-page .download-hero h1,
+  body .blog-page .blog-header h1 {
+    font-size: clamp(var(--ds-text-3xl), 4.3vw, 52px);
+    line-height: 1.14;
+  }
+}
+
+@media (max-width: 480px) {
+  body .faq-page .faq-questions {
+    padding: var(--ds-space-4) var(--ds-space-3);
+  }
+
+  body .download-page .download-notes {
+    padding: var(--ds-space-5) var(--ds-space-3);
+  }
+}

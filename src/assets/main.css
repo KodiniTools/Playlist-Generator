@@ -22,6 +22,7 @@
 @import './kodini-controls-stage3.css';
 @import './kodini-playlist-stage4.css';
 @import './kodini-landing-modern.css';
+@import './kodini-subpages-modern.css';
 
 /* === Schrift (Supreme, vom Site-Root ausgeliefert) === */
 @font-face {
@@ -140,9 +141,9 @@ html body .global-nav .global-nav-dropdown-menu {
   box-shadow: var(--ds-shadow-overlay) !important;
 }
 
-/* Aktive Sprache wie der Primärbutton der App: Gold mit Navy-Text. */
+/* Aktive Sprache wie der Primärbutton der App: dunkles Gold mit weißem Text. */
 html body .global-nav .global-nav-lang-btn.active {
-  background: var(--ds-accent) !important;
+  background: var(--ds-accent-fill) !important;
   color: var(--ds-on-accent) !important;
 }
 
