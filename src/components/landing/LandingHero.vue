@@ -351,8 +351,8 @@
   }
 
   .preview-btn.active-btn {
-    border-color: var(--ds-accent);
-    background: var(--ds-accent);
+    border-color: var(--ds-accent-fill);
+    background: var(--ds-accent-fill);
     color: var(--ds-on-accent);
   }
 

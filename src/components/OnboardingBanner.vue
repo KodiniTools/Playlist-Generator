@@ -115,7 +115,7 @@
     width: 22px;
     height: 22px;
     border-radius: var(--ds-radius-full);
-    background: var(--ds-accent);
+    background: var(--ds-accent-fill);
     color: var(--ds-on-accent);
     font-size: var(--ds-text-xs);
     font-weight: var(--ds-weight-bold);

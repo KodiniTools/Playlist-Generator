@@ -208,7 +208,7 @@
     font-weight: var(--ds-weight-bold);
     white-space: nowrap;
     color: var(--ds-on-accent);
-    background: var(--ds-accent);
+    background: var(--ds-accent-fill);
     border-radius: var(--ds-radius-full);
   }
 

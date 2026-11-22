@@ -106,10 +106,23 @@ describe('Kontrast (WCAG AA, mindestens 4.5:1)', () => {
     expect(failures).toEqual([])
   })
 
-  it.each(THEMES)('%s: Text auf Akzent und Akzent-Hover', (theme) => {
+  it.each(THEMES)('%s: Text auf gefüllter Goldfläche und deren Hover', (theme) => {
     const colors = themeColorsV2(theme)
-    expect(contrastRatio(colors.onAccent, colors.accent)).toBeGreaterThanOrEqual(AA)
-    expect(contrastRatio(colors.onAccent, colors.accentHover)).toBeGreaterThanOrEqual(AA)
+    expect(contrastRatio(colors.onAccent, colors.accentFill)).toBeGreaterThanOrEqual(AA)
+    expect(contrastRatio(colors.onAccent, colors.accentFillHover)).toBeGreaterThanOrEqual(AA)
+  })
+
+  it.each(THEMES)('%s: gefüllte Goldfläche hebt sich mind. 3:1 von der Fläche ab', (theme) => {
+    const colors = themeColorsV2(theme)
+    const failures = (['surface0', 'surface1'] as const).flatMap((surface) => {
+      const ratio = contrastRatio(colors.accentFill, colors[surface])
+      return ratio >= 3 ? [] : [`accentFill auf ${surface}: ${ratio.toFixed(2)}`]
+    })
+    expect(failures).toEqual([])
+  })
+
+  it.each(THEMES)('%s: Schrift auf goldenen Buttons ist weiß', (theme) => {
+    expect(colorTokenV2(theme, 'onAccent')).toBe('#ffffff')
   })
 
   it.each(THEMES)(

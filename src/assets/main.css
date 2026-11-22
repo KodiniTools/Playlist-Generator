@@ -141,9 +141,9 @@ html body .global-nav .global-nav-dropdown-menu {
   box-shadow: var(--ds-shadow-overlay) !important;
 }
 
-/* Aktive Sprache wie der Primärbutton der App: Gold mit Navy-Text. */
+/* Aktive Sprache wie der Primärbutton der App: dunkles Gold mit weißem Text. */
 html body .global-nav .global-nav-lang-btn.active {
-  background: var(--ds-accent) !important;
+  background: var(--ds-accent-fill) !important;
   color: var(--ds-on-accent) !important;
 }
 

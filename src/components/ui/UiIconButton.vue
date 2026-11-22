@@ -96,12 +96,12 @@
   }
 
   .ui-icon-button--primary {
-    background: var(--ds-accent);
+    background: var(--ds-accent-fill);
     color: var(--ds-on-accent);
   }
 
   .ui-icon-button--primary:hover:not(:disabled) {
-    background: var(--ds-accent-hover);
+    background: var(--ds-accent-fill-hover);
   }
 
   .ui-icon-button--sm {
