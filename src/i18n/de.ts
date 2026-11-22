@@ -67,6 +67,7 @@ const de = {
     'Wie der Audio Wiedergabeliste Generator funktioniert: Formate, Sortierung, Tastenkürzel und Tipps für perfekte Wiedergabelisten.',
 
   // Landing Page - Hero
+  hero_eyebrow: 'Kostenlos · Playlist-Generator im Browser',
   hero_title: 'Audio Wiedergabeliste Generator',
   hero_subtitle: 'M3U Playlist erstellen – in Sekunden, direkt im Browser',
   hero_description:

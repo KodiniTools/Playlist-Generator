@@ -9,8 +9,9 @@
      --ds-accent (Buttons), Verlauf aus --ds-app-glow (je Theme in tokens-v2.css).
    - `body` vor dem Selektor hebt die Spezifität über die scoped Regeln der
      Landing-Komponenten.
-   - Breiten nur ab 901 px, damit die schmaleren Raster der Komponenten für
-     Tablet und Handy gültig bleiben.
+   - Breiten und der zweispaltige Hero nur ab 901 px, damit die schmaleren
+     Raster und das einspaltige Hero-Layout der Komponenten für Tablet und
+     Handy gültig bleiben.
    - Kein Blur-Schatten (Design-System); Karten heben sich beim Hover über
      Rahmenfarbe und leichten Versatz ab. Fokus bleibt --ds-focus-ring.
    ========================================================================== */
@@ -93,6 +94,79 @@ body .landing-page .details-section {
 body .landing-page .tw\:bg-surface-1 {
   border-color: color-mix(in srgb, var(--ds-border) 66%, var(--ds-tint) 34%);
   background: color-mix(in srgb, var(--ds-surface-1) 91%, var(--ds-tint) 9%);
+}
+
+/* === Karteninhalt linksbündig, Häkchen der Vorteile in Cyan === */
+body .landing-page .feature-card {
+  text-align: left;
+}
+
+body .landing-page .feature-card__icon {
+  margin: 0 0 var(--ds-space-4);
+}
+
+body .landing-page .trust-badge svg {
+  color: color-mix(in srgb, var(--ds-tint) 62%, var(--ds-text) 38%);
+}
+
+body .landing-page .preview-track-item,
+body .landing-page .preview-code {
+  overflow-wrap: anywhere;
+}
+
+/* === Hero zweispaltig (nur Desktop): Text links, App-Vorschau rechts ===
+   Bis 900 px bleibt das einspaltige, zentrierte Layout der Komponente. */
+@media (min-width: 901px) {
+  body .landing-page .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--ds-space-12);
+    max-width: calc(1180px + 2 * var(--ds-gutter));
+    min-height: 0;
+    margin-inline: auto;
+    padding: var(--ds-space-16) var(--ds-gutter) var(--ds-space-12);
+    text-align: left;
+  }
+
+  body .landing-page .hero-content {
+    max-width: none;
+    margin-bottom: 0;
+  }
+
+  body .landing-page .hero-title {
+    font-size: clamp(40px, 4.65vw, 64px);
+    line-height: 1.1;
+  }
+
+  body .landing-page .hero-subtitle {
+    font-weight: var(--ds-weight-semibold);
+  }
+
+  body .landing-page .hero-description {
+    max-width: 560px;
+  }
+
+  body .landing-page .hero-buttons,
+  body .landing-page .trust-badges {
+    justify-content: flex-start;
+  }
+
+  body .landing-page .app-preview {
+    max-width: none;
+    margin-bottom: 0;
+  }
+
+  body .landing-page .preview-body {
+    grid-template-columns: minmax(0, 44fr) minmax(0, 56fr);
+    min-height: 280px;
+  }
+
+  body .landing-page .scroll-indicator {
+    grid-column: 1 / -1;
+    justify-self: center;
+    margin-top: var(--ds-space-8);
+  }
 }
 
 /* === Breiten nur auf dem Desktop === */

@@ -83,3 +83,22 @@ describe('LandingPage – Aktionen', () => {
     expect(wrapper.find('.btn').exists()).toBe(false)
   })
 })
+
+describe('LandingPage – Hero', () => {
+  beforeEach(() => {
+    useTranslation().setLanguage('de')
+  })
+
+  it('zeigt die Dachzeile übersetzt vor der einzigen h1', async () => {
+    const wrapper = mountLandingPage()
+    const eyebrow = () => wrapper.find('.hero-content > .hero-eyebrow')
+
+    expect(eyebrow().text()).toBe('Kostenlos · Playlist-Generator im Browser')
+    expect(eyebrow().element.nextElementSibling?.tagName).toBe('H1')
+    expect(wrapper.findAll('h1')).toHaveLength(1)
+
+    useTranslation().setLanguage('en')
+    await wrapper.vm.$nextTick()
+    expect(eyebrow().text()).toBe('Free · Browser Playlist Generator')
+  })
+})
