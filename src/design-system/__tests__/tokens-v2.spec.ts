@@ -112,6 +112,18 @@ describe('Kontrast (WCAG AA, mindestens 4.5:1)', () => {
     expect(contrastRatio(colors.onAccent, colors.accentHover)).toBeGreaterThanOrEqual(AA)
   })
 
+  it.each(THEMES)(
+    '%s: Akzent (Primär-Button, Fokus) als Fläche mind. 3:1 (WCAG 1.4.11)',
+    (theme) => {
+      const colors = themeColorsV2(theme)
+      const failures = (['surface0', 'surface1'] as const).flatMap((surface) => {
+        const ratio = contrastRatio(colors.accent, colors[surface])
+        return ratio >= 3 ? [] : [`accent auf ${surface}: ${ratio.toFixed(2)}`]
+      })
+      expect(failures).toEqual([])
+    },
+  )
+
   it.each(THEMES)('%s: Text auf gefüllter Erfolgs-Fläche', (theme) => {
     const colors = themeColorsV2(theme)
     expect(contrastRatio(colors.onSuccess, colors.success)).toBeGreaterThanOrEqual(AA)
@@ -130,7 +142,7 @@ describe('Kontrast (WCAG AA, mindestens 4.5:1)', () => {
 describe('tokens-v2.ts', () => {
   it('liefert Farbwerte, Variablennamen und var()-Ausdrücke', () => {
     expect(colorTokenV2('dark', 'accent')).toBe('#d4a257')
-    expect(colorTokenV2('light', 'accent')).toBe('#c9984d')
+    expect(colorTokenV2('light', 'accent')).toBe('#b8842f')
     expect(colorCssVarV2('text2')).toBe('--ds-text-2')
     expect(cssVarV2('text2')).toBe('var(--ds-text-2)')
     expect(cssVarV2('surface1', '#111d33')).toBe('var(--ds-surface-1, #111d33)')

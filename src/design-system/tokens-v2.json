@@ -164,13 +164,13 @@
       },
       "accent": {
         "$type": "color",
-        "$value": "#c9984d",
+        "$value": "#b8842f",
         "$description": "Primäraktion, Fokus, aktive Zustände",
         "$extensions": { "css": "--ds-accent" }
       },
       "accentHover": {
         "$type": "color",
-        "$value": "#b8842f",
+        "$value": "#c9984d",
         "$description": "Primäraktion :hover",
         "$extensions": { "css": "--ds-accent-hover" }
       },
