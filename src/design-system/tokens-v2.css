@@ -45,6 +45,10 @@
   /* Effekte (theme-abhängig) */
   --ds-focus-ring: 0 0 0 2px var(--ds-surface-0), 0 0 0 4px var(--ds-accent);
   --ds-shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.35);
+  /* Dezente blau-cyan Tiefenwirkung der App-Fläche (Grundlayout Etappe 1) */
+  --ds-app-glow:
+    radial-gradient(ellipse 72% 38% at 82% 4%, rgba(37, 105, 157, 0.13), transparent 75%),
+    radial-gradient(ellipse 58% 38% at 5% 42%, rgba(27, 91, 130, 0.07), transparent 76%);
 
   /* === Typografie === */
   --ds-font-sans: 'Supreme', sans-serif;
@@ -139,6 +143,9 @@
 
   --ds-focus-ring: 0 0 0 2px var(--ds-surface-0), 0 0 0 4px var(--ds-accent);
   --ds-shadow-overlay: 0 8px 24px rgba(20, 33, 58, 0.12);
+  --ds-app-glow:
+    radial-gradient(ellipse 72% 38% at 82% 4%, rgba(54, 135, 183, 0.075), transparent 75%),
+    radial-gradient(ellipse 58% 38% at 5% 42%, rgba(75, 137, 169, 0.045), transparent 76%);
 }
 
 /* === Light (SSI-Partials, spiegelt .light-theme vollständig) === */
@@ -168,4 +175,7 @@
 
   --ds-focus-ring: 0 0 0 2px var(--ds-surface-0), 0 0 0 4px var(--ds-accent);
   --ds-shadow-overlay: 0 8px 24px rgba(20, 33, 58, 0.12);
+  --ds-app-glow:
+    radial-gradient(ellipse 72% 38% at 82% 4%, rgba(54, 135, 183, 0.075), transparent 75%),
+    radial-gradient(ellipse 58% 38% at 5% 42%, rgba(75, 137, 169, 0.045), transparent 76%);
 }

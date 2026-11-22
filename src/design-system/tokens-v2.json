@@ -226,6 +226,12 @@
         "$value": "0 8px 24px rgba(0, 0, 0, 0.35)",
         "$description": "Einziger Schatten: Dialog, Popover, Menü",
         "$extensions": { "css": "--ds-shadow-overlay" }
+      },
+      "appGlow": {
+        "$type": "gradient",
+        "$value": "radial-gradient(ellipse 72% 38% at 82% 4%, rgba(37, 105, 157, 0.13), transparent 75%), radial-gradient(ellipse 58% 38% at 5% 42%, rgba(27, 91, 130, 0.07), transparent 76%)",
+        "$description": "Dezente blau-cyan Hintergrundverläufe der App-Fläche (background-image)",
+        "$extensions": { "css": "--ds-app-glow" }
       }
     },
     "light": {
@@ -240,6 +246,12 @@
         "$value": "0 8px 24px rgba(20, 33, 58, 0.12)",
         "$description": "Einziger Schatten: Dialog, Popover, Menü",
         "$extensions": { "css": "--ds-shadow-overlay" }
+      },
+      "appGlow": {
+        "$type": "gradient",
+        "$value": "radial-gradient(ellipse 72% 38% at 82% 4%, rgba(54, 135, 183, 0.075), transparent 75%), radial-gradient(ellipse 58% 38% at 5% 42%, rgba(75, 137, 169, 0.045), transparent 76%)",
+        "$description": "Dezente blau-cyan Hintergrundverläufe der App-Fläche (background-image)",
+        "$extensions": { "css": "--ds-app-glow" }
       }
     }
   },

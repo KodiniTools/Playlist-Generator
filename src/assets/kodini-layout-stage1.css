@@ -1,0 +1,23 @@
+/* ==========================================================================
+   Playlist Generator · Grundlayout Etappe 1
+   --------------------------------------------------------------------------
+   Rein visuelle, additive Schicht. Keine Änderung an Vue, Routing, Stores,
+   Theme-Logik, Audio oder SSI-Partials.
+
+   - Verlauf: Farben kommen aus --ds-app-glow (tokens-v2.css, Dark/Light).
+     `body` vor dem Selektor hebt die Spezifität über den scoped
+     `background`-Shorthand von AppPage.vue, der im Build später geladen wird.
+   - Fokus: nur Fallback für Elemente ohne eigenen Fokusstil. :where() hält die
+     Spezifität bei 0-1-0, damit `outline: none` + --ds-focus-ring der
+     Komponenten Vorrang behalten (kein Doppelring).
+   ========================================================================== */
+
+body .app-wrapper .app-page {
+  background-image: var(--ds-app-glow);
+  background-repeat: no-repeat;
+}
+
+:where(.app-wrapper .app-page) :focus-visible {
+  outline: 2px solid var(--ds-accent);
+  outline-offset: 2px;
+}
