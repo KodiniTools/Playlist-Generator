@@ -88,6 +88,12 @@
         "$description": "Links im Fließtext",
         "$extensions": { "css": "--ds-link" }
       },
+      "tint": {
+        "$type": "color",
+        "$value": "#3c98b9",
+        "$description": "Blau-Cyan-Tönung; nur per color-mix mit Flächen und Rahmen, nie als Textfarbe",
+        "$extensions": { "css": "--ds-tint" }
+      },
       "success": {
         "$type": "color",
         "$value": "#5fcf8a",
@@ -191,6 +197,12 @@
         "$value": "#0f5aa8",
         "$description": "Links im Fließtext",
         "$extensions": { "css": "--ds-link" }
+      },
+      "tint": {
+        "$type": "color",
+        "$value": "#3c98b9",
+        "$description": "Blau-Cyan-Tönung; nur per color-mix mit Flächen und Rahmen, nie als Textfarbe",
+        "$extensions": { "css": "--ds-tint" }
       },
       "success": {
         "$type": "color",

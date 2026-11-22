@@ -34,6 +34,7 @@
   --ds-accent-soft: rgba(212, 162, 87, 0.14);
   --ds-on-accent: #0a1324;
   --ds-link: #6aaef5;
+  --ds-tint: #3c98b9; /* Blau-Cyan-Tönung, nur gemischt mit Flächen/Rahmen (color-mix) */
 
   /* Status */
   --ds-success: #5fcf8a;
@@ -134,6 +135,7 @@
   --ds-accent-soft: rgba(201, 152, 77, 0.16);
   --ds-on-accent: #14213a;
   --ds-link: #0f5aa8;
+  --ds-tint: #3c98b9;
 
   --ds-success: #177a42;
   --ds-on-success: #ffffff;
@@ -166,6 +168,7 @@
   --ds-accent-soft: rgba(201, 152, 77, 0.16);
   --ds-on-accent: #14213a;
   --ds-link: #0f5aa8;
+  --ds-tint: #3c98b9;
 
   --ds-success: #177a42;
   --ds-on-success: #ffffff;
