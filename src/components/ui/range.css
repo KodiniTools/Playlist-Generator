@@ -5,6 +5,7 @@
    Scoped einbinden: <style scoped src="./range.css"></style>. */
 
 input[type='range'] {
+  font-family: inherit;
   -webkit-appearance: none;
   appearance: none;
   width: 100%;

@@ -271,13 +271,13 @@
     "fontSans": {
       "$type": "fontFamily",
       "$value": "'Supreme', sans-serif",
-      "$description": "Supreme in 400/500/600/700 als echte Schnitte deployen (/fonts/)",
+      "$description": "Supreme Regular 400 aus /fonts/Supreme-Regular.woff2, einzige Schriftdatei; 500–700 synthetisiert der Browser daraus",
       "$extensions": { "css": "--ds-font-sans" }
     },
     "fontMono": {
       "$type": "fontFamily",
-      "$value": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
-      "$description": "Code-Block, Chips, Dateinamen in Meta",
+      "$value": "'Supreme', sans-serif",
+      "$description": "Code-Block, Chips, Dateinamen in Meta. Bewusst Supreme statt Monospace: die App nutzt ausschließlich Supreme Regular",
       "$extensions": { "css": "--ds-font-mono" }
     },
     "size": {

@@ -78,7 +78,7 @@ controlSizesV2.row // 44
   `--ds-success | -warning | -danger | -info`.
 - **effect**: `--ds-focus-ring` (2 px Abstand, 2 px Gold), `--ds-shadow-overlay` (einziger Schatten),
   `--ds-app-glow` (dezente blau-cyan Verläufe der App-Fläche, als `background-image`).
-- **typography**: `--ds-font-sans`, `--ds-font-mono`, `--ds-text-xs … -3xl` (12 · 13 · 14 · 16 · 20 · 24 · 32),
+- **typography**: `--ds-font-sans`, `--ds-font-mono` (beide Supreme Regular, einzige Schrift der App), `--ds-text-xs … -3xl` (12 · 13 · 14 · 16 · 20 · 24 · 32),
   `--ds-weight-*`, `--ds-leading`, `--ds-leading-tight`, `--ds-tracking-tight`.
 - **spacing**: `--ds-space-1 … -16` im 4er-Raster.
 - **radius / border**: `--ds-radius-sm | -md | -lg | -full` (6 / 10 / 16 / 999), `--ds-border-width` 1 px.

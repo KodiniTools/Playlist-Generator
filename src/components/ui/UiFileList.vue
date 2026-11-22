@@ -459,6 +459,7 @@
   }
 
   .ui-file-list__checkbox {
+    font-family: inherit;
     width: 16px;
     height: 16px;
     margin: 0;
@@ -528,6 +529,7 @@
   }
 
   .ui-file-list__handle {
+    font-family: inherit;
     display: inline-flex;
     align-items: center;
     justify-content: center;

@@ -56,6 +56,7 @@
     border-radius: var(--ds-radius-md);
     background: transparent;
     color: var(--ds-text-2);
+    font-family: inherit;
     cursor: pointer;
     flex-shrink: 0;
     transition:

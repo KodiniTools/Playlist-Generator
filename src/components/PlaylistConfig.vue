@@ -345,6 +345,7 @@
 
   .playlist-config__input {
     position: absolute;
+    font-family: inherit;
     width: 1px;
     height: 1px;
     padding: 0;

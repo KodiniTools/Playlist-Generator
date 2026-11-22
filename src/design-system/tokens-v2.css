@@ -53,7 +53,8 @@
 
   /* === Typografie === */
   --ds-font-sans: 'Supreme', sans-serif;
-  --ds-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Bewusst keine Monospace-Schrift: die App nutzt ausschließlich Supreme Regular. */
+  --ds-font-mono: 'Supreme', sans-serif;
   --ds-text-xs: 12px;
   --ds-text-sm: 13px;
   --ds-text-md: 14px;
