@@ -18,6 +18,7 @@
 @import '../design-system/tokens.css';
 @import '../design-system/tokens-v2.css';
 @import './kodini-layout-stage1.css';
+@import './kodini-header-stage2.css';
 
 /* === Schrift (Supreme, vom Site-Root ausgeliefert) === */
 @font-face {

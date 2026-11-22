@@ -72,7 +72,8 @@ npm run tauri build   # Installer nach src-tauri/target/release/bundle/{nsis,msi
   Drag & Drop von Dateien und Ordnern geht an die Ablagezone der App
   (`disable_drag_drop_handler` in `src-tauri/src/main.rs`).
 - Links nach außen (kodinitools.com, PayPal, Facebook) öffnen im Standardbrowser.
-- Favicon: Die App nutzt weiter nur `public/favicon.ico`. Das Programm-Icon
+- Favicon: Das Repo enthält keins mehr, im Web gilt das Site-Favicon `kodinitools.com/favicon.ico`
+  (im Desktop-Fenster gibt es keinen Tab und damit kein Favicon). Das Programm-Icon
   (`src-tauri/icons/`) ist aus `public/icons/icon-512.png` erzeugt (`npx tauri icon`).
 - Läuft auf Windows 10/11 mit Microsoft Edge WebView2 (dort vorinstalliert; sonst lädt der
   Installer WebView2 nach).

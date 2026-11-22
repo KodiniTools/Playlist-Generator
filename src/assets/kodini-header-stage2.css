@@ -1,0 +1,50 @@
+/* ==========================================================================
+   Playlist Generator · Etappe 2: Header und Navigation
+   --------------------------------------------------------------------------
+   Rein visuelle Schicht für die Vue-Seitennavigation (AppHeader.vue). Keine
+   Änderung an Vue, Routing, Theme-Logik oder der SSI-Navigation.
+
+   - Blau-Cyan-Tönung aus --ds-tint, Gold aus --ds-accent (beide je Theme in
+     tokens-v2.css), gemischt mit den Flächen- und Rahmen-Tokens.
+   - `body` vor dem Selektor hebt die Spezifität über die scoped Regeln von
+     AppHeader.vue, unabhängig von der Ladereihenfolge der CSS-Chunks.
+   - Fokus bleibt der vorhandene --ds-focus-ring der Komponente.
+   ========================================================================== */
+
+body .app-wrapper .app-header {
+  background: color-mix(in srgb, var(--ds-surface-1) 94%, var(--ds-tint) 6%);
+  border-bottom-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
+}
+
+body .app-wrapper .app-header__inner {
+  gap: clamp(8px, 1.5vw, 20px);
+}
+
+body .app-wrapper .app-header__nav {
+  align-items: center;
+  gap: var(--ds-space-1);
+}
+
+body .app-wrapper .app-header__link {
+  border: var(--ds-border-width) solid transparent;
+  border-radius: var(--ds-radius-md);
+  white-space: nowrap;
+}
+
+body .app-wrapper .app-header__link:hover {
+  background: color-mix(in srgb, var(--ds-surface-2) 84%, var(--ds-tint) 16%);
+  border-color: color-mix(in srgb, var(--ds-border) 72%, var(--ds-tint) 28%);
+}
+
+body .app-wrapper .app-header__link--active,
+body .app-wrapper .app-header__link--active:hover {
+  color: var(--ds-text);
+  background: color-mix(in srgb, var(--ds-surface-2) 90%, var(--ds-accent) 10%);
+  border-color: color-mix(in srgb, var(--ds-border) 64%, var(--ds-accent) 36%);
+  box-shadow: inset 0 -2px 0 var(--ds-accent);
+}
+
+/* Fokus-Ring und Gold-Linie teilen sich box-shadow: beim Fokus gilt der Ring. */
+body .app-wrapper .app-header__link--active:focus-visible {
+  box-shadow: var(--ds-focus-ring);
+}
