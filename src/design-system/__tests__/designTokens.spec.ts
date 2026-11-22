@@ -112,6 +112,25 @@ describe('Design-Tokens in allen Styles', () => {
     expect(hits).toEqual([])
   })
 
+  it('einzige Schriftart ist Supreme Regular (keine andere Familie, keine zweite Schriftdatei)', () => {
+    const tokenFiles = ['tokens.css', 'tokens-v2.css', 'tokens.json', 'tokens-v2.json']
+    const families = tokenFiles.flatMap((file) => {
+      const source = readFileSync(join(SRC, 'design-system', file), 'utf8')
+      const values = file.endsWith('.json')
+        ? [...source.matchAll(/"\$type": "fontFamily",\s*"\$value": "([^"]+)"/g)]
+        : [...source.matchAll(/--(?:ds-font-(?:sans|mono)|font-family-[\w-]+):\s*([^;]+);/g)]
+      return values.map((m) => `${file}: ${(m[1] ?? '').trim()}`)
+    })
+    expect(families.length).toBeGreaterThanOrEqual(8)
+    expect(families.filter((entry) => !entry.endsWith(": 'Supreme', sans-serif"))).toEqual([])
+
+    const mainCss = readFileSync(join(SRC, 'assets/main.css'), 'utf8')
+    const faces = [...mainCss.matchAll(/@font-face\s*\{([^}]*)\}/g)].map((m) => m[1] ?? '')
+    expect(faces).toHaveLength(1)
+    expect(faces[0]).toMatch(/font-family:\s*'Supreme'/)
+    expect(faces[0]).toMatch(/Supreme-Regular\.woff2/)
+  })
+
   it('Schatten nur als Fokus-Ring, Overlay oder Innenlinie; kein Blur, kein Text-Schatten', () => {
     const shadows = find(/box-shadow:\s*([^;]+)/g, (m) => {
       const value = (m[1] ?? '').replace(/\s*!important$/, '').trim()

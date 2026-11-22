@@ -49,6 +49,7 @@
   }
 
   .ui-switch__track {
+    font-family: inherit;
     position: relative;
     flex-shrink: 0;
     width: 32px;
