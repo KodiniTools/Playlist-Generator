@@ -170,13 +170,13 @@
       },
       "accent": {
         "$type": "color",
-        "$value": "#b8842f",
+        "$value": "#8f6320",
         "$description": "Primäraktion, Fokus, aktive Zustände",
         "$extensions": { "css": "--ds-accent" }
       },
       "accentHover": {
         "$type": "color",
-        "$value": "#c9984d",
+        "$value": "#7d561c",
         "$description": "Primäraktion :hover",
         "$extensions": { "css": "--ds-accent-hover" }
       },
@@ -188,7 +188,7 @@
       },
       "onAccent": {
         "$type": "color",
-        "$value": "#14213a",
+        "$value": "#ffffff",
         "$description": "Text und Icons auf Akzent",
         "$extensions": { "css": "--ds-on-accent" }
       },
