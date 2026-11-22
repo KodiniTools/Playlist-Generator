@@ -1,6 +1,14 @@
 import type { Language } from '../composables/useTranslation'
 import type { TranslationKey } from '../i18n/de'
-import { PAGES, SITE_URL, alternateUrls, canonicalUrl, type PageMeta } from './pageMeta'
+import {
+  PAGES,
+  SITE_URL,
+  alternateUrls,
+  canonicalUrl,
+  jsonForScript,
+  structuredData,
+  type PageMeta,
+} from './pageMeta'
 
 /**
  * Serverseitiger `<head>` je Sprache und Route über nginx-SSI (`ssi on`).
@@ -17,6 +25,10 @@ import { PAGES, SITE_URL, alternateUrls, canonicalUrl, type PageMeta } from './p
  * - `$` ist in Ausdrücken immer eine Variable: Regex-Ende daher `\z`, Text-`$` als `&#36;`.
  * - `$arg_lang` fehlt nach dem try_files-Fallback (Query geht verloren); geprüft
  *   wird deshalb `$request_uri` (Original-URL mit Query).
+ * - Jeder `set`-Wert ist auf 256 Byte begrenzt: das JSON-LD (strukturierte Daten)
+ *   wird deshalb in Stücken (`pg_j1` …) gesetzt und erst beim Ausgeben verkettet.
+ * - In doppelt gequoteten Werten gilt nur `\\` als Maskierung (`\\"`, `\\$`, `\\\\`);
+ *   `\\u…` bricht den Befehl ab, JSON-Escapes brauchen daher den doppelten Backslash.
  *
  * Ohne SSI (vite preview, Desktop) bleiben alle Befehle Kommentare: sichtbar
  * ist dann genau ein Satz Tags, nämlich der deutsche der Startseite.
@@ -44,12 +56,81 @@ export function headTags(page: PageMeta, lang: Language, t: Translations): strin
   const links = alternateUrls(page.path)
     .map((a) => `<link rel='alternate' hreflang='${a.hreflang}' href='${esc(a.href)}' />`)
     .join('\n    ')
+  const data = structuredData(page, lang, (key) => t[lang][key])
   return [
     `<title>${esc(t[lang][page.title])}</title>`,
     `<meta name='description' content='${esc(t[lang][page.description])}' />`,
     `<link rel='canonical' href='${esc(canonicalUrl(page.path, lang))}' />`,
     links,
+    ...(data ? [`${LD_OPEN}${jsonForScript(data)}${LD_CLOSE}`] : []),
   ].join('\n    ')
+}
+
+/** Rahmen des JSON-LD-Elements; `usePageMeta` findet es im Browser über den Typ. */
+const LD_OPEN = '<script type="application/ld+json">'
+const LD_CLOSE = '</script>'
+
+/** Maskiert Text für einen doppelt gequoteten SSI-Wert, der unverändert ausgegeben wird. */
+function ssiRaw(text: string): string {
+  return text.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\$/g, '\\$')
+}
+
+/** JSON-Zeichenketteninhalt (ohne Anführungszeichen), tauglich für `<script>` und SSI. */
+function ssiJsonText(text: string): string {
+  return ssiRaw(jsonForScript(text).slice(1, -1))
+}
+
+/** Platzhalter im JSON-LD-Gerüst und die SSI-Variable, die ihn zur Laufzeit füllt. */
+const LD_VARS = {
+  type: 'pg_ty',
+  name: 'pg_n',
+  url: 'pg_ju',
+  lang: 'pg_l',
+  description: 'pg_jd',
+  os: 'pg_os',
+} as const
+const mark = (key: string) => `@@${key}@@`
+
+/**
+ * JSON-LD-Gerüst als SSI-Wert: dieselbe Struktur wie `structuredData`, die
+ * seitenabhängigen Werte sind Variablen. Zerlegt in Stücke unter dem nginx-Limit,
+ * ohne eine Variable (`${…}`) oder eine Maskierung (`\\x`) zu trennen.
+ */
+export function ldChunks(limit: number = SSI_VALUE_LIMIT): string[] {
+  const skeleton = structuredData(
+    {
+      title: 'meta_title_landing',
+      description: mark('description') as TranslationKey,
+      path: '/',
+      schema: {
+        type: mark('type') as 'WebApplication',
+        name: mark('name') as TranslationKey,
+        operatingSystem: mark('os'),
+      },
+    },
+    mark('lang') as Language,
+    (key) => key,
+    mark('url'),
+  )
+  let value = ssiRaw(`${LD_OPEN}${jsonForScript(skeleton)}${LD_CLOSE}`)
+  for (const [key, name] of Object.entries(LD_VARS)) {
+    value = value.replace(mark(key), `\${${name}}`)
+  }
+  const tokens = value.match(/\$\{[a-z_0-9]+\}|\\.|[^\\$]+|\$/g) ?? []
+  const size = (text: string) => new TextEncoder().encode(text).length
+  const chunks: string[] = []
+  let current = ''
+  for (const token of tokens.flatMap((tk) =>
+    tk.startsWith('${') || tk.startsWith('\\') ? [tk] : [...tk],
+  )) {
+    if (size(current + token) > limit) {
+      chunks.push(current)
+      current = ''
+    }
+    current += token
+  }
+  if (current) chunks.push(current)
+  return chunks
 }
 
 /** Base-Pfad der App für Regex (z. B. `\/playlist_generator`). */
@@ -81,6 +162,8 @@ export function buildSsiVars(): string {
       ssiSet('pg_q', '') +
       ssiSet('pg_r', 'landing') +
       ssiSet('pg_t', '') +
+      ssiSet('pg_ty', '') +
+      ssiSet('pg_ld', '') +
       ssiSet('pg_head', ''),
     `<!--# if expr="$request_uri = /[?&]lang=en(&|\\z)/" -->${ssiSet('pg_l', 'en')}${ssiSet('pg_q', '?lang=en')}<!--# endif -->`,
     ...routeKeys().map(
@@ -94,8 +177,9 @@ export function buildSsiVars(): string {
 
 /**
  * SSI-Block für den Bereich zwischen den Markern. Jede Kombination aus Sprache
- * und Route setzt Titel (`pg_t`), Description (`pg_d`) und Pfad (`pg_p`);
- * Canonical und hreflang entstehen daraus. Unbekannte Pfade gelten als Startseite.
+ * und Route setzt Titel (`pg_t`), Description (`pg_d`) und Pfad (`pg_p`), bei
+ * Seiten mit strukturierten Daten zusätzlich Typ, Name, Beschreibung und System;
+ * Canonical, hreflang und JSON-LD entstehen daraus. Unbekannte Pfade gelten als Startseite.
  */
 export function buildSsiHead(t: Translations): string {
   const chain: string[] = []
@@ -108,10 +192,17 @@ export function buildSsiHead(t: Translations): string {
             'pg_d',
             `<meta name='description' content='${esc(t[lang][page.description])}' />`,
           ) +
-          ssiSet('pg_p', page.path),
+          ssiSet('pg_p', page.path) +
+          (page.schema
+            ? ssiSet('pg_ty', page.schema.type) +
+              ssiSet('pg_n', ssiJsonText(t[lang][page.schema.name])) +
+              ssiSet('pg_jd', ssiJsonText(t[lang][page.description])) +
+              ssiSet('pg_os', ssiJsonText(page.schema.operatingSystem))
+            : ''),
       )
     }
   }
+  const chunks = ldChunks()
   const link = (rel: string, href: string, hreflang?: string) =>
     `<link rel='${rel}'${hreflang ? ` hreflang='${hreflang}'` : ''} href='${href}' />`
   return [
@@ -123,8 +214,14 @@ export function buildSsiHead(t: Translations): string {
       'pg_a2',
       link('alternate', '${pg_u}?lang=en', 'en') + link('alternate', '${pg_u}', 'x-default'),
     ),
+    // Strukturierte Daten nur für Seiten mit `schema`; URL = Canonical der Sprachfassung
+    '<!--# if expr="$pg_ty" -->' +
+      ssiSet('pg_ju', '${pg_u}${pg_q}') +
+      chunks.map((chunk, i) => ssiSet(`pg_j${i + 1}`, chunk)).join('') +
+      ssiSet('pg_ld', chunks.map((_, i) => `\${pg_j${i + 1}}`).join('')) +
+      '<!--# endif -->',
     '<!--# if expr="$pg_t" -->' +
-      ssiSet('pg_head', '${pg_t}${pg_d}${pg_a1}${pg_a2}') +
+      ssiSet('pg_head', '${pg_t}${pg_d}${pg_a1}${pg_a2}${pg_ld}') +
       '<!--# endif -->',
     '<!--# if expr="$pg_head" --><!--# echo var="pg_head" encoding="none" --><!--# else -->',
     headTags(PAGES.landing!, 'de', t),

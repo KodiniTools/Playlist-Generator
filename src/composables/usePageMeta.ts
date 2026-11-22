@@ -1,7 +1,7 @@
 import { watch } from 'vue'
 import { useRoute, useRouter, type RouteLocationNormalizedLoaded } from 'vue-router'
 import { useTranslation, type Language } from './useTranslation'
-import { PAGES, alternateUrls, canonicalUrl } from '../seo/pageMeta'
+import { PAGES, alternateUrls, canonicalUrl, structuredData } from '../seo/pageMeta'
 
 export { SITE_URL, alternateUrls, canonicalUrl } from '../seo/pageMeta'
 
@@ -44,11 +44,32 @@ export function applyPageMeta(
   }
 }
 
+const LD_SELECTOR = 'script[type="application/ld+json"]'
+
+/**
+ * Setzt das JSON-LD der Seite (schema.org) oder entfernt es, wenn die Seite
+ * keine strukturierten Daten hat. Übernimmt das vom Server gelieferte Element.
+ */
+export function applyStructuredData(data: Record<string, unknown> | null): void {
+  const existing = document.head.querySelector<HTMLScriptElement>(LD_SELECTOR)
+  if (data === null) {
+    existing?.remove()
+    return
+  }
+  const el =
+    existing ??
+    document.head.appendChild(
+      Object.assign(document.createElement('script'), { type: 'application/ld+json' }),
+    )
+  // textContent wird nicht als HTML geparst: reines JSON genügt
+  el.textContent = JSON.stringify(data)
+}
+
 const queryLang = (route: RouteLocationNormalizedLoaded) =>
   typeof route.query.lang === 'string' ? route.query.lang : null
 
 /**
- * Hält Titel, Beschreibung, kanonische URL und `<html lang>` passend zu Route
+ * Hält Titel, Beschreibung, kanonische URL, JSON-LD und `<html lang>` passend zu Route
  * und Sprache. Steht `?lang=` in der URL, folgt er einem Sprachwechsel.
  */
 export function usePageMeta(): void {
@@ -68,12 +89,14 @@ export function usePageMeta(): void {
       if (document.documentElement.lang !== lang) document.documentElement.lang = lang
       const page = PAGES[String(route.name)]
       if (!page) return
+      const canonical = canonicalUrl(page.path, inUrl === null ? null : lang)
       applyPageMeta(
         t.value(page.title),
         t.value(page.description),
-        canonicalUrl(page.path, inUrl === null ? null : lang),
+        canonical,
         alternateUrls(page.path),
       )
+      applyStructuredData(structuredData(page, lang, t.value, canonical))
     },
     { immediate: true },
   )
