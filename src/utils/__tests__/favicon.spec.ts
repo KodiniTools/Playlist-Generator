@@ -1,10 +1,10 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { enforceFavicon, faviconUrl } from '../favicon'
+import { enforceFavicon, faviconUrl, SITE_ROOT } from '../favicon'
 
 const ROOT = resolve(__dirname, '../../..')
-const BASE = '/playlist_generator/'
+const BASE = SITE_ROOT
 const OWN = new URL(faviconUrl(BASE), document.baseURI).href
 
 /** Alle Links, die ein Browser als Favicon verwenden könnte. */
@@ -52,7 +52,7 @@ describe('enforceFavicon', () => {
 
   it('entfernt vorhandene fremde Icons und lässt Touch-Icon und Manifest stehen', () => {
     addLink('icon', '/icons/icon.svg')
-    addLink('shortcut icon', '/favicon.ico')
+    addLink('shortcut icon', '/playlist_generator/favicon.ico')
     addLink('mask-icon', '/safari.svg')
     addLink('icon', '/partials/brand.png', document.body)
     addLink('apple-touch-icon', '/icons/apple-touch-icon.png')
@@ -105,7 +105,15 @@ describe('Favicon-Quellen im Repo', () => {
     expect(rels[0]).toMatch(/href="\/favicon\.ico"/)
   })
 
-  it('deploy.sh liefert die favicon.ico aus dem Build aus (nicht ausgeschlossen)', () => {
+  it('nutzt das Site-Favicon im Web-Root, das Repo liefert kein eigenes aus', () => {
+    expect(faviconUrl(SITE_ROOT)).toBe('/favicon.ico')
+    // Läge die Datei in public/, würde Vite den Link auf /playlist_generator/favicon.ico umschreiben.
+    expect(existsSync(resolve(ROOT, 'public/favicon.ico'))).toBe(false)
+    const main = readFileSync(resolve(ROOT, 'src/main.ts'), 'utf8')
+    expect(main).toMatch(/enforceFavicon\(SITE_ROOT\)/)
+  })
+
+  it('deploy.sh behält keine alte favicon.ico im App-Ordner (nicht in KEEP)', () => {
     const deploy = readFileSync(resolve(ROOT, 'deploy.sh'), 'utf8')
     const keep = deploy.match(/^KEEP=\(([^)]*)\)/m)?.[1] ?? ''
     expect(keep).not.toMatch(/favicon/)

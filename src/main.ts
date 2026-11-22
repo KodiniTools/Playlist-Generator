@@ -4,11 +4,12 @@ import App from './App.vue'
 import router from './router'
 import './assets/main.css'
 import { registerServiceWorker } from './utils/pwa'
-import { enforceFavicon } from './utils/favicon'
+import { enforceFavicon, SITE_ROOT } from './utils/favicon'
 import { IS_DESKTOP } from './utils/desktop'
 
-// Nur die eigene public/favicon.ico, nie ein Icon aus SSI-Partials o. Ä.
-enforceFavicon(import.meta.env.BASE_URL)
+// Nur das Site-Favicon kodinitools.com/favicon.ico (wie alle KodiniTools-Apps),
+// nie ein anderes Icon aus SSI-Partials o. Ä.
+enforceFavicon(SITE_ROOT)
 
 const app = createApp(App)
 app.use(createPinia())

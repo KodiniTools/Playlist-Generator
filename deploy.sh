@@ -20,8 +20,9 @@ BRANCH="${DEPLOY_BRANCH:-main}"
 
 # Files that live in the web root but are NOT produced by the build. They are
 # preserved across deploys (never overwritten or removed by the sync below).
-# favicon.ico is NOT listed: it comes from public/favicon.ico and must always
-# be the deployed one.
+# favicon.ico is NOT listed: the app has no favicon of its own and uses the
+# site favicon at /favicon.ico (web root of kodinitools.com). A stale copy in
+# the app folder is removed by the sync.
 # /downloads/ holds the Windows installers (.exe/.msi), placed there by
 # deploy-downloads.sh and linked from the /download page (see DESKTOP.md).
 KEEP=(README.md /downloads/)

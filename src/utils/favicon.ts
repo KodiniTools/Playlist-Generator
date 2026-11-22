@@ -1,12 +1,17 @@
 /**
- * Favicon-Schutz: Die App zeigt ausschließlich die eigene `public/favicon.ico`.
- * Fremde Icon-Links (z. B. aus den SSI-Partials oder von Skripten nachgeladen)
- * werden entfernt, ein entfernter oder umgebogener eigener Link wird ersetzt.
+ * Favicon-Schutz: Die App zeigt wie alle KodiniTools-Apps ausschließlich das
+ * Site-Favicon `https://kodinitools.com/favicon.ico` (liegt im Web-Root des
+ * Servers, nicht im Repo). Andere Icon-Links (z. B. aus den SSI-Partials oder
+ * von Skripten nachgeladen) werden entfernt, ein entfernter oder umgebogener
+ * Link wird ersetzt.
  * Apple-Touch-Icon und Manifest-Icons (PWA) sind keine Favicons und bleiben.
  */
 const ICON_REL = /(^|\s)(icon|mask-icon)(\s|$)/i
 
-/** URL der eigenen Favicon-Datei unter dem App-Basispfad. */
+/** Wurzelpfad der Site: dort liegt das gemeinsame Favicon aller KodiniTools-Apps. */
+export const SITE_ROOT = '/'
+
+/** URL der Favicon-Datei unter einem Basispfad, z. B. faviconUrl(SITE_ROOT) → '/favicon.ico'. */
 export function faviconUrl(base: string): string {
   return `${base.replace(/\/?$/, '/')}favicon.ico`
 }
@@ -20,7 +25,7 @@ function touchesLink(node: Node): boolean {
 }
 
 /**
- * Setzt genau einen `<link rel="icon">` auf die eigene favicon.ico und hält
+ * Setzt genau einen `<link rel="icon">` auf die favicon.ico unter `base` und hält
  * diesen Zustand per MutationObserver. Gibt eine Funktion zum Beenden zurück.
  */
 export function enforceFavicon(base: string, doc: Document = document): () => void {

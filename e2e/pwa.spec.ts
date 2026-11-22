@@ -23,15 +23,13 @@ test('Manifest ist verlinkt und beschreibt Icons und Dateizuordnungen', async ({
   )
 })
 
-test('nutzt ausschließlich die eigene favicon.ico', async ({ page, request }) => {
-  const href = '/playlist_generator/favicon.ico'
+test('nutzt ausschließlich das Site-Favicon /favicon.ico', async ({ page }) => {
+  // Die Datei liegt im Web-Root von kodinitools.com, nicht im Repo; geprüft wird nur der Link.
   await page.goto('./')
   const icons = page.locator('link[rel~="icon" i], link[rel~="mask-icon" i]')
   await expect(icons).toHaveCount(1)
-  await expect(icons).toHaveAttribute('href', new RegExp(`${href}$`))
-  const response = await request.get(href)
-  expect(response.ok()).toBe(true)
-  expect(response.headers()['content-type']).toMatch(/icon/)
+  const href = await icons.evaluate((link: HTMLLinkElement) => new URL(link.href).pathname)
+  expect(href).toBe('/favicon.ico')
 })
 
 test('lädt die App nach dem ersten Besuch auch offline', async ({ page, context }) => {
