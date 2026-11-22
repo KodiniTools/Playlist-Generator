@@ -1,0 +1,77 @@
+/* ==========================================================================
+   Playlist Generator · Etappe 4: Playlist-Vorschau und Audio-Player
+   --------------------------------------------------------------------------
+   Rein visuelle Schicht für Vorschau, Codefenster, Player und Warteschlange.
+   Keine Änderung an Vue, Wiedergabe, Lautstärke, Titelauswahl, Wiederholung
+   oder Export.
+
+   - Cyan-Tönung aus --ds-tint, Gold aus --ds-accent (je Theme in tokens-v2.css).
+   - `body` vor dem Selektor hebt die Spezifität über die scoped Regeln der
+     Komponenten, deren CSS-Chunk nach main.css geladen wird.
+   - Flächen mit --ds-text-3 darauf werden auf --ds-surface-1 gemischt, damit
+     der Kontrast bei 4,5:1 bleibt.
+   - Fokus bleibt der vorhandene --ds-focus-ring der Komponenten; kein
+     Blur-Schatten (Design-System erlaubt nur Fokus-Ring, Overlay-Token,
+     Innenlinien).
+   - Fortschrittsbalken, aktiver Titel und aktive Warteschlangen-Taste sind
+     bereits in den Komponenten auf --ds-accent und bleiben unverändert.
+   ========================================================================== */
+
+/* === Playlist-Vorschau: Codefenster === */
+body .app-page .playlist-preview__code {
+  border-color: color-mix(in srgb, var(--ds-border) 74%, var(--ds-tint) 26%);
+  background: color-mix(in srgb, var(--ds-surface-0) 96%, var(--ds-tint) 4%);
+}
+
+body .app-page .playlist-preview__code-header {
+  background: color-mix(in srgb, var(--ds-surface-1) 91%, var(--ds-tint) 9%);
+  border-bottom-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
+}
+
+body .app-page .playlist-preview__file-name {
+  color: var(--ds-text);
+}
+
+body .app-page .playlist-preview__line-text--directive {
+  color: color-mix(in srgb, var(--ds-text-2) 80%, var(--ds-tint) 20%);
+}
+
+body .app-page .playlist-preview__lines {
+  scrollbar-color: var(--ds-border-strong) transparent;
+}
+
+body .app-page .playlist-preview__actions {
+  padding-top: var(--ds-space-1);
+}
+
+/* === Audio-Player === */
+body .app-page .player {
+  background: color-mix(in srgb, var(--ds-surface-1) 95%, var(--ds-tint) 5%);
+  border-top-color: color-mix(in srgb, var(--ds-border) 66%, var(--ds-tint) 34%);
+}
+
+body .app-page .player__art {
+  background: color-mix(in srgb, var(--ds-surface-2) 86%, var(--ds-tint) 14%);
+}
+
+body .app-page .player__time {
+  color: var(--ds-text-2);
+}
+
+body .app-page .player__seek-track {
+  background: color-mix(in srgb, var(--ds-surface-3) 86%, var(--ds-tint) 14%);
+}
+
+/* === Warteschlange === */
+body .app-page .player__queue {
+  border-color: color-mix(in srgb, var(--ds-border) 70%, var(--ds-tint) 30%);
+}
+
+body .app-page .player__queue-header {
+  background: color-mix(in srgb, var(--ds-surface-1) 91%, var(--ds-tint) 9%);
+  border-bottom-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
+}
+
+body .app-page .player__queue-item:not(.player__queue-item--active):hover {
+  background: color-mix(in srgb, var(--ds-surface-1) 88%, var(--ds-tint) 12%);
+}
