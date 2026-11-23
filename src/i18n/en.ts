@@ -64,13 +64,14 @@ const en: Record<TranslationKey, string> = {
     'How the Audio Playlist Generator works: formats, sorting, keyboard shortcuts and tips for perfect playlists.',
 
   // Landing Page - Hero
-  hero_eyebrow: 'Free · Browser Playlist Generator',
   hero_title: 'Audio Playlist Generator',
   hero_subtitle: 'Create an M3U playlist in seconds, right in your browser',
   hero_description:
     'Transform your local audio files into perfectly organized playlists. Supports M3U, XSPF, and JSON – free and 100% local in your browser.',
   hero_cta: 'Get Started',
-  hero_learn_more: 'Learn More',
+  hero_image_alt:
+    'Audio Playlist Generator: file list with durations and the finished M3U playlist',
+  benefits_title: 'Why the Audio Playlist Generator?',
 
   // Feature Cards
   feature1_title: 'Multiple Formats',
@@ -85,7 +86,6 @@ const en: Record<TranslationKey, string> = {
 
   // Details Section
   details_title: 'Powerful Features',
-  details_subtitle: 'Everything you need for perfect playlists',
 
   detail1_title: 'Drag & Drop Upload',
   detail1_desc:
@@ -102,13 +102,8 @@ const en: Record<TranslationKey, string> = {
   detail6_desc: 'Works directly in the browser – no download, no installation required.',
 
   // Trust Badges
-  trust_free: 'Free',
-  trust_no_registration: 'No Registration',
-  trust_private: '100% Local & Private',
 
   // App Preview Labels
-  preview_files_label: 'Audio Files',
-  preview_output_label: 'Playlist Preview',
 
   // CTA Section
   cta_title: 'Ready to get started?',

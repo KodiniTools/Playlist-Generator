@@ -1,191 +1,381 @@
 /* ==========================================================================
-   Playlist Generator · Landingpage im freigegebenen Erscheinungsbild
+   Playlist Generator · Landingpage nach dem Vorbild Audio Normalizer
    --------------------------------------------------------------------------
-   Rein visuelle Schicht, ausschließlich unter .landing-page. App, FAQ, Blog
-   und Download bleiben unberührt. Keine Änderung an Vue, Übersetzungen, SEO
-   oder der SSI-Navigation.
+   Aufbau, Maße und Schriftgrößen entsprechen der Landingpage des Audio
+   Normalizers (dort LandingPage.vue + kodini-layout-stage1.css): zweispaltiger
+   Hero mit Bild rechts, Funktionen, Vorteile, FAQ. Zusätzlich hier: die
+   Sektion „Weitere KodiniTools“ im selben Kartenbild.
 
-   - Farben nur aus Tokens: Flächen/Rahmen mit --ds-tint gemischt, Gold bleibt
-     --ds-accent (Buttons), Verlauf aus --ds-app-glow (je Theme in tokens-v2.css).
-   - `body` vor dem Selektor hebt die Spezifität über die scoped Regeln der
-     Landing-Komponenten.
-   - Breiten und der zweispaltige Hero nur ab 901 px, damit die schmaleren
-     Raster und das einspaltige Hero-Layout der Komponenten für Tablet und
-     Handy gültig bleiben.
-   - Kein Blur-Schatten (Design-System); Karten heben sich beim Hover über
-     Rahmenfarbe und leichten Versatz ab. Fokus bleibt --ds-focus-ring.
+   - Gilt ausschließlich unter .landing-page; `body` davor hält die Regeln über
+     scoped Styles gemeinsam genutzter Komponenten.
+   - Farben nur aus Tokens (--ds-landing-glow, --ds-card-gradient,
+     --ds-heading-accent in tokens-v2.css). Der Button nutzt --ds-accent-fill
+     mit weißer Schrift (Regel dieses Projekts für gefüllte Goldflächen).
+   - Schrift: wie im Vorbild durchgehend Supreme Regular 400, ohne
+     synthetisches Fett.
    ========================================================================== */
 
-/* === Seitenhintergrund ===
-   Klasse doppelt: die scoped Regel .landing-page[data-v] hat 0-2-0. */
-body .landing-page.landing-page {
-  background-image: var(--ds-app-glow);
+/* === Seite === */
+body .landing-page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  background-color: var(--ds-surface-0);
+  background-image: var(--ds-landing-glow);
   background-repeat: no-repeat;
+  background-size: 100% 42rem;
+  color: var(--ds-text);
+  font-size: var(--ds-text-md);
+  line-height: var(--ds-leading);
 }
 
-/* === App-Vorschau im Hero === */
-body .landing-page .preview-window {
-  border-color: color-mix(in srgb, var(--ds-border) 70%, var(--ds-tint) 30%);
-  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+body .landing-page > section {
+  --ds-weight-medium: var(--ds-weight-regular);
+  --ds-weight-semibold: var(--ds-weight-regular);
+  --ds-weight-bold: var(--ds-weight-regular);
+
+  font-weight: var(--ds-weight-regular);
+  font-synthesis: none;
 }
 
-body .landing-page .preview-titlebar {
-  background: color-mix(in srgb, var(--ds-surface-1) 91%, var(--ds-tint) 9%);
-  border-bottom-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
+body .landing-page .container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding-inline: clamp(var(--ds-space-3), 3vw, var(--ds-space-6));
 }
 
-/* === Karten: Funktionen, Details, weitere Tools === */
-body .landing-page .feature-card,
+/* === Hero === */
+body .landing-page .hero {
+  text-align: center;
+  padding-block: clamp(var(--ds-space-8), 7vw, 6rem) clamp(var(--ds-space-8), 5vw, 4rem);
+}
+
+body .landing-page .hero > .container {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(var(--ds-space-6), 5vw, var(--ds-space-16));
+}
+
+body .landing-page .hero-content {
+  max-width: 680px;
+  margin: 0;
+  text-align: start;
+}
+
+/* Display-Größe nur hier: die Token-Skala endet bei 32 px. */
+body .landing-page .hero-title {
+  margin: 0 0 var(--ds-space-3);
+  font-size: clamp(2.25rem, 5.25vw, 4.5rem);
+  font-weight: var(--ds-weight-bold);
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+  color: var(--ds-text);
+}
+
+body .landing-page .hero-subtitle {
+  margin: 0 0 var(--ds-space-3);
+  font-size: var(--ds-text-lg);
+  font-weight: var(--ds-weight-medium);
+  color: var(--ds-heading-accent);
+}
+
+body .landing-page .hero-description {
+  margin: 0 0 var(--ds-space-6);
+  font-size: var(--ds-text-md);
+  color: var(--ds-text-2);
+}
+
+body .landing-page .btn-hero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--ds-control-lg);
+  padding: 0 var(--ds-space-5);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-accent-fill);
+  color: var(--ds-on-accent);
+  font-size: var(--ds-text-lg);
+  font-weight: var(--ds-weight-semibold);
+  text-decoration: none;
+  transition: background-color var(--ds-duration) var(--ds-ease);
+}
+
+body .landing-page .btn-hero:hover {
+  background: var(--ds-accent-fill-hover);
+  color: var(--ds-on-accent);
+}
+
+body .landing-page .btn-hero:focus-visible {
+  outline: none;
+  box-shadow: var(--ds-focus-ring);
+}
+
+/* Hero-Bild: nie größer als 800 px, skaliert auf die Spaltenbreite. Die
+   width/height-Attribute und aspect-ratio reservieren den Platz (kein Layout-Shift). */
+body .landing-page .hero-media {
+  max-width: 800px;
+  margin: 0;
+  overflow: hidden;
+  border: var(--ds-border-width) solid var(--ds-border-strong);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-surface-2);
+  box-shadow: var(--ds-shadow-overlay);
+}
+
+body .landing-page .hero-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1120 / 630;
+}
+
+/* === Sektionen: abwechselnd Panel- und Seitenfläche === */
+body .landing-page :is(.features, .benefits, .faq, .tools-section) {
+  padding-block: clamp(var(--ds-space-8), 5vw, var(--ds-space-16));
+}
+
+body .landing-page :is(.features, .faq) {
+  border-top: var(--ds-border-width) solid var(--ds-border);
+  border-bottom: var(--ds-border-width) solid var(--ds-border);
+  background: var(--ds-surface-1);
+}
+
+/* Anker-Ziele unter der externen Navigation */
+body .landing-page :is(.features, .faq, .tools-section) {
+  scroll-margin-top: var(--external-nav-height, 0px);
+}
+
+body .landing-page .section-title {
+  margin: 0 0 var(--ds-space-8);
+  font-size: var(--ds-text-2xl);
+  font-weight: var(--ds-weight-bold);
+  line-height: var(--ds-leading-tight);
+  letter-spacing: var(--ds-tracking-tight);
+  text-align: center;
+  color: var(--ds-text);
+}
+
+/* Unterzeile einer Sektion (nur „Weitere KodiniTools“) */
+body .landing-page .section-title:has(+ .section-lead) {
+  margin-bottom: var(--ds-space-2);
+}
+
+body .landing-page .section-lead {
+  max-width: 720px;
+  margin: 0 auto var(--ds-space-8);
+  text-align: center;
+  color: var(--ds-text-2);
+}
+
+/* === Karten === */
+body .landing-page :is(.features-grid, .benefits-grid, .tools-cards) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: var(--ds-gap);
+}
+
+body .landing-page :is(.feature-card, .benefit-card, .tool-link-card) {
+  padding: var(--ds-space-5);
+  border: var(--ds-border-width) solid var(--ds-border);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-card-gradient);
+  transition: border-color var(--ds-duration) var(--ds-ease);
+}
+
+body .landing-page :is(.feature-card, .benefit-card, .tool-link-card):hover {
+  border-color: var(--ds-border-strong);
+}
+
+body .landing-page .feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-control-lg);
+  height: var(--ds-control-lg);
+  margin-bottom: var(--ds-space-3);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface-2);
+  font-size: var(--ds-text-xl);
+  color: var(--ds-heading-accent);
+}
+
+body .landing-page .feature-icon svg {
+  width: var(--ds-icon-md);
+  height: var(--ds-icon-md);
+}
+
+body .landing-page :is(.feature-card, .benefit-card, .tool-link-card) h3 {
+  margin: 0 0 var(--ds-space-2);
+  font-size: var(--ds-text-lg);
+  font-weight: var(--ds-weight-semibold);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text);
+}
+
+body .landing-page :is(.feature-card, .benefit-card, .tool-link-card) p {
+  margin: 0;
+  font-size: var(--ds-text-md);
+  color: var(--ds-text-2);
+}
+
+/* === Weitere KodiniTools: Karte ist ein Link === */
 body .landing-page .tool-link-card {
-  border-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
-  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
-  transition:
-    border-color var(--ds-duration) var(--ds-ease),
-    background-color var(--ds-duration) var(--ds-ease),
-    transform var(--ds-duration) var(--ds-ease);
+  display: block;
+  color: var(--ds-text);
+  text-decoration: none;
 }
 
-body .landing-page .detail-item {
-  border-color: color-mix(in srgb, var(--ds-border) 78%, var(--ds-tint) 22%);
-  background: color-mix(in srgb, var(--ds-surface-0) 94%, var(--ds-tint) 6%);
-  transition:
-    border-color var(--ds-duration) var(--ds-ease),
-    transform var(--ds-duration) var(--ds-ease);
-}
-
-body .landing-page .feature-card:hover,
-body .landing-page .detail-item:hover,
-body .landing-page .tool-link-card:hover {
-  border-color: color-mix(in srgb, var(--ds-border-strong) 40%, var(--ds-tint) 60%);
-  transform: translateY(-3px);
-}
-
-body .landing-page .tool-link-card:hover {
-  background: color-mix(in srgb, var(--ds-surface-1) 92%, var(--ds-tint) 8%);
-}
-
-body .landing-page .detail-item:hover {
-  background: color-mix(in srgb, var(--ds-surface-0) 90%, var(--ds-tint) 10%);
-}
-
-/* === Icons und Verweise in Cyan (mit Textfarbe gemischt für Kontrast) === */
-body .landing-page .feature-card__icon,
-body .landing-page .tool-link-icon {
-  background: color-mix(in srgb, var(--ds-surface-2) 84%, var(--ds-tint) 16%);
-  color: color-mix(in srgb, var(--ds-tint) 62%, var(--ds-text) 38%);
-}
-
-body .landing-page .detail-icon {
-  color: color-mix(in srgb, var(--ds-tint) 62%, var(--ds-text) 38%);
+body .landing-page .tool-link-card:focus-visible {
+  outline: none;
+  box-shadow: var(--ds-focus-ring);
 }
 
 body .landing-page .tool-link-cta {
-  color: color-mix(in srgb, var(--ds-tint) 50%, var(--ds-text) 50%);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  margin-top: var(--ds-space-3);
+  font-size: var(--ds-text-md);
+  color: var(--ds-link);
 }
 
-/* === Abschnitt „Details“ === */
-body .landing-page .details-section {
-  border-top-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
-  border-bottom-color: color-mix(in srgb, var(--ds-border) 76%, var(--ds-tint) 24%);
-  background: color-mix(in srgb, var(--ds-surface-1) 96%, var(--ds-tint) 4%);
+body .landing-page .tool-link-cta svg {
+  width: var(--ds-icon-sm);
+  height: var(--ds-icon-sm);
 }
 
-/* === Abschlussbereich (CTA-Box nutzt die Tailwind-Fläche surface-1) === */
-body .landing-page .tw\:bg-surface-1 {
-  border-color: color-mix(in srgb, var(--ds-border) 66%, var(--ds-tint) 34%);
-  background: color-mix(in srgb, var(--ds-surface-1) 91%, var(--ds-tint) 9%);
+body .landing-page .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
-/* === Karteninhalt linksbündig, Häkchen der Vorteile in Cyan === */
-body .landing-page .feature-card {
+/* === FAQ === */
+body .landing-page .faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-3);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+body .landing-page .faq-item {
+  overflow: hidden;
+  border: var(--ds-border-width) solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-card-gradient);
+  transition: border-color var(--ds-duration) var(--ds-ease);
+}
+
+body .landing-page .faq-item:hover,
+body .landing-page .faq-open {
+  border-color: var(--ds-border-strong);
+}
+
+body .landing-page .faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-4);
+  width: 100%;
+  min-height: var(--ds-row-height);
+  padding: var(--ds-space-3) var(--ds-space-5);
+  border: none;
+  background: none;
+  color: var(--ds-text);
+  font: inherit;
+  font-size: var(--ds-text-lg);
+  font-weight: var(--ds-weight-medium);
   text-align: left;
+  cursor: pointer;
+  transition: background-color var(--ds-duration) var(--ds-ease);
 }
 
-body .landing-page .feature-card__icon {
-  margin: 0 0 var(--ds-space-4);
+body .landing-page .faq-question:hover {
+  background: var(--ds-surface-2);
 }
 
-body .landing-page .trust-badge svg {
-  color: color-mix(in srgb, var(--ds-tint) 62%, var(--ds-text) 38%);
+body .landing-page .faq-question:focus-visible {
+  outline: none;
+  box-shadow: inset var(--ds-focus-ring);
 }
 
-body .landing-page .preview-track-item,
-body .landing-page .preview-code {
-  overflow-wrap: anywhere;
+body .landing-page .faq-icon {
+  flex-shrink: 0;
+  font-size: var(--ds-text-xl);
+  color: var(--ds-text-2);
 }
 
-/* === Hero zweispaltig (nur Desktop): Text links, App-Vorschau rechts ===
-   Bis 900 px bleibt das einspaltige, zentrierte Layout der Komponente. */
-@media (min-width: 901px) {
-  body .landing-page .hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: center;
-    column-gap: var(--ds-space-12);
-    max-width: calc(1180px + 2 * var(--ds-gutter));
-    min-height: 0;
-    margin-inline: auto;
-    padding: var(--ds-space-16) var(--ds-gutter) var(--ds-space-12);
-    text-align: left;
+body .landing-page .faq-answer {
+  padding: 0 var(--ds-space-5) var(--ds-space-4);
+  font-size: var(--ds-text-md);
+  color: var(--ds-text-2);
+}
+
+body .landing-page .faq-answer p {
+  margin: 0;
+}
+
+/* === Schmale Bildschirme (Schwellen wie im Vorbild) === */
+@media (max-width: 768px) {
+  body .landing-page .section-title {
+    margin-bottom: var(--ds-space-6);
+    font-size: var(--ds-text-xl);
   }
 
-  body .landing-page .hero-content {
-    max-width: none;
-    margin-bottom: 0;
+  body .landing-page .section-title:has(+ .section-lead) {
+    margin-bottom: var(--ds-space-2);
   }
 
-  body .landing-page .hero-title {
-    font-size: clamp(40px, 4.65vw, 64px);
-    line-height: 1.1;
+  body .landing-page .section-lead {
+    margin-bottom: var(--ds-space-6);
   }
 
+  body .landing-page .faq-question {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-size: var(--ds-text-md);
+  }
+
+  body .landing-page .faq-answer {
+    padding: 0 var(--ds-space-4) var(--ds-space-3);
+  }
+}
+
+@media (max-width: 760px) {
+  body .landing-page .hero > .container {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
   body .landing-page .hero-subtitle {
-    font-weight: var(--ds-weight-semibold);
+    font-size: var(--ds-text-md);
   }
 
-  body .landing-page .hero-description {
-    max-width: 560px;
+  body .landing-page .hero-media {
+    border-radius: var(--ds-radius-md);
   }
 
-  body .landing-page .hero-buttons,
-  body .landing-page .trust-badges {
-    justify-content: flex-start;
+  body .landing-page .btn-hero {
+    width: 100%;
+    max-width: 320px;
+    height: var(--ds-row-height);
   }
 
-  body .landing-page .app-preview {
-    max-width: none;
-    margin-bottom: 0;
-  }
-
-  body .landing-page .preview-body {
-    grid-template-columns: minmax(0, 44fr) minmax(0, 56fr);
-    min-height: 280px;
-  }
-
-  body .landing-page .scroll-indicator {
-    grid-column: 1 / -1;
-    justify-self: center;
-    margin-top: var(--ds-space-8);
-  }
-}
-
-/* === Breiten nur auf dem Desktop === */
-@media (min-width: 901px) {
-  body .landing-page .feature-cards,
-  body .landing-page .details-grid,
-  body .landing-page .tools-cards {
-    max-width: 1180px;
-  }
-
-  body .landing-page .section-header {
-    max-width: 760px;
+  body .landing-page :is(.feature-card, .benefit-card, .tool-link-card) {
+    padding: var(--ds-space-4);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body .landing-page .feature-card:hover,
-  body .landing-page .detail-item:hover,
-  body .landing-page .tool-link-card:hover {
-    transform: none;
+  body
+    .landing-page
+    :is(.btn-hero, .feature-card, .benefit-card, .tool-link-card, .faq-item, .faq-question) {
+    transition: none;
   }
 }
