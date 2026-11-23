@@ -67,13 +67,14 @@ const de = {
     'Wie der Audio Wiedergabeliste Generator funktioniert: Formate, Sortierung, Tastenkürzel und Tipps für perfekte Wiedergabelisten.',
 
   // Landing Page - Hero
-  hero_eyebrow: 'Kostenlos · Playlist-Generator im Browser',
   hero_title: 'Audio Wiedergabeliste Generator',
   hero_subtitle: 'M3U Playlist erstellen – in Sekunden, direkt im Browser',
   hero_description:
     'Verwandeln Sie Ihre lokalen Audiodateien in perfekt organisierte Wiedergabelisten. Unterstützt M3U, XSPF und JSON – kostenlos und 100% lokal in Ihrem Browser.',
   hero_cta: 'Jetzt starten',
-  hero_learn_more: 'Mehr erfahren',
+  hero_image_alt:
+    'Audio Wiedergabeliste Generator: Dateiliste mit Laufzeiten und fertige M3U-Wiedergabeliste',
+  benefits_title: 'Warum der Audio Wiedergabeliste Generator?',
 
   // Feature Cards
   feature1_title: 'Mehrere Formate',
@@ -88,7 +89,6 @@ const de = {
 
   // Details Section
   details_title: 'Leistungsstarke Funktionen',
-  details_subtitle: 'Alles, was Sie für perfekte Wiedergabelisten brauchen',
 
   detail1_title: 'Drag & Drop Upload',
   detail1_desc:
@@ -107,13 +107,8 @@ const de = {
   detail6_desc: 'Funktioniert direkt im Browser – kein Download, keine Installation erforderlich.',
 
   // Trust Badges
-  trust_free: 'Kostenlos',
-  trust_no_registration: 'Keine Registrierung',
-  trust_private: '100% Lokal & Privat',
 
   // App Preview Labels
-  preview_files_label: 'Audiodateien',
-  preview_output_label: 'Wiedergabeliste-Vorschau',
 
   // CTA Section
   cta_title: 'Bereit, loszulegen?',

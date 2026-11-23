@@ -68,37 +68,62 @@ describe('LandingPage – Kopfleiste', () => {
   })
 })
 
-describe('LandingPage – Aktionen', () => {
+describe('LandingPage – Aufbau nach dem Vorbild Audio Normalizer', () => {
   beforeEach(() => {
     useTranslation().setLanguage('de')
   })
 
-  it('führt mit UiButtons zur App und zu den Features', () => {
+  it('hat die Sektionen Hero, Funktionen, Vorteile, FAQ und weitere Tools in dieser Reihenfolge', () => {
+    const wrapper = mountLandingPage()
+    const sections = wrapper.findAll('.landing-page > section')
+    expect(sections.map((section) => section.classes()[0])).toEqual([
+      'hero',
+      'features',
+      'benefits',
+      'faq',
+      'tools-section',
+    ])
+    expect(wrapper.findAll('h1')).toHaveLength(1)
+    expect(wrapper.findAll('.feature-card')).toHaveLength(6)
+    expect(wrapper.findAll('.benefit-card')).toHaveLength(3)
+    expect(wrapper.findAll('.faq-item')).toHaveLength(6)
+  })
+
+  it('führt im Hero mit genau einem Button zur App', () => {
     const wrapper = mountLandingPage()
     const { t } = useTranslation()
-    const toApp = wrapper.findAll('a.ui-button--primary[href="/app"]')
-    expect(toApp.map((link) => link.text())).toEqual([t.value('hero_cta'), t.value('cta_button')])
-    expect(wrapper.get('a.ui-button--secondary[href="#features"]').text()).toBe('Mehr erfahren')
-    expect(wrapper.get('a.scroll-indicator').attributes('aria-label')).toBe('Mehr erfahren')
-    expect(wrapper.find('.btn').exists()).toBe(false)
-  })
-})
-
-describe('LandingPage – Hero', () => {
-  beforeEach(() => {
-    useTranslation().setLanguage('de')
+    const links = wrapper.findAll('.hero a')
+    expect(links).toHaveLength(1)
+    expect(links[0]?.attributes('href')).toBe('/app')
+    expect(links[0]?.text()).toBe(`${t.value('hero_cta')} →`)
   })
 
-  it('zeigt die Dachzeile übersetzt vor der einzigen h1', async () => {
+  it('zeigt das Hero-Bild der Sprache mit festen Maßen (kein Layout-Shift)', async () => {
     const wrapper = mountLandingPage()
-    const eyebrow = () => wrapper.find('.hero-content > .hero-eyebrow')
-
-    expect(eyebrow().text()).toBe('Kostenlos · Playlist-Generator im Browser')
-    expect(eyebrow().element.nextElementSibling?.tagName).toBe('H1')
-    expect(wrapper.findAll('h1')).toHaveLength(1)
+    const image = () => wrapper.get('.hero-media img')
+    expect(image().attributes('src')).toMatch(/playlist-generator-landingpage-de\.webp$/)
+    expect(image().attributes('width')).toBe('1120')
+    expect(image().attributes('height')).toBe('630')
+    expect(image().attributes('alt')).toBe(useTranslation().t.value('hero_image_alt'))
 
     useTranslation().setLanguage('en')
     await wrapper.vm.$nextTick()
-    expect(eyebrow().text()).toBe('Free · Browser Playlist Generator')
+    expect(image().attributes('src')).toMatch(/playlist-generator-landingpage-en\.webp$/)
+  })
+
+  it('klappt FAQ-Antworten per Button auf und zu (aria-expanded)', async () => {
+    const wrapper = mountLandingPage()
+    const first = wrapper.get('.faq-item')
+    const button = first.get('button.faq-question')
+    expect(button.attributes('aria-expanded')).toBe('false')
+    expect(first.get('.faq-answer').isVisible()).toBe(false)
+
+    await button.trigger('click')
+    expect(button.attributes('aria-expanded')).toBe('true')
+    expect(first.classes()).toContain('faq-open')
+    expect(first.get('.faq-answer').text()).toContain('M3U')
+
+    await button.trigger('click')
+    expect(button.attributes('aria-expanded')).toBe('false')
   })
 })

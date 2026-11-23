@@ -9,16 +9,12 @@ const MIGRATED = [
   'assets/main.css',
   'assets/tailwind.css',
   'views/AppPage.vue',
-  'views/LandingPage.vue',
   'views/FaqPage.vue',
   'views/BlogPage.vue',
   'components/AppHeader.vue',
   'components/OnboardingBanner.vue',
   'components/ToolsGrid.vue',
-  'components/landing/LandingHero.vue',
-  'components/landing/LandingFeatureCards.vue',
-  'components/landing/LandingDetails.vue',
-  'components/landing/LandingTools.vue',
+  'assets/kodini-landing-modern.css',
   'components/blog/blogArticle.css',
 ]
 

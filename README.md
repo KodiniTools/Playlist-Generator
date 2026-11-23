@@ -132,7 +132,7 @@ Eine Kopie des Partials zum Nachlesen liegt im Texteditor-Repo unter `partials/n
 
 Utilities liegen in `@layer utilities` und verlieren gegen ungelayerte scoped Styles. Beim Umstellen einer
 Komponente deshalb die scoped Regel für dieselbe Eigenschaft entfernen. Neue Komponenten nutzen
-Utilities, bestehende werden bei Bedarf umgestellt (Pilot: `LandingCta.vue`).
+Utilities, bestehende werden bei Bedarf umgestellt (z. B. `PlaylistNameRow.vue`).
 `src/assets/__tests__/tailwind.spec.ts` sichert diese Regeln ab.
 
 ## Übergabe an den Kodini Texteditor

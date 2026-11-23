@@ -106,6 +106,12 @@
         "$description": "Blau-Cyan-Tönung; nur per color-mix mit Flächen und Rahmen, nie als Textfarbe",
         "$extensions": { "css": "--ds-tint" }
       },
+      "headingAccent": {
+        "$type": "color",
+        "$value": "#69d7e9",
+        "$description": "Cyan für Unterzeilen der Landingpage (Vorbild Audio Normalizer)",
+        "$extensions": { "css": "--ds-heading-accent" }
+      },
       "success": {
         "$type": "color",
         "$value": "#5fcf8a",
@@ -228,6 +234,12 @@
         "$description": "Blau-Cyan-Tönung; nur per color-mix mit Flächen und Rahmen, nie als Textfarbe",
         "$extensions": { "css": "--ds-tint" }
       },
+      "headingAccent": {
+        "$type": "color",
+        "$value": "#086a80",
+        "$description": "Cyan für Unterzeilen der Landingpage (Vorbild Audio Normalizer)",
+        "$extensions": { "css": "--ds-heading-accent" }
+      },
       "success": {
         "$type": "color",
         "$value": "#177a42",
@@ -268,6 +280,18 @@
         "$value": "radial-gradient(ellipse 72% 38% at 82% 4%, rgba(37, 105, 157, 0.13), transparent 75%), radial-gradient(ellipse 58% 38% at 5% 42%, rgba(27, 91, 130, 0.07), transparent 76%)",
         "$description": "Dezente blau-cyan Hintergrundverläufe der App-Fläche (background-image)",
         "$extensions": { "css": "--ds-app-glow" }
+      },
+      "landingGlow": {
+        "$type": "gradient",
+        "$value": "radial-gradient(ellipse at 85% 0%, rgba(38, 167, 187, 0.16), transparent 68%), radial-gradient(ellipse at 12% 0%, rgba(55, 114, 202, 0.2), transparent 62%)",
+        "$description": "Blau-cyan Seitenverlauf der Landingpage (background-image, Vorbild Audio Normalizer)",
+        "$extensions": { "css": "--ds-landing-glow" }
+      },
+      "cardGradient": {
+        "$type": "gradient",
+        "$value": "linear-gradient(150deg, var(--ds-surface-1), var(--ds-surface-0))",
+        "$description": "Kartenfläche der Landingpage: Verlauf von Panel zu Seite",
+        "$extensions": { "css": "--ds-card-gradient" }
       }
     },
     "light": {
@@ -288,6 +312,18 @@
         "$value": "radial-gradient(ellipse 72% 38% at 82% 4%, rgba(54, 135, 183, 0.075), transparent 75%), radial-gradient(ellipse 58% 38% at 5% 42%, rgba(75, 137, 169, 0.045), transparent 76%)",
         "$description": "Dezente blau-cyan Hintergrundverläufe der App-Fläche (background-image)",
         "$extensions": { "css": "--ds-app-glow" }
+      },
+      "landingGlow": {
+        "$type": "gradient",
+        "$value": "radial-gradient(ellipse at 85% 0%, rgba(35, 162, 195, 0.16), transparent 68%), radial-gradient(ellipse at 12% 0%, rgba(86, 147, 216, 0.15), transparent 62%)",
+        "$description": "Blau-cyan Seitenverlauf der Landingpage (background-image, Vorbild Audio Normalizer)",
+        "$extensions": { "css": "--ds-landing-glow" }
+      },
+      "cardGradient": {
+        "$type": "gradient",
+        "$value": "linear-gradient(150deg, var(--ds-surface-1), var(--ds-surface-0))",
+        "$description": "Kartenfläche der Landingpage: Verlauf von Panel zu Seite",
+        "$extensions": { "css": "--ds-card-gradient" }
       }
     }
   },
