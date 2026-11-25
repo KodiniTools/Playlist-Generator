@@ -143,7 +143,7 @@ html body .global-nav .global-nav-dropdown-menu {
 
 /* Aktive Sprache wie der Primärbutton der App: dunkles Gold mit weißem Text. */
 html body .global-nav .global-nav-lang-btn.active {
-  background: var(--ds-accent-fill) !important;
+  background: var(--ds-accent-fill-grad) !important;
   color: var(--ds-on-accent) !important;
 }
 
