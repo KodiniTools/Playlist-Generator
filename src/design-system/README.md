@@ -78,7 +78,8 @@ controlSizesV2.row // 44
   `--ds-success | -warning | -danger | -info`.
 - **effect**: `--ds-focus-ring` (2 px Abstand, 2 px Gold), `--ds-shadow-overlay` (einziger Schatten),
   `--ds-app-glow` (dezente blau-cyan Verläufe der App-Fläche, als `background-image`),
-  `--ds-landing-glow` (Seitenverlauf der Landingpage), `--ds-card-gradient` (Kartenfläche der Landingpage).
+  `--ds-landing-glow` (Seitenverlauf der Landingpage), `--ds-card-gradient` (Kartenfläche der Landingpage),
+  `--ds-accent-fill-grad`, `--ds-accent-fill-grad-hover` (Verlauf der Primär-Buttons).
 - **typography**: `--ds-font-sans`, `--ds-font-mono` (beide Supreme Regular, einzige Schrift der App), `--ds-text-xs … -3xl` (12 · 13 · 14 · 16 · 20 · 24 · 32),
   `--ds-weight-*`, `--ds-leading`, `--ds-leading-tight`, `--ds-tracking-tight`.
 - **spacing**: `--ds-space-1 … -16` im 4er-Raster.
@@ -90,7 +91,7 @@ controlSizesV2.row // 44
 
 ## Regeln für v2
 
-- Gold ist Vollfläche für Primäraktion, Fokus und aktive Zustände. Keine Gradients, kein Glow.
+- Gold ist Vollfläche für Fokus und aktive Zustände. Kein Glow. Einzige Ausnahme bei Verläufen: Primär-Buttons tragen `--ds-accent-fill-grad` (Hover `--ds-accent-fill-grad-hover`), einen dreistufigen dunkelgoldenen Verlauf wie auf der KodiniTools-Startseite.
 - Ein Rahmen: 1 px. Drei Radien: 6 / 10 / 16. Schatten nur für Overlays.
 - Hover ändert Farbe, nie Größe. 150 ms, nur Opacity und Transform animieren.
 - Icons aus einem Set (Lucide, Stroke 1.75), keine Emoji.

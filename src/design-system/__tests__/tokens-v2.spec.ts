@@ -171,3 +171,39 @@ describe('tokens-v2.ts', () => {
     expect(breakpointsV2).toEqual({ phone: 480, tablet: 768, desktop: 1024 })
   })
 })
+
+describe('Verlauf der Primär-Buttons', () => {
+  const blocks = [
+    ['dark', rootBlock],
+    ['light (.light-theme)', lightBlock],
+    ["light ([data-theme='light'])", dataThemeLightBlock],
+  ] as const
+
+  it.each(blocks)('%s: jede Stufe hält mit weißer Schrift AA', (_name, block) => {
+    for (const name of ['--ds-accent-fill-grad', '--ds-accent-fill-grad-hover']) {
+      const stops = block[name]?.match(/#[0-9a-f]{6}/gi) ?? []
+      expect(stops).toHaveLength(3)
+      for (const stop of stops) {
+        expect(contrastRatio('#ffffff', stop)).toBeGreaterThanOrEqual(AA)
+      }
+    }
+  })
+
+  it('Primär-Buttons, Hero-Button und aktiver Sprachknopf nutzen den Verlauf', () => {
+    const uses = (path: string, pattern: RegExp) =>
+      expect(readRelative(base, path)).toMatch(pattern)
+    const fill = /background: var\(--ds-accent-fill-grad\)/
+    const hover = /background: var\(--ds-accent-fill-grad-hover\)/
+    for (const path of [
+      '../../components/ui/UiButton.vue',
+      '../../components/ui/UiIconButton.vue',
+      '../../assets/kodini-landing-modern.css',
+    ]) {
+      uses(path, fill)
+      uses(path, hover)
+    }
+    expect(mainCss).toMatch(
+      /\.global-nav-lang-btn\.active \{\s*background: var\(--ds-accent-fill-grad\) !important;/,
+    )
+  })
+})

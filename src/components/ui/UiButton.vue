@@ -90,13 +90,13 @@
   }
 
   .ui-button--primary {
-    background: var(--ds-accent-fill);
+    background: var(--ds-accent-fill-grad);
     color: var(--ds-on-accent);
     font-weight: var(--ds-weight-semibold);
   }
 
   .ui-button--primary:hover:not(:disabled) {
-    background: var(--ds-accent-fill-hover);
+    background: var(--ds-accent-fill-grad-hover);
   }
 
   .ui-button--secondary {

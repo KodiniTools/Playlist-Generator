@@ -94,7 +94,7 @@ body .landing-page .btn-hero {
   height: var(--ds-control-lg);
   padding: 0 var(--ds-space-5);
   border-radius: var(--ds-radius-md);
-  background: var(--ds-accent-fill);
+  background: var(--ds-accent-fill-grad);
   color: var(--ds-on-accent);
   font-size: var(--ds-text-lg);
   font-weight: var(--ds-weight-semibold);
@@ -103,7 +103,7 @@ body .landing-page .btn-hero {
 }
 
 body .landing-page .btn-hero:hover {
-  background: var(--ds-accent-fill-hover);
+  background: var(--ds-accent-fill-grad-hover);
   color: var(--ds-on-accent);
 }
 
