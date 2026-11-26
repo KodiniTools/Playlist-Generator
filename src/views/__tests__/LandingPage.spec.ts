@@ -114,8 +114,8 @@ describe('LandingPage – Aufbau nach dem Vorbild Audio Normalizer', () => {
     const wrapper = mountLandingPage()
     const image = () => wrapper.get('.hero-media img')
     expect(image().attributes('src')).toMatch(/playlist-generator-landingpage-de\.webp$/)
-    expect(image().attributes('width')).toBe('1120')
-    expect(image().attributes('height')).toBe('630')
+    expect(image().attributes('width')).toBe('1600')
+    expect(image().attributes('height')).toBe('900')
     expect(image().attributes('alt')).toBe(useTranslation().t.value('hero_image_alt'))
 
     useTranslation().setLanguage('en')
