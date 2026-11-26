@@ -61,6 +61,31 @@
       </div>
       <UiCallout v-if="lowContrast" type="warning">{{ t('share_image_low_contrast') }}</UiCallout>
 
+      <div class="share-image__text">
+        <UiSegmentedControl
+          v-model="font"
+          :options="fontOptions"
+          :label="t('share_image_font')"
+          size="sm"
+          data-input="font"
+        />
+        <div class="share-image__size">
+          <label>{{ t('share_image_text_size') }} (%)</label>
+          <SliderField
+            v-model="textSize"
+            :min="TEXT_SIZE_MIN"
+            :max="TEXT_SIZE_MAX"
+            :step="TEXT_SIZE_STEP"
+            :default-value="TEXT_SIZE_DEFAULT"
+            :aria-label="t('share_image_text_size')"
+            data-input="text-size"
+          />
+        </div>
+        <span v-if="font !== DEFAULT_SHARE_FONT" class="share-image__hint">
+          {{ t('share_image_font_hint') }}
+        </span>
+      </div>
+
       <div class="share-image__photo">
         <input
           ref="photoInput"
@@ -142,7 +167,10 @@
   import type { ThemeName } from '../design-system/tokens'
   import {
     BackgroundImageError,
+    DEFAULT_SHARE_FONT,
+    SHARE_FONT_IDS,
     SHARE_IMAGE_SIZES,
+    SHARE_TEXT_SCALE,
     contrastRatio,
     defaultShareColors,
     formatTotal,
@@ -152,9 +180,11 @@
     summarizeTracks,
     type BackgroundErrorCode,
     type ShareBackground,
+    type ShareFontId,
     type ShareImageData,
     type ShareImageFormat,
     type ShareImageType,
+    type ShareTypography,
   } from '../utils/shareImage'
 
   /** Wiedergabeliste als Bild (Story 1080×1920 / Post 1080×1080) herunterladen oder teilen. */
@@ -237,6 +267,27 @@
     }
   }
 
+  // Schriftart und Textgröße (Prozent im Regler, Faktor im Bild).
+  const FONT_LABELS: Record<ShareFontId, TranslationKey> = {
+    app: 'share_image_font_app',
+    sans: 'share_image_font_sans',
+    serif: 'share_image_font_serif',
+    mono: 'share_image_font_mono',
+  }
+  const TEXT_SIZE_MIN = Math.round(SHARE_TEXT_SCALE.min * 100)
+  const TEXT_SIZE_MAX = Math.round(SHARE_TEXT_SCALE.max * 100)
+  const TEXT_SIZE_STEP = Math.round(SHARE_TEXT_SCALE.step * 100)
+  const TEXT_SIZE_DEFAULT = Math.round(SHARE_TEXT_SCALE.default * 100)
+  const font = ref<ShareFontId>(DEFAULT_SHARE_FONT)
+  const textSize = ref(TEXT_SIZE_DEFAULT)
+  const typography = computed<ShareTypography>(() => ({
+    font: font.value,
+    scale: textSize.value / 100,
+  }))
+  const fontOptions = computed<SegmentedOption[]>(() =>
+    SHARE_FONT_IDS.map((id) => ({ value: id, label: t.value(FONT_LABELS[id]) })),
+  )
+
   const formatOptions = computed<SegmentedOption[]>(() => [
     { value: 'story', label: t.value('share_image_story') },
     { value: 'post', label: t.value('share_image_post') },
@@ -296,6 +347,7 @@
         type.value,
         colors.value,
         background.value,
+        typography.value,
       )
       if (id === job && props.open) setPreview(result)
     } catch (err) {
@@ -317,7 +369,7 @@
   )
 
   watch(
-    [() => props.open, data, format, theme, type, colors, background],
+    [() => props.open, data, format, theme, type, colors, background, typography],
     () => {
       if (props.open) void render()
     },
@@ -391,6 +443,32 @@
 
   .share-image__color label {
     cursor: pointer;
+  }
+
+  .share-image__text {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-2) var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-2);
+  }
+
+  .share-image__size {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    max-width: 100%;
+  }
+
+  .share-image__size label {
+    white-space: nowrap;
+  }
+
+  .share-image__size .slider-field {
+    width: 16rem;
+    min-width: 0;
+    flex: 0 1 auto;
   }
 
   .share-image__photo {

@@ -101,6 +101,37 @@ describe('ShareImageDialog', () => {
     expect(wrapper.get('img').attributes('height')).toBe('1080')
   })
 
+  it('rendert standardmäßig mit App-Schrift und 100 % Textgröße', async () => {
+    mountDialog()
+    await flushPromises()
+    expect(render.mock.calls[0]![6]).toEqual({ font: 'app', scale: 1 })
+  })
+
+  it('übernimmt Schriftart und Textgröße und setzt die Textgröße zurück', async () => {
+    const wrapper = mountDialog()
+    await flushPromises()
+    expect(wrapper.text()).not.toContain('Systemschriften')
+
+    await wrapper
+      .findAll('[role="radio"]')
+      .find((r) => r.text() === 'Serif')!
+      .trigger('click')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![6]).toEqual({ font: 'serif', scale: 1 })
+    expect(wrapper.text()).toContain('Systemschriften')
+
+    await wrapper.get('[data-input="text-size"]').setValue('120')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![6]).toEqual({ font: 'serif', scale: 1.2 })
+    const sizeNumber = wrapper.get<HTMLInputElement>('.share-image__size input[type="number"]')
+    expect(sizeNumber.element.value).toBe('120')
+
+    await wrapper.get('.share-image__size .slider-field__reset').trigger('click')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![6]).toEqual({ font: 'serif', scale: 1 })
+    expect(sizeNumber.element.value).toBe('100')
+  })
+
   it('lädt das Bild mit passendem Dateinamen herunter', async () => {
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
     const wrapper = mountDialog()
