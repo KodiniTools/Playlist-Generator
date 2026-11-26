@@ -1,6 +1,6 @@
 /** Intrinsische Bildmaße (px); verhindern Layout-Shift beim Laden. */
-export const LANDING_IMAGE_WIDTH = 1120
-export const LANDING_IMAGE_HEIGHT = 630
+export const LANDING_IMAGE_WIDTH = 1600
+export const LANDING_IMAGE_HEIGHT = 900
 
 /**
  * URL des Landingpage-Bildes der Sprache (Dateien in `public/`).
