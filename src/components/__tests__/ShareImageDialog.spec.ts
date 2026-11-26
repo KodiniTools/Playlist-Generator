@@ -6,6 +6,7 @@ import { useToast } from '../../composables/useToast'
 import { useTranslation } from '../../composables/useTranslation'
 import {
   BackgroundImageError,
+  defaultNumberColor,
   defaultShareColors,
   loadBackgroundImage,
   renderShareImage,
@@ -30,7 +31,7 @@ async function pickFile(wrapper: ReturnType<typeof mountDialog>, file: File) {
 /** Wählt eine Farbe über den ColorField: Panel öffnen, Hex eintragen, Feld verlassen. */
 async function pickColor(
   wrapper: ReturnType<typeof mountDialog>,
-  which: 'text' | 'background',
+  which: 'text' | 'background' | 'numbers',
   hex: string,
 ) {
   const swatch = wrapper.get(`[data-color="${which}"]`)
@@ -43,8 +44,10 @@ async function pickColor(
 }
 
 /** Aktuelle Farbe eines ColorField (der Swatch zeigt sie als title). */
-const colorOf = (wrapper: ReturnType<typeof mountDialog>, which: 'text' | 'background') =>
-  wrapper.get(`[data-color="${which}"]`).attributes('title')
+const colorOf = (
+  wrapper: ReturnType<typeof mountDialog>,
+  which: 'text' | 'background' | 'numbers',
+) => wrapper.get(`[data-color="${which}"]`).attributes('title')
 
 const { files, playlistName, excludedFiles } = usePlaylist()
 const { toasts } = useToast()
@@ -168,6 +171,24 @@ describe('ShareImageDialog', () => {
     await wrapper.get('[data-action="reset-colors"]').trigger('click')
     await flushPromises()
     expect(render.mock.calls.at(-1)![4]).toEqual(defaultShareColors('dark'))
+  })
+
+  it('stellt die Farbe der Titelnummern ein und setzt sie zurück', async () => {
+    const wrapper = mountDialog()
+    await flushPromises()
+    const accent = defaultNumberColor('dark')
+    expect(colorOf(wrapper, 'numbers')).toBe(accent)
+    // Ohne eigene Wahl bestimmt das Bild den Akzent selbst.
+    expect(render.mock.calls.at(-1)![4]).toMatchObject({ numbers: undefined })
+
+    await pickColor(wrapper, 'numbers', '#ff00aa')
+    await flushPromises()
+    expect(render.mock.calls.at(-1)![4]).toMatchObject({ numbers: '#ff00aa' })
+
+    await wrapper.get('[data-action="reset-colors"]').trigger('click')
+    await flushPromises()
+    expect(colorOf(wrapper, 'numbers')).toBe(accent)
+    expect(render.mock.calls.at(-1)![4]).toMatchObject({ numbers: undefined })
   })
 
   it('warnt bei zu wenig Kontrast', async () => {

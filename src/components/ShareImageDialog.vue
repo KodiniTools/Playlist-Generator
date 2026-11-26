@@ -49,6 +49,16 @@
           />
           <label for="share-image-background-color">{{ t('share_image_background_color') }}</label>
         </div>
+        <div class="share-image__color">
+          <ColorField
+            id="share-image-numbers-color"
+            v-model="numbersColor"
+            class="share-image__swatch"
+            data-color="numbers"
+            :label="t('share_image_numbers_color')"
+          />
+          <label for="share-image-numbers-color">{{ t('share_image_numbers_color') }}</label>
+        </div>
         <UiButton
           size="sm"
           variant="ghost"
@@ -172,6 +182,7 @@
     SHARE_IMAGE_SIZES,
     SHARE_TEXT_SCALE,
     contrastRatio,
+    defaultNumberColor,
     defaultShareColors,
     formatTotal,
     loadBackgroundImage,
@@ -208,12 +219,23 @@
   // Eigene Farben; beim Wechsel des Farbschemas starten sie wieder bei dessen Werten.
   const textColor = ref(defaultShareColors('dark').text)
   const backgroundColor = ref(defaultShareColors('dark').background)
-  const colors = computed(() => ({ text: textColor.value, background: backgroundColor.value }))
+  const numbersColor = ref(defaultNumberColor('dark'))
+  // Nummern nur dann eigens übergeben, wenn sie vom Standard abweichen: sonst wählt das Bild
+  // den Akzent selbst (und weicht bei zu wenig Kontrast auf die Textfarbe aus).
+  const numbersCustomized = computed(
+    () => numbersColor.value.toLowerCase() !== defaultNumberColor(theme.value).toLowerCase(),
+  )
+  const colors = computed(() => ({
+    text: textColor.value,
+    background: backgroundColor.value,
+    numbers: numbersCustomized.value ? numbersColor.value : undefined,
+  }))
   const customized = computed(() => {
     const preset = defaultShareColors(theme.value)
     return (
       textColor.value.toLowerCase() !== preset.text.toLowerCase() ||
-      backgroundColor.value.toLowerCase() !== preset.background.toLowerCase()
+      backgroundColor.value.toLowerCase() !== preset.background.toLowerCase() ||
+      numbersCustomized.value
     )
   })
   // Unter 4,5:1 (WCAG AA) ist der Text auf dem Handy schwer lesbar.
@@ -226,6 +248,7 @@
     const preset = defaultShareColors(theme.value)
     textColor.value = preset.text
     backgroundColor.value = preset.background
+    numbersColor.value = defaultNumberColor(theme.value)
   }
 
   // sync: die Farben stehen schon fest, bevor das Bild neu gezeichnet wird.
