@@ -79,9 +79,16 @@ export function summarizeTracks(
   return { tracks, totalSeconds, approximate }
 }
 
-/** Welche Titel aufs Bild passen; reicht der Platz nicht, wird die letzte Zeile zu „+ N weitere“. */
-export function shareRows(tracks: ShareTrack[], format: ShareImageFormat): ShareRows {
-  const max = SHARE_IMAGE_ROWS[format]
+/**
+ * Welche Titel aufs Bild passen; reicht der Platz nicht, wird die letzte Zeile zu „+ N weitere“.
+ * `maxRows` ersetzt die Standardzahl des Formats (nötig bei geänderter Textgröße), mindestens 1.
+ */
+export function shareRows(
+  tracks: ShareTrack[],
+  format: ShareImageFormat,
+  maxRows: number = SHARE_IMAGE_ROWS[format],
+): ShareRows {
+  const max = Math.max(1, Math.floor(maxRows))
   if (tracks.length <= max) return { tracks, more: 0 }
   return { tracks: tracks.slice(0, max - 1), more: tracks.length - (max - 1) }
 }
@@ -159,7 +166,44 @@ export function shareImageFileName(
 
 const FONT = designTokens.typography.fontFamily.base.$value
 
-interface Geometry {
+/**
+ * Schriftarten im Bild. `app` ist die gebündelte App-Schrift (Supreme Regular); die übrigen
+ * sind Systemschriften, es wird keine weitere Schriftdatei geladen. Wie sie aussehen, hängt
+ * vom Gerät ab, auf dem das Bild entsteht.
+ */
+export const SHARE_FONTS = {
+  app: FONT,
+  sans: "system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+  serif: "Georgia, 'Times New Roman', Times, serif",
+  mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Courier New', monospace",
+} as const
+
+export type ShareFontId = keyof typeof SHARE_FONTS
+export const SHARE_FONT_IDS = Object.keys(SHARE_FONTS) as ShareFontId[]
+export const DEFAULT_SHARE_FONT: ShareFontId = 'app'
+
+/** Textgröße als Faktor auf alle Schriftgrößen und Zeilenhöhen (100 % = bisheriges Bild). */
+export const SHARE_TEXT_SCALE = { min: 0.8, max: 1.3, step: 0.05, default: 1 } as const
+
+/** Vom Nutzer gewählte Schrift und Textgröße. */
+export interface ShareTypography {
+  font: ShareFontId
+  /** Faktor, 1 = Standard; wird auf 0,8–1,3 begrenzt. */
+  scale: number
+}
+
+export const DEFAULT_SHARE_TYPOGRAPHY: ShareTypography = {
+  font: DEFAULT_SHARE_FONT,
+  scale: SHARE_TEXT_SCALE.default,
+}
+
+/** Begrenzt die Textgröße; ungültige Werte werden zu 1. */
+export function clampTextScale(scale: number): number {
+  if (!Number.isFinite(scale)) return SHARE_TEXT_SCALE.default
+  return Math.min(SHARE_TEXT_SCALE.max, Math.max(SHARE_TEXT_SCALE.min, scale))
+}
+
+export interface Geometry {
   pad: number
   kicker: number
   title: number
@@ -194,6 +238,22 @@ const GEOMETRY: Record<ShareImageFormat, Geometry> = {
     artist: 26,
     footer: 24,
   },
+}
+
+/** Schriftgrößen und Zeilenhöhe mit Faktor; der Rand (`pad`) bleibt. */
+export function scaleGeometry(g: Geometry, scale: number): Geometry {
+  const k = clampTextScale(scale)
+  return {
+    pad: g.pad,
+    kicker: g.kicker * k,
+    title: g.title * k,
+    titleLines: g.titleLines,
+    meta: g.meta * k,
+    row: g.row * k,
+    track: g.track * k,
+    artist: g.artist * k,
+    footer: g.footer * k,
+  }
 }
 
 /** Vom Nutzer gewählte Farben (#rrggbb); fehlende Werte kommen aus dem Theme. */
@@ -342,12 +402,15 @@ export function drawShareImage(
   theme: ThemeName,
   colors?: Partial<ShareColors>,
   backgroundImage?: ShareBackground | null,
+  typography: Partial<ShareTypography> = DEFAULT_SHARE_TYPOGRAPHY,
 ): void {
   const { width, height } = SHARE_IMAGE_SIZES[format]
-  const g = GEOMETRY[format]
+  const scale = clampTextScale(typography.scale ?? SHARE_TEXT_SCALE.default)
+  const g = scaleGeometry(GEOMETRY[format], scale)
+  const family = SHARE_FONTS[typography.font ?? DEFAULT_SHARE_FONT] ?? FONT
   const c = sharePalette(theme, colors)
   const measure = (text: string) => ctx.measureText(text).width
-  const font = (size: number, weight = 400) => `${weight} ${size}px ${FONT}`
+  const font = (size: number, weight = 400) => `${weight} ${size}px ${family}`
 
   // Hintergrund mit leichtem Verlauf
   const background = ctx.createLinearGradient(0, 0, 0, height)
@@ -436,8 +499,12 @@ export function drawShareImage(
   ctx.fillRect(left, y, 120, 6)
   y += 40
 
-  // Titelzeilen
-  const { tracks, more } = shareRows(data.tracks, format)
+  // Titelzeilen. Bei größerem Text passen weniger hinein: höchstens so viele wie bei 100 %,
+  // geteilt durch den Faktor, und nie mehr, als bis zur Fußzeile Platz ist.
+  const footerTop = height - g.pad - g.footer * 0.5
+  const fitting = Math.floor((footerTop - y) / g.row)
+  const maxRows = Math.min(Math.floor(SHARE_IMAGE_ROWS[format] / scale), fitting)
+  const { tracks, more } = shareRows(data.tracks, format, maxRows)
   const numberWidth = g.track * 1.6
   const durationWidth = g.track * 3.2
   tracks.forEach((track, index) => {
@@ -501,10 +568,14 @@ export async function renderShareImage(
   type: ShareImageType = 'image/png',
   colors?: Partial<ShareColors>,
   backgroundImage?: ShareBackground | null,
+  typography: Partial<ShareTypography> = DEFAULT_SHARE_TYPOGRAPHY,
 ): Promise<Blob> {
   const { width, height } = SHARE_IMAGE_SIZES[format]
   try {
-    await document.fonts?.load(`700 40px ${FONT}`)
+    // Nur die App-Schrift muss geladen werden; Systemschriften sind sofort da.
+    if ((typography.font ?? DEFAULT_SHARE_FONT) === 'app') {
+      await document.fonts?.load(`700 40px ${FONT}`)
+    }
   } catch {
     // Ohne Schrift zeichnet der Browser mit der Ersatzschrift.
   }
@@ -513,7 +584,7 @@ export async function renderShareImage(
   canvas.height = height
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Canvas 2D nicht verfügbar')
-  drawShareImage(ctx, data, format, theme, colors, backgroundImage)
+  drawShareImage(ctx, data, format, theme, colors, backgroundImage, typography)
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error('Bild konnte nicht erzeugt werden'))),
