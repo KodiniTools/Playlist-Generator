@@ -89,6 +89,18 @@ describe('LandingPage – Aufbau nach dem Vorbild Audio Normalizer', () => {
     expect(wrapper.findAll('.faq-item')).toHaveLength(6)
   })
 
+  it('färbt im Titel nur das letzte Wort blau, der Titeltext bleibt vollständig', async () => {
+    const wrapper = mountLandingPage()
+    const title = () => wrapper.get('h1.hero-title')
+    expect(title().text()).toBe('Audio Wiedergabeliste Generator')
+    expect(title().get('.hero-title-accent').text()).toBe('Generator')
+
+    useTranslation().setLanguage('en')
+    await wrapper.vm.$nextTick()
+    expect(title().text()).toBe('Audio Playlist Generator')
+    expect(title().get('.hero-title-accent').text()).toBe('Generator')
+  })
+
   it('führt im Hero mit genau einem Button zur App', () => {
     const wrapper = mountLandingPage()
     const { t } = useTranslation()

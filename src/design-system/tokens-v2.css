@@ -39,6 +39,8 @@
   --ds-link: #6aaef5;
   --ds-tint: #3c98b9; /* Blau-Cyan-Tönung, nur gemischt mit Flächen/Rahmen (color-mix) */
   --ds-heading-accent: #69d7e9; /* Cyan für Unterzeilen der Landingpage (Vorbild Audio Normalizer) */
+  --ds-title-gold: #e6bc76; /* Hero-Titel der Landingpage (Kodini 2026-11-26) */
+  --ds-title-blue: #48a0d8; /* Logo-Blau, gemessen im KodiniTools-Logo */
 
   /* Status */
   --ds-success: #5fcf8a;
@@ -152,6 +154,8 @@
   --ds-link: #0f5aa8;
   --ds-tint: #3c98b9;
   --ds-heading-accent: #086a80; /* Cyan für Unterzeilen der Landingpage (Vorbild Audio Normalizer) */
+  --ds-title-gold: #775115; /* Hero-Titel der Landingpage (Kodini 2026-11-26) */
+  --ds-title-blue: #0058a0; /* Logo-Blau, gemessen im KodiniTools-Logo */
 
   --ds-success: #177a42;
   --ds-on-success: #ffffff;
@@ -196,6 +200,8 @@
   --ds-link: #0f5aa8;
   --ds-tint: #3c98b9;
   --ds-heading-accent: #086a80; /* Cyan für Unterzeilen der Landingpage (Vorbild Audio Normalizer) */
+  --ds-title-gold: #775115; /* Hero-Titel der Landingpage (Kodini 2026-11-26) */
+  --ds-title-blue: #0058a0; /* Logo-Blau, gemessen im KodiniTools-Logo */
 
   --ds-success: #177a42;
   --ds-on-success: #ffffff;
