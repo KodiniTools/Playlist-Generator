@@ -260,8 +260,11 @@ export function scaleGeometry(g: Geometry, scale: number): Geometry {
 export interface ShareColors {
   text: string
   background: string
-  /** Farbe der Titelnummern; ohne Angabe der Akzent des Themes. */
-  numbers?: string
+  /**
+   * Akzentfarbe: Titelnummern, Label über dem Namen, Linie, Schallplatte und „+ N weitere“.
+   * Ohne Angabe der Akzent des Themes.
+   */
+  accent?: string
 }
 
 export interface SharePalette {
@@ -310,8 +313,8 @@ export function contrastRatio(a: string, b: string): number {
   return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05)
 }
 
-/** Standardfarbe der Titelnummern: der Akzent des Themes. */
-export function defaultNumberColor(theme: ThemeName): string {
+/** Standard-Akzentfarbe: der Akzent des Themes. */
+export function defaultAccentColor(theme: ThemeName): string {
   return themeColors(theme).accent
 }
 
@@ -325,9 +328,14 @@ export function defaultShareColors(theme: ThemeName): ShareColors {
  * Farben fürs Bild. Ohne eigene Farben exakt die Theme-Farben; mit eigenen
  * Farben werden Nebentöne aus Text und Hintergrund gemischt. Der Akzent des
  * Themes bleibt, solange er sich vom Hintergrund abhebt (≥ 3:1), sonst wird
- * die Textfarbe genommen.
+ * die Textfarbe genommen. Eine eigene Akzentfarbe (`colors.accent`) gilt immer.
  */
 export function sharePalette(theme: ThemeName, colors?: Partial<ShareColors>): SharePalette {
+  const palette = basePalette(theme, colors)
+  return colors?.accent && parseHex(colors.accent) ? { ...palette, accent: colors.accent } : palette
+}
+
+function basePalette(theme: ThemeName, colors?: Partial<ShareColors>): SharePalette {
   const c = themeColors(theme)
   const text = colors?.text && parseHex(colors.text) ? colors.text : c.text
   const bg = colors?.background && parseHex(colors.background) ? colors.background : c.bg
@@ -416,7 +424,6 @@ export function drawShareImage(
   const g = scaleGeometry(GEOMETRY[format], scale)
   const family = SHARE_FONTS[typography.font ?? DEFAULT_SHARE_FONT] ?? FONT
   const c = sharePalette(theme, colors)
-  const numberColor = colors?.numbers && parseHex(colors.numbers) ? colors.numbers : c.accent
   const measure = (text: string) => ctx.measureText(text).width
   const font = (size: number, weight = 400) => `${weight} ${size}px ${family}`
 
@@ -522,7 +529,7 @@ export function drawShareImage(
     const hasArtist = Boolean(track.artist)
     const titleY = top + (hasArtist ? g.row * 0.45 : g.row * 0.62)
 
-    ctx.fillStyle = numberColor
+    ctx.fillStyle = c.accent
     ctx.font = font(g.track * 0.8, 700)
     ctx.fillText(String(index + 1).padStart(2, '0'), left, titleY)
 

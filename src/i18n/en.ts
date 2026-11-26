@@ -167,7 +167,7 @@ const en: Record<TranslationKey, string> = {
   share_image_type: 'File type',
   share_image_text_color: 'Text color',
   share_image_background_color: 'Background',
-  share_image_numbers_color: 'Number color',
+  share_image_accent_color: 'Accent color',
   share_image_reset_colors: 'Reset colors',
   share_image_font: 'Font',
   share_image_font_app: 'Supreme',

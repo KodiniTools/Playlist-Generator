@@ -11,7 +11,7 @@ import {
   scaleGeometry,
   loadBackgroundImage,
   contrastRatio,
-  defaultNumberColor,
+  defaultAccentColor,
   defaultShareColors,
   mixColors,
   parseHex,
@@ -249,32 +249,32 @@ describe('Farben', () => {
   })
 })
 
-describe('Farbe der Titelnummern', () => {
-  const numberFill = (colors?: { text?: string; background?: string; numbers?: string }) => {
+describe('Akzentfarbe', () => {
+  const numberFill = (colors?: { text?: string; background?: string; accent?: string }) => {
     const { ctx, texts } = recordingContext()
     drawShareImage(ctx, data(), 'post', 'dark', colors)
     return texts.find((t) => t.text === '01')?.fill
   }
 
   it('ist ohne Auswahl der Akzent des Themes', () => {
-    expect(defaultNumberColor('dark')).toBe(themeColors('dark').accent)
+    expect(defaultAccentColor('dark')).toBe(themeColors('dark').accent)
     expect(numberFill()).toBe(themeColors('dark').accent)
   })
 
-  it('nimmt die gewählte Farbe nur für die Nummern', () => {
+  it('färbt Nummern, Label und „+ N weitere“, nicht die Titel', () => {
     const { ctx, texts } = recordingContext()
-    drawShareImage(ctx, data(), 'post', 'dark', { numbers: '#ff00aa' })
+    drawShareImage(ctx, data({ tracks: tracks(12) }), 'post', 'dark', { accent: '#ff00aa' })
     expect(texts.find((t) => t.text === '01')?.fill).toBe('#ff00aa')
-    expect(texts.find((t) => t.text === '03')?.fill).toBe('#ff00aa')
+    expect(texts.find((t) => t.text === 'WIEDERGABELISTE')?.fill).toBe('#ff00aa')
+    expect(texts.find((t) => t.text.startsWith('+ '))?.fill).toBe('#ff00aa')
     expect(texts.find((t) => t.text === 'Titel 1')?.fill).toBe(themeColors('dark').text)
-    expect(texts.find((t) => t.text === 'WIEDERGABELISTE')?.fill).toBe(themeColors('dark').accent)
   })
 
   it('übersteht eigene Text- und Hintergrundfarben und ignoriert ungültige Werte', () => {
-    expect(numberFill({ text: '#ffffff', background: '#000000', numbers: '#00ff00' })).toBe(
+    expect(numberFill({ text: '#ffffff', background: '#000000', accent: '#00ff00' })).toBe(
       '#00ff00',
     )
-    expect(numberFill({ numbers: 'blau' })).toBe(themeColors('dark').accent)
+    expect(numberFill({ accent: 'blau' })).toBe(themeColors('dark').accent)
   })
 })
 
