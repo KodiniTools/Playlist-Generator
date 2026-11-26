@@ -71,7 +71,11 @@ body .landing-page .hero-title {
   line-height: 1.05;
   letter-spacing: -0.045em;
   overflow-wrap: anywhere;
-  color: var(--ds-text);
+  color: var(--ds-title-gold);
+}
+
+body .landing-page .hero-title-accent {
+  color: var(--ds-title-blue);
 }
 
 body .landing-page .hero-subtitle {

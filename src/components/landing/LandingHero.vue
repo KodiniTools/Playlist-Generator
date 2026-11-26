@@ -2,7 +2,9 @@
   <section class="hero">
     <div class="container">
       <div class="hero-content">
-        <h1 class="hero-title">{{ t('hero_title') }}</h1>
+        <h1 class="hero-title">
+          {{ titleHead }} <span class="hero-title-accent">{{ titleLast }}</span>
+        </h1>
         <p class="hero-subtitle">{{ t('hero_subtitle') }}</p>
         <p class="hero-description">{{ t('hero_description') }}</p>
         <RouterLink to="/app" class="btn-hero">{{ t('hero_cta') }} →</RouterLink>
@@ -35,6 +37,17 @@
   } from '../../utils/landingImage'
 
   const { t, currentLanguage } = useTranslation()
+
+  /** Titel in zwei Farben: alles vor dem letzten Wort in Gold, das letzte Wort in Logo-Blau. */
+  const titleSplit = computed(() => {
+    const title = t.value('hero_title')
+    const cut = title.lastIndexOf(' ')
+    return cut === -1
+      ? { head: '', last: title }
+      : { head: title.slice(0, cut), last: title.slice(cut + 1) }
+  })
+  const titleHead = computed(() => titleSplit.value.head)
+  const titleLast = computed(() => titleSplit.value.last)
 
   /** Hero-Bild folgt der UI-Sprache (DE/EN). */
   const heroImageSrc = computed(() =>

@@ -137,6 +137,26 @@ describe('Kontrast (WCAG AA, mindestens 4.5:1)', () => {
     },
   )
 
+  it.each(THEMES)('%s: Hero-Titel (Gold und Logo-Blau) auf der Seitenfläche', (theme) => {
+    const colors = themeColorsV2(theme)
+    const failures = (['titleGold', 'titleBlue'] as const).flatMap((title) => {
+      const ratio = contrastRatio(colors[title], colors.surface0)
+      return ratio >= AA ? [] : [`${title} auf surface0: ${ratio.toFixed(2)}`]
+    })
+    expect(failures).toEqual([])
+  })
+
+  it('Hero-Titel nutzt die vorgegebenen Hexwerte je Theme', () => {
+    expect([colorTokenV2('light', 'titleGold'), colorTokenV2('light', 'titleBlue')]).toEqual([
+      '#775115',
+      '#0058a0',
+    ])
+    expect([colorTokenV2('dark', 'titleGold'), colorTokenV2('dark', 'titleBlue')]).toEqual([
+      '#e6bc76',
+      '#48a0d8',
+    ])
+  })
+
   it.each(THEMES)('%s: Text auf gefüllter Erfolgs-Fläche', (theme) => {
     const colors = themeColorsV2(theme)
     expect(contrastRatio(colors.onSuccess, colors.success)).toBeGreaterThanOrEqual(AA)
