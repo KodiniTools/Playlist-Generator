@@ -173,6 +173,7 @@ const de = {
   share_image_type: 'Dateityp',
   share_image_text_color: 'Textfarbe',
   share_image_background_color: 'Hintergrund',
+  share_image_numbers_color: 'Nummernfarbe',
   share_image_reset_colors: 'Farben zurücksetzen',
   share_image_font: 'Schriftart',
   share_image_font_app: 'Supreme',
